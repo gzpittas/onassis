@@ -1,0 +1,58 @@
+<div class="page-header">
+  <h1>Sources</h1>
+  <%= link_to "Add Source", new_source_path, class: "btn btn-gold" %>
+</div>
+
+<div class="filters">
+  <%= form_with url: sources_path, method: :get, local: true do |f| %>
+    <div class="filter-row">
+      <div class="filter-group">
+        <%= label_tag :source_type, "Type" %>
+        <%= select_tag :source_type,
+            options_for_select([["All Types", ""]] + Source::SOURCE_TYPES.map { |t| [t.titleize, t] }, params[:source_type]),
+            onchange: "this.form.submit()" %>
+      </div>
+      <div class="filter-group">
+        <%= link_to "Clear Filter", sources_path, class: "btn btn-secondary" %>
+      </div>
+    </div>
+  <% end %>
+</div>
+
+<% if @sources.any? %>
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Author</th>
+          <th>Type</th>
+          <th>Publisher</th>
+          <th>Entries</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @sources.each do |source| %>
+          <tr>
+            <td><%= link_to source.title, source %></td>
+            <td><%= source.author %></td>
+            <td><span class="tag"><%= source.source_type&.titleize %></span></td>
+            <td><%= source.publisher %></td>
+            <td><%= source.entries.count %></td>
+            <td class="actions">
+              <%= link_to "Edit", edit_source_path(source), class: "btn btn-small btn-secondary" %>
+              <%= link_to "Delete", source, data: { turbo_method: :delete, turbo_confirm: "Are you sure?" }, class: "btn btn-small btn-danger" %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% else %>
+  <div class="empty-state">
+    <h3>No Sources Yet</h3>
+    <p>Start adding the books, articles, and documentaries you're researching.</p>
+    <%= link_to "Add Your First Source", new_source_path, class: "btn btn-gold" %>
+  </div>
+<% end %>

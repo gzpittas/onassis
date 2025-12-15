@@ -1,0 +1,14 @@
+<nav class="main-nav">
+  <div class="nav-brand">
+    <%= link_to "ONASSIS", root_path %>
+    <span class="nav-subtitle">Timeline Research Tool</span>
+  </div>
+  <div class="nav-links">
+    <%= link_to "Timeline", root_path, class: current_page?(root_path) ? "active" : "" %>
+    <%= link_to "Entries", entries_path, class: controller_name == "entries" ? "active" : "" %>
+    <%= link_to "Characters", characters_path, class: controller_name == "characters" ? "active" : "" %>
+    <%= link_to "Sources", sources_path, class: controller_name == "sources" ? "active" : "" %>
+    <%= link_to "Search", search_path, class: controller_name == "search" ? "active" : "" %>
+    <%= link_to "Help", help_path, class: controller_name == "help" ? "active" : "" %>
+  </div>
+</nav>

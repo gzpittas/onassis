@@ -1,0 +1,32 @@
+<div class="source-fields card" id="entry_source_<%= f.object.id || f.object.object_id %>">
+  <%= f.hidden_field :id if f.object.persisted? %>
+  <%= f.hidden_field :_destroy %>
+
+  <div class="form-row">
+    <div class="form-group">
+      <%= f.label :source_id, "Source" %>
+      <%= f.select :source_id, @sources.map { |s| [s.display_name, s.id] }, { include_blank: "Select source..." } %>
+    </div>
+    <div class="form-group">
+      <%= f.label :author, "Author (optional)" %>
+      <%= f.text_field :author, placeholder: "e.g., John Smith" %>
+    </div>
+    <div class="form-group" style="flex: 0 0 auto; align-self: flex-end;">
+      <%= link_to "Remove", "#", class: "btn btn-danger btn-small remove-source" %>
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="form-group">
+      <%= f.label :page_reference, "Page / Date Reference" %>
+      <%= f.text_field :page_reference, placeholder: "e.g., 123-125 or March 15, 1968, p. A1" %>
+    </div>
+    <div class="form-group">
+      <%= f.label :link, "Link (URL)" %>
+      <%= f.url_field :link, placeholder: "https://..." %>
+    </div>
+  </div>
+  <div class="form-group">
+    <%= f.label :notes, "Notes about this source" %>
+    <%= f.text_area :notes, placeholder: "Any specific notes about how this source covers this event...", rows: 2 %>
+  </div>
+</div>

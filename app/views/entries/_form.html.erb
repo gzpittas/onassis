@@ -1,0 +1,162 @@
+<%= form_with model: @entry, local: true do |f| %>
+  <% if @entry.errors.any? %>
+    <div class="error-messages">
+      <h3><%= pluralize(@entry.errors.count, "error") %> prohibited this entry from being saved:</h3>
+      <ul>
+        <% @entry.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="form-group">
+    <%= f.label :title %>
+    <%= f.text_field :title, placeholder: "e.g., Marriage to Tina Livanos" %>
+  </div>
+
+  <div class="form-row">
+    <div class="form-group">
+      <%= f.label :event_date, "Event Date" %>
+      <%= f.date_field :event_date, min: "1800-01-01", max: "2100-12-31" %>
+    </div>
+
+    <div class="form-group">
+      <%= f.label :end_date, "End Date (optional)" %>
+      <%= f.date_field :end_date, min: "1800-01-01", max: "2100-12-31" %>
+    </div>
+
+    <div class="form-group">
+      <%= f.label :entry_type, "Event Type" %>
+      <%= f.select :entry_type, Entry::ENTRY_TYPES.map { |t| [t.titleize, t] }, { include_blank: "Select type..." } %>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :location %>
+    <%= f.text_field :location, placeholder: "e.g., Athens, Greece" %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :description %>
+    <%= f.text_area :description, placeholder: "Describe what happened..." %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :significance, "Historical Significance (for writers)" %>
+    <%= f.text_area :significance, placeholder: "Why is this event important for the series? What dramatic potential does it have?" %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :character_ids, "People Involved" %>
+    <%= f.collection_check_boxes :character_ids, @characters, :id, :name do |b| %>
+      <div class="form-checkbox">
+        <%= b.check_box %>
+        <%= b.label %>
+      </div>
+    <% end %>
+    <p class="form-hint"><%= link_to "Add a new character", new_character_path %></p>
+  </div>
+
+  <div class="form-section">
+    <h3>Sources</h3>
+    <p class="form-hint">Add one or more sources for this entry. Multiple sources help verify the information.</p>
+
+    <div id="entry-sources">
+      <%= f.fields_for :entry_sources do |es| %>
+        <%= render "entry_source_fields", f: es %>
+      <% end %>
+    </div>
+
+    <div class="form-group">
+      <%= link_to "Add Another Source", "#", class: "btn btn-secondary btn-small", id: "add-source-btn" %>
+      <span class="form-hint" style="margin-left: 1rem;"><%= link_to "Create a new source", new_source_path %></span>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <div class="form-checkbox">
+      <%= f.check_box :verified %>
+      <%= f.label :verified, "Mark as verified (confirmed from multiple sources)" %>
+    </div>
+  </div>
+
+  <div class="form-actions">
+    <%= f.submit class: "btn btn-gold" %>
+    <%= link_to "Cancel", entries_path, class: "btn btn-secondary" %>
+  </div>
+<% end %>
+
+<template id="entry-source-template">
+  <div class="source-fields card">
+    <div class="form-row">
+      <div class="form-group">
+        <label>Source</label>
+        <select name="entry[entry_sources_attributes][NEW_RECORD][source_id]">
+          <option value="">Select source...</option>
+          <% @sources.each do |source| %>
+            <option value="<%= source.id %>"><%= source.display_name %></option>
+          <% end %>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Author (optional)</label>
+        <input type="text" name="entry[entry_sources_attributes][NEW_RECORD][author]" placeholder="e.g., John Smith">
+      </div>
+      <div class="form-group" style="flex: 0 0 auto; align-self: flex-end;">
+        <a href="#" class="btn btn-danger btn-small remove-source">Remove</a>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Page / Date Reference</label>
+        <input type="text" name="entry[entry_sources_attributes][NEW_RECORD][page_reference]" placeholder="e.g., 123-125 or March 15, 1968, p. A1">
+      </div>
+      <div class="form-group">
+        <label>Link (URL)</label>
+        <input type="url" name="entry[entry_sources_attributes][NEW_RECORD][link]" placeholder="https://...">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Notes about this source</label>
+      <textarea name="entry[entry_sources_attributes][NEW_RECORD][notes]" placeholder="Any specific notes about how this source covers this event..." rows="2"></textarea>
+    </div>
+  </div>
+</template>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Source management
+    let sourceIndex = <%= @entry.entry_sources.length %>;
+
+    document.getElementById('add-source-btn').addEventListener('click', function(e) {
+      e.preventDefault();
+      const template = document.getElementById('entry-source-template');
+      const container = document.getElementById('entry-sources');
+      const newFields = template.content.cloneNode(true);
+
+      // Replace NEW_RECORD with actual index
+      newFields.querySelectorAll('[name*="NEW_RECORD"]').forEach(function(el) {
+        el.name = el.name.replace(/NEW_RECORD/g, sourceIndex);
+      });
+
+      container.appendChild(newFields);
+      sourceIndex++;
+    });
+
+    document.getElementById('entry-sources').addEventListener('click', function(e) {
+      if (e.target.classList.contains('remove-source')) {
+        e.preventDefault();
+        const sourceField = e.target.closest('.source-fields');
+        const destroyInput = sourceField.querySelector('input[name*="_destroy"]');
+
+        if (destroyInput) {
+          destroyInput.value = '1';
+          sourceField.style.display = 'none';
+        } else {
+          sourceField.remove();
+        }
+      }
+    });
+  });
+</script>

@@ -1,0 +1,111 @@
+/* ======================
+
+var(--black);
+
+var(--white);
+
+var(--putty);
+
+var(--french-grey-001);
+var(--french-grey-002);
+var(--french-grey-003);
+var(--french-grey-004);
+var(--french-grey-005);
+var(--french-grey-006);
+var(--french-grey-007);
+var(--french-grey-008);
+var(--french-grey-009);
+
+var(--french-grey-01);
+var(--french-grey-02);
+var(--french-grey-03);
+var(--french-grey-04);
+var(--french-grey-05);
+var(--french-grey-06);
+var(--french-grey-07);
+var(--french-grey-08);
+var(--french-grey-09);
+
+var(--french-grey-10);
+var(--french-grey-15);
+var(--french-grey-20);
+var(--french-grey-25);
+var(--french-grey-30);
+var(--french-grey-35);
+var(--french-grey-40);
+var(--french-grey-45);
+var(--french-grey-50);
+var(--french-grey-55);
+var(--french-grey-60);
+var(--french-grey-65);
+var(--french-grey-70);
+var(--french-grey-75);
+var(--french-grey-80);
+var(--french-grey-85);
+var(--french-grey-90);
+var(--french-grey-95);
+
+var(--french-grey-96);
+var(--french-grey-97);
+var(--french-grey-98);
+var(--french-grey-99);
+var(--french-grey-100);
+
+====================== */
+
+
+:root {
+
+  --menurooster-black: #000000;
+
+  --menurooster-white: #ffffff;
+
+  --menurooster-putty: #f4f3f2;
+
+/* French Greys */
+
+  --french-grey-001: #ffffff;
+  --french-grey-002: #fefdfc;
+  --french-grey-003: #fdfcfb;
+  --french-grey-004: #fcfbf9;
+  --french-grey-005: #fbfaf8;
+  --french-grey-006: #faf9f7;
+  --french-grey-007: #f8f7f5;
+  --french-grey-008: #f7f6f3;
+  --french-grey-009: #f6f5f2;
+
+  --french-grey-01: #faf9f7;
+  --french-grey-02: #f5f3f1;
+  --french-grey-03: #f0eeeb;
+  --french-grey-04: #eae7e4;
+  --french-grey-05: #e4e1de;
+  --french-grey-06: #e2dedb;
+  --french-grey-07: #dfdbd7;
+  --french-grey-08: #ddd8d4;
+  --french-grey-09: #dad6d2;
+
+  --french-grey-10: #d9d5d1;
+  --french-grey-15: #d1ccc7;
+  --french-grey-20: #c7c2bd;
+  --french-grey-25: #bdb8b2;
+  --french-grey-30: #b5b0aa;
+  --french-grey-35: #aba6a0;
+  --french-grey-40: #a29e98;
+  --french-grey-45: #99958f;
+  --french-grey-50: #8f8b85;
+  --french-grey-55: #86827d;
+  --french-grey-60: #7c7973;
+  --french-grey-65: #736f6a;
+  --french-grey-70: #696762;
+  --french-grey-75: #605e5a;
+  --french-grey-80: #565450;
+  --french-grey-85: #4d4b48;
+  --french-grey-90: #43413e;
+  --french-grey-95: #363432;
+
+  --french-grey-96: #32302e;
+  --french-grey-97: #2e2c2a;
+  --french-grey-98: #2a2826;
+  --french-grey-99: #252423;
+  --french-grey-100: #1f1e1d;
+}

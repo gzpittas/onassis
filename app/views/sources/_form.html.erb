@@ -1,0 +1,119 @@
+<%= form_with model: @source, local: true do |f| %>
+  <% if @source.errors.any? %>
+    <div class="error-messages">
+      <h3><%= pluralize(@source.errors.count, "error") %> prohibited this source from being saved:</h3>
+      <ul>
+        <% @source.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="form-group">
+    <%= f.label :title %>
+    <%= f.text_field :title, placeholder: "e.g., Onassis: An Extravagant Life" %>
+  </div>
+
+  <div class="form-row">
+    <div class="form-group">
+      <%= f.label :author %>
+      <%= f.text_field :author, placeholder: "e.g., Frank Brady" %>
+    </div>
+
+    <div class="form-group">
+      <%= f.label :source_type, "Type" %>
+      <%= f.select :source_type, Source::SOURCE_TYPES.map { |t| [t.titleize, t] }, { include_blank: "Select type..." } %>
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="form-group">
+      <%= f.label :publisher %>
+      <%= f.text_field :publisher, placeholder: "e.g., Prentice Hall" %>
+    </div>
+
+    <div class="form-group">
+      <%= f.label :publication_date, "Publication Date" %>
+      <%= f.date_field :publication_date, min: "1800-01-01", max: "2100-12-31" %>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :notes, "Notes / Summary" %>
+    <%= f.text_area :notes, placeholder: "General notes about this source, reliability assessment, key themes covered..." %>
+  </div>
+
+  <div class="form-section">
+    <h3>Links</h3>
+    <p class="form-hint">Add links to online versions of this source, archives, or related materials.</p>
+
+    <div id="source-links">
+      <%= f.fields_for :source_links do |link| %>
+        <%= render "source_link_fields", f: link %>
+      <% end %>
+    </div>
+
+    <div class="form-group">
+      <%= link_to "Add Link", "#", class: "btn btn-secondary btn-small", id: "add-link-btn" %>
+    </div>
+  </div>
+
+  <div class="form-actions">
+    <%= f.submit class: "btn btn-gold" %>
+    <%= link_to "Cancel", sources_path, class: "btn btn-secondary" %>
+  </div>
+<% end %>
+
+<template id="source-link-template">
+  <div class="link-fields">
+    <div class="form-row">
+      <div class="form-group" style="flex: 2;">
+        <label>URL</label>
+        <input type="url" name="source[source_links_attributes][NEW_RECORD][url]" placeholder="https://...">
+      </div>
+      <div class="form-group" style="flex: 1;">
+        <label>Label (optional)</label>
+        <input type="text" name="source[source_links_attributes][NEW_RECORD][label]" placeholder="e.g., Archive.org">
+      </div>
+      <div class="form-group" style="flex: 0 0 auto; align-self: flex-end;">
+        <a href="#" class="btn btn-danger btn-small remove-link">Remove</a>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    let linkIndex = <%= @source.source_links.length %>;
+
+    document.getElementById('add-link-btn').addEventListener('click', function(e) {
+      e.preventDefault();
+      const template = document.getElementById('source-link-template');
+      const container = document.getElementById('source-links');
+      const newFields = template.content.cloneNode(true);
+
+      newFields.querySelectorAll('[name*="NEW_RECORD"]').forEach(function(el) {
+        el.name = el.name.replace(/NEW_RECORD/g, linkIndex);
+      });
+
+      container.appendChild(newFields);
+      linkIndex++;
+    });
+
+    document.getElementById('source-links').addEventListener('click', function(e) {
+      if (e.target.classList.contains('remove-link')) {
+        e.preventDefault();
+        const linkField = e.target.closest('.link-fields');
+        const destroyInput = linkField.querySelector('input[name*="_destroy"]');
+
+        if (destroyInput) {
+          destroyInput.value = '1';
+          linkField.style.display = 'none';
+        } else {
+          linkField.remove();
+        }
+      }
+    });
+  });
+</script>

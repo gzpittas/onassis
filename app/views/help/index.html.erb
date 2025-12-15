@@ -1,0 +1,277 @@
+<div class="page-header">
+  <h1>Help & Instructions</h1>
+</div>
+
+<div class="help-intro card">
+  <p>Welcome to the <strong>Onassis Timeline</strong>, a research tool for documenting the life and events of Aristotle Onassis. This guide will help you understand how to effectively use the system to track your research from books, newspapers, and other sources.</p>
+</div>
+
+<div class="help-toc card">
+  <h2>Quick Navigation</h2>
+  <ul>
+    <li><a href="#workflow">Recommended Workflow</a></li>
+    <li><a href="#entries">Timeline Entries</a></li>
+    <li><a href="#characters">Characters</a></li>
+    <li><a href="#sources">Sources</a></li>
+    <li><a href="#tips">Tips for Writers</a></li>
+  </ul>
+</div>
+
+<div class="help-section" id="workflow">
+  <h2>Recommended Workflow</h2>
+  <div class="card">
+    <p>For best results, follow this order when adding new research:</p>
+    <ol class="help-steps">
+      <li>
+        <strong>Add the Source first</strong><br>
+        Before documenting any events, create a record for the book, article, or documentary you're reading. This allows you to link entries back to their origin.
+      </li>
+      <li>
+        <strong>Add Characters as you encounter them</strong><br>
+        When you come across a new person in your research, add them to the Characters database before creating entries that involve them.
+      </li>
+      <li>
+        <strong>Create Timeline Entries</strong><br>
+        Document events as you read, linking them to the source and any characters involved.
+      </li>
+      <li>
+        <strong>Mark entries as Verified</strong><br>
+        When you find the same event confirmed in multiple sources, mark it as verified to indicate higher confidence.
+      </li>
+    </ol>
+  </div>
+</div>
+
+<div class="help-section" id="entries">
+  <h2>Timeline Entries</h2>
+  <div class="card">
+    <p>Timeline entries are the core of your research database. Each entry represents a specific event or moment in Onassis's life.</p>
+
+    <h3>Required Fields</h3>
+    <table class="help-table">
+      <tr>
+        <td><span class="field-required">Title</span></td>
+        <td>A clear, concise title for the event. Be specific enough that writers can quickly identify what happened.<br>
+        <em>Examples: "Marriage to Tina Livanos", "Purchase of Olympic Airways", "First meeting with Maria Callas"</em></td>
+      </tr>
+      <tr>
+        <td><span class="field-required">Event Date</span></td>
+        <td>The date the event occurred. If you only know the year, use January 1st of that year and note the uncertainty in the description.</td>
+      </tr>
+    </table>
+
+    <h3>Optional Fields</h3>
+    <table class="help-table">
+      <tr>
+        <td><strong>End Date</strong></td>
+        <td>For events spanning multiple days (trips, negotiations, affairs). Leave blank for single-day events.</td>
+      </tr>
+      <tr>
+        <td><strong>Event Type</strong></td>
+        <td>Categorize the event for filtering. Available types:
+          <div class="tag-list">
+            <% Entry::ENTRY_TYPES.each do |type| %>
+              <span class="tag"><%= type.titleize %></span>
+            <% end %>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td><strong>Location</strong></td>
+        <td>Where the event took place. Include city and country.<br>
+        <em>Examples: "Athens, Greece", "Monte Carlo, Monaco", "Aboard the Christina, Mediterranean"</em></td>
+      </tr>
+      <tr>
+        <td><strong>Description</strong></td>
+        <td>Detailed account of what happened. Include relevant context, quotes, and specific details from your source.</td>
+      </tr>
+      <tr>
+        <td><strong>Historical Significance</strong></td>
+        <td><span class="tag tag-type">For Writers</span> This field is specifically for noting the dramatic potential of the event. What makes this compelling for the series? How might it be portrayed?</td>
+      </tr>
+      <tr>
+        <td><strong>People Involved</strong></td>
+        <td>Select all characters who were present or directly involved in the event. You can select multiple characters.</td>
+      </tr>
+      <tr>
+        <td><strong>Sources</strong></td>
+        <td>You can add <strong>multiple sources</strong> for each entry. This is especially useful when the same event is documented in different books or articles. For each source you can specify:
+          <ul>
+            <li><strong>Source:</strong> Select from your source database</li>
+            <li><strong>Page Reference:</strong> The specific page(s) in that source</li>
+            <li><strong>Notes:</strong> How this source specifically covers the event</li>
+          </ul>
+          Click "Add Another Source" to cite additional sources for the same event.
+        </td>
+      </tr>
+      <tr>
+        <td><strong>Verified</strong></td>
+        <td>Check this box when the event has been confirmed by multiple independent sources. Leave unchecked for single-source information or uncertain details.</td>
+      </tr>
+    </table>
+  </div>
+</div>
+
+<div class="help-section" id="characters">
+  <h2>Characters</h2>
+  <div class="card">
+    <p>Characters are the people who interacted with Aristotle Onassis throughout his life. Building a comprehensive character database helps track relationships and makes it easy to see all events involving a specific person.</p>
+
+    <h3>Required Fields</h3>
+    <table class="help-table">
+      <tr>
+        <td><span class="field-required">Name</span></td>
+        <td>The person's full name as commonly known. Use the name they're most recognized by.<br>
+        <em>Examples: "Jacqueline Kennedy" (not "Jacqueline Lee Bouvier Kennedy Onassis"), "Maria Callas" (not "Maria Anna Cecilia Sofia Kalogeropoulos")</em></td>
+      </tr>
+    </table>
+
+    <h3>Optional Fields</h3>
+    <table class="help-table">
+      <tr>
+        <td><strong>Relationship</strong></td>
+        <td>How this person relates to Onassis. Available types:
+          <div class="tag-list">
+            <% Character::RELATIONSHIPS.each do |rel| %>
+              <span class="tag"><%= rel.titleize %></span>
+            <% end %>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td><strong>Date of Birth</strong></td>
+        <td>The person's birth date, if known.</td>
+      </tr>
+      <tr>
+        <td><strong>Date of Death</strong></td>
+        <td>The person's death date, if applicable and known.</td>
+      </tr>
+      <tr>
+        <td><strong>Nationality</strong></td>
+        <td>The person's nationality or country of origin.</td>
+      </tr>
+      <tr>
+        <td><strong>Occupation</strong></td>
+        <td>What the person was known for. Can include multiple roles.<br>
+        <em>Examples: "Shipping Magnate", "Opera Singer", "First Lady, Editor"</em></td>
+      </tr>
+      <tr>
+        <td><strong>Biography / Notes</strong></td>
+        <td>Background information about the person, their significance to Onassis's life, and any notes relevant to the series.</td>
+      </tr>
+    </table>
+
+    <h3>Relationship Types Explained</h3>
+    <dl class="help-definitions">
+      <dt>Family</dt>
+      <dd>Blood relatives and immediate family members (children, parents, siblings)</dd>
+      <dt>Business</dt>
+      <dd>Business partners, associates, employees, competitors in commerce</dd>
+      <dt>Romantic</dt>
+      <dd>Spouses, lovers, romantic interests</dd>
+      <dt>Political</dt>
+      <dd>Politicians, government officials, diplomats</dd>
+      <dt>Social</dt>
+      <dd>Friends, social acquaintances, celebrities in his circle</dd>
+      <dt>Rival</dt>
+      <dd>Direct competitors, enemies, antagonists</dd>
+      <dt>Employee</dt>
+      <dd>Staff, crew members, household employees</dd>
+      <dt>Other</dt>
+      <dd>Anyone who doesn't fit the above categories</dd>
+    </dl>
+  </div>
+</div>
+
+<div class="help-section" id="sources">
+  <h2>Sources</h2>
+  <div class="card">
+    <p>Tracking your sources is essential for verifying information and allowing writers to dig deeper into specific events.</p>
+
+    <h3>Required Fields</h3>
+    <table class="help-table">
+      <tr>
+        <td><span class="field-required">Title</span></td>
+        <td>The full title of the book, article, or documentary.</td>
+      </tr>
+    </table>
+
+    <h3>Optional Fields</h3>
+    <table class="help-table">
+      <tr>
+        <td><strong>Author</strong></td>
+        <td>The author or creator of the source.</td>
+      </tr>
+      <tr>
+        <td><strong>Type</strong></td>
+        <td>The format of the source:
+          <div class="tag-list">
+            <% Source::SOURCE_TYPES.each do |type| %>
+              <span class="tag"><%= type.titleize %></span>
+            <% end %>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td><strong>Publisher</strong></td>
+        <td>The publishing company or media outlet.</td>
+      </tr>
+      <tr>
+        <td><strong>Publication Date</strong></td>
+        <td>When the source was published or released.</td>
+      </tr>
+      <tr>
+        <td><strong>Notes / Summary</strong></td>
+        <td>Your assessment of the source: reliability, bias, key themes covered, overall quality. This helps writers evaluate how much weight to give information from this source.</td>
+      </tr>
+    </table>
+  </div>
+</div>
+
+<div class="help-section" id="tips">
+  <h2>Tips for Writers</h2>
+  <div class="card">
+    <h3>Using the Timeline View</h3>
+    <ul>
+      <li>Use the <strong>decade filter</strong> to focus on specific eras (e.g., the 1960s for the Maria Callas affair and Jackie Kennedy marriage)</li>
+      <li>Use the <strong>event type filter</strong> to find all business deals, marriages, or scandals</li>
+      <li>Use the <strong>character filter</strong> to see all events involving a specific person</li>
+    </ul>
+
+    <h3>The Significance Field</h3>
+    <p>When adding entries, the "Historical Significance" field is your space to note:</p>
+    <ul>
+      <li>Why this event matters dramatically</li>
+      <li>Potential scene ideas or visual moments</li>
+      <li>Connections to other events or characters</li>
+      <li>Themes this event could explore</li>
+      <li>Which season/episode this might fit into</li>
+    </ul>
+
+    <h3>Verification Status</h3>
+    <ul>
+      <li><span class="tag tag-verified">Verified</span> - Confirmed by multiple independent sources. Safe to use as established fact.</li>
+      <li><span class="tag tag-unverified">Unverified</span> - Single source or conflicting accounts. May need dramatic license or further research.</li>
+    </ul>
+
+    <h3>Search Tips</h3>
+    <ul>
+      <li>Search finds matches in titles, descriptions, character names, biographies, source titles, and notes</li>
+      <li>Use specific terms for better results (e.g., "Monaco" instead of "casino")</li>
+      <li>Search for character names to find all mentions across entries</li>
+    </ul>
+  </div>
+</div>
+
+<div class="help-section">
+  <h2>Quick Links</h2>
+  <div class="card">
+    <div class="help-actions">
+      <%= link_to "View Timeline", root_path, class: "btn btn-primary" %>
+      <%= link_to "Add Entry", new_entry_path, class: "btn btn-gold" %>
+      <%= link_to "Add Character", new_character_path, class: "btn btn-gold" %>
+      <%= link_to "Add Source", new_source_path, class: "btn btn-gold" %>
+      <%= link_to "Search", search_path, class: "btn btn-secondary" %>
+    </div>
+  </div>
+</div>

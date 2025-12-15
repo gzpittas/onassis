@@ -1,0 +1,78 @@
+<div class="page-header">
+  <h1><%= @character.name %></h1>
+  <div class="actions">
+    <%= link_to "Edit", edit_character_path(@character), class: "btn btn-secondary" %>
+    <%= link_to "Delete", @character, data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete this character?" }, class: "btn btn-danger" %>
+    <%= link_to "Back to Characters", characters_path, class: "btn btn-primary" %>
+  </div>
+</div>
+
+<div class="card">
+  <div class="detail-grid">
+    <% if @character.relationship.present? %>
+      <div class="detail-item">
+        <label>Relationship to Onassis</label>
+        <div class="value"><span class="tag"><%= @character.relationship.titleize %></span></div>
+      </div>
+    <% end %>
+    <% if @character.lifespan.present? %>
+      <div class="detail-item">
+        <label>Lifespan</label>
+        <div class="value"><%= @character.lifespan %></div>
+      </div>
+    <% end %>
+    <% if @character.nationality.present? %>
+      <div class="detail-item">
+        <label>Nationality</label>
+        <div class="value"><%= @character.nationality %></div>
+      </div>
+    <% end %>
+    <% if @character.occupation.present? %>
+      <div class="detail-item">
+        <label>Occupation</label>
+        <div class="value"><%= @character.occupation %></div>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<% if @character.bio.present? %>
+  <div class="detail-section">
+    <h2>Biography</h2>
+    <div class="card">
+      <p><%= simple_format(@character.bio) %></p>
+    </div>
+  </div>
+<% end %>
+
+<div class="detail-section">
+  <h2>Timeline Appearances (<%= @entries.count %>)</h2>
+  <% if @entries.any? %>
+    <div class="timeline">
+      <% @entries.each do |entry| %>
+        <div class="timeline-entry">
+          <div class="timeline-date"><%= entry.date_display %></div>
+          <h3 class="timeline-title">
+            <%= link_to entry.title, entry %>
+          </h3>
+          <% if entry.description.present? %>
+            <p class="timeline-description"><%= truncate(entry.description, length: 150) %></p>
+          <% end %>
+          <div class="timeline-meta">
+            <% if entry.entry_type.present? %>
+              <span class="tag tag-type"><%= entry.entry_type.titleize %></span>
+            <% end %>
+            <% if entry.source.present? %>
+              <span>Source: <%= entry.source.title %></span>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="empty-state">
+      <p>No timeline entries yet for this character.</p>
+      <%= link_to "Add an entry", new_entry_path, class: "btn btn-gold" %>
+    </div>
+  <% end %>
+</div>

@@ -1,0 +1,109 @@
+<div class="page-header">
+  <h1>Search</h1>
+</div>
+
+<div class="card">
+  <%= form_with url: search_path, method: :get, local: true do |f| %>
+    <div class="form-group">
+      <%= text_field_tag :q, @query, placeholder: "Search entries, characters, sources...", class: "search-input" %>
+      <%= submit_tag "Search", class: "btn btn-gold" %>
+    </div>
+  <% end %>
+</div>
+
+<% if @query.present? %>
+  <% total = @entries.count + @characters.count + @sources.count %>
+
+  <% if total == 0 %>
+    <div class="empty-state">
+      <h3>No Results Found</h3>
+      <p>No matches for "<%= @query %>". Try a different search term.</p>
+    </div>
+  <% else %>
+    <p class="card-meta">Found <%= total %> results for "<%= @query %>"</p>
+
+    <% if @entries.any? %>
+      <div class="detail-section">
+        <h2>Timeline Entries (<%= @entries.count %>)</h2>
+        <div class="timeline">
+          <% @entries.each do |entry| %>
+            <div class="timeline-entry">
+              <div class="timeline-date"><%= entry.date_display %></div>
+              <h3 class="timeline-title">
+                <%= link_to entry.title, entry %>
+              </h3>
+              <% if entry.description.present? %>
+                <p class="timeline-description"><%= truncate(entry.description, length: 150) %></p>
+              <% end %>
+              <div class="timeline-meta">
+                <% if entry.entry_type.present? %>
+                  <span class="tag tag-type"><%= entry.entry_type.titleize %></span>
+                <% end %>
+                <% entry.characters.limit(3).each do |character| %>
+                  <span class="tag tag-character"><%= character.name %></span>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+
+    <% if @characters.any? %>
+      <div class="detail-section">
+        <h2>Characters (<%= @characters.count %>)</h2>
+        <div class="grid">
+          <% @characters.each do |character| %>
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title"><%= link_to character.name, character %></h3>
+                <% if character.relationship.present? %>
+                  <span class="tag"><%= character.relationship.titleize %></span>
+                <% end %>
+              </div>
+              <div class="card-body">
+                <% if character.occupation.present? %>
+                  <p><%= character.occupation %></p>
+                <% end %>
+                <p class="card-meta"><%= character.entries.count %> timeline entries</p>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+
+    <% if @sources.any? %>
+      <div class="detail-section">
+        <h2>Sources (<%= @sources.count %>)</h2>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Author</th>
+                <th>Type</th>
+                <th>Entries</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @sources.each do |source| %>
+                <tr>
+                  <td><%= link_to source.title, source %></td>
+                  <td><%= source.author %></td>
+                  <td><span class="tag"><%= source.source_type&.titleize %></span></td>
+                  <td><%= source.entries.count %></td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    <% end %>
+  <% end %>
+<% else %>
+  <div class="empty-state">
+    <h3>Search the Onassis Timeline</h3>
+    <p>Enter a search term to find entries, characters, or sources.</p>
+  </div>
+<% end %>

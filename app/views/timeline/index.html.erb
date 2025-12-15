@@ -1,0 +1,93 @@
+<div class="page-header">
+  <h1>Aristotle Onassis Timeline</h1>
+  <%= link_to "Add Entry", new_entry_path, class: "btn btn-gold" %>
+</div>
+
+<div class="filters">
+  <h3>Filter Timeline</h3>
+  <%= form_with url: root_path, method: :get, local: true do |f| %>
+    <div class="filter-row">
+      <div class="filter-group">
+        <%= label_tag :decade, "Decade" %>
+        <%= select_tag :decade,
+            options_for_select([["All Decades", ""]] + @decades.map { |d| ["#{d}s", d] }, params[:decade]),
+            onchange: "this.form.submit()" %>
+      </div>
+      <div class="filter-group">
+        <%= label_tag :entry_type, "Event Type" %>
+        <%= select_tag :entry_type,
+            options_for_select([["All Types", ""]] + @entry_types.map { |t| [t.titleize, t] }, params[:entry_type]),
+            onchange: "this.form.submit()" %>
+      </div>
+      <div class="filter-group">
+        <%= label_tag :character_id, "Character" %>
+        <%= select_tag :character_id,
+            options_for_select([["All Characters", ""]] + @characters.map { |c| [c.name, c.id] }, params[:character_id]),
+            onchange: "this.form.submit()" %>
+      </div>
+      <div class="filter-group">
+        <%= link_to "Clear Filters", root_path, class: "btn btn-secondary" %>
+      </div>
+    </div>
+  <% end %>
+</div>
+
+<% if @entries.any? %>
+  <div class="timeline">
+    <% @entries.group_by(&:year).each do |year, entries| %>
+      <div class="timeline-year">
+        <% entries.each do |entry| %>
+          <div class="timeline-entry">
+            <div class="timeline-date"><%= entry.date_display %></div>
+            <h3 class="timeline-title">
+              <%= link_to entry.title, entry %>
+            </h3>
+            <% if entry.location.present? %>
+              <div class="timeline-meta"><span><%= entry.location %></span></div>
+            <% end %>
+            <% if entry.description.present? %>
+              <p class="timeline-description"><%= truncate(entry.description, length: 200) %></p>
+            <% end %>
+            <div class="timeline-meta">
+              <% if entry.entry_type.present? %>
+                <span class="tag tag-type"><%= entry.entry_type.titleize %></span>
+              <% end %>
+              <% entry.characters.each do |character| %>
+                <%= link_to character.name, character, class: "tag tag-character" %>
+              <% end %>
+              <% if entry.verified? %>
+                <span class="tag tag-verified">Verified</span>
+              <% else %>
+                <span class="tag tag-unverified">Unverified</span>
+              <% end %>
+            </div>
+            <% if entry.entry_sources.any? %>
+              <div class="source-citation">
+                <% if entry.entry_sources.count == 1 %>
+                  <% es = entry.entry_sources.first %>
+                  Source: <%= link_to es.source.display_name, es.source %>
+                  <% if es.page_reference.present? %>(p. <%= es.page_reference %>)<% end %>
+                <% else %>
+                  Sources: <%= entry.entry_sources.includes(:source).map { |es| link_to(es.source.title, es.source) }.join(", ").html_safe %>
+                <% end %>
+              </div>
+            <% elsif entry.source.present? %>
+              <div class="source-citation">
+                Source: <%= link_to entry.source.display_name, entry.source %>
+                <% if entry.page_reference.present? %>
+                  (p. <%= entry.page_reference %>)
+                <% end %>
+              </div>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+<% else %>
+  <div class="empty-state">
+    <h3>No Timeline Entries Yet</h3>
+    <p>Start adding entries from your research to build the Onassis timeline.</p>
+    <%= link_to "Add Your First Entry", new_entry_path, class: "btn btn-gold" %>
+  </div>
+<% end %>

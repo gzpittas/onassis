@@ -1,0 +1,96 @@
+<div class="page-header">
+  <h1><%= @source.title %></h1>
+  <div class="actions">
+    <%= link_to "Edit", edit_source_path(@source), class: "btn btn-secondary" %>
+    <%= link_to "Delete", @source, data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete this source?" }, class: "btn btn-danger" %>
+    <%= link_to "Back to Sources", sources_path, class: "btn btn-primary" %>
+  </div>
+</div>
+
+<div class="card">
+  <div class="detail-grid">
+    <% if @source.author.present? %>
+      <div class="detail-item">
+        <label>Author</label>
+        <div class="value"><%= @source.author %></div>
+      </div>
+    <% end %>
+    <% if @source.source_type.present? %>
+      <div class="detail-item">
+        <label>Type</label>
+        <div class="value"><span class="tag"><%= @source.source_type.titleize %></span></div>
+      </div>
+    <% end %>
+    <% if @source.publisher.present? %>
+      <div class="detail-item">
+        <label>Publisher</label>
+        <div class="value"><%= @source.publisher %></div>
+      </div>
+    <% end %>
+    <% if @source.publication_date.present? %>
+      <div class="detail-item">
+        <label>Publication Date</label>
+        <div class="value"><%= @source.publication_date.strftime("%B %d, %Y") %></div>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<% if @source.notes.present? %>
+  <div class="detail-section">
+    <h2>Notes</h2>
+    <div class="card">
+      <p><%= simple_format(@source.notes) %></p>
+    </div>
+  </div>
+<% end %>
+
+<% if @source.source_links.any? %>
+  <div class="detail-section">
+    <h2>Links</h2>
+    <div class="card">
+      <ul class="source-links">
+        <% @source.source_links.each do |link| %>
+          <li>
+            <%= link_to link.label.present? ? link.label : link.url, link.url, target: "_blank", rel: "noopener noreferrer" %>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+  </div>
+<% end %>
+
+<div class="detail-section">
+  <h2>Entries from this Source (<%= @entries.count %>)</h2>
+  <% if @entries.any? %>
+    <div class="timeline">
+      <% @entries.each do |entry| %>
+        <div class="timeline-entry">
+          <div class="timeline-date"><%= entry.date_display %></div>
+          <h3 class="timeline-title">
+            <%= link_to entry.title, entry %>
+          </h3>
+          <% if entry.page_reference.present? %>
+            <p class="card-meta">Page: <%= entry.page_reference %></p>
+          <% end %>
+          <% if entry.description.present? %>
+            <p class="timeline-description"><%= truncate(entry.description, length: 150) %></p>
+          <% end %>
+          <div class="timeline-meta">
+            <% if entry.entry_type.present? %>
+              <span class="tag tag-type"><%= entry.entry_type.titleize %></span>
+            <% end %>
+            <% entry.characters.each do |character| %>
+              <span class="tag tag-character"><%= character.name %></span>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="empty-state">
+      <p>No timeline entries yet from this source.</p>
+      <%= link_to "Add an entry", new_entry_path(source_id: @source.id), class: "btn btn-gold" %>
+    </div>
+  <% end %>
+</div>

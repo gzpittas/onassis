@@ -1,0 +1,127 @@
+<div class="page-header">
+  <h1><%= @entry.title %></h1>
+  <div class="actions">
+    <%= link_to "Edit", edit_entry_path(@entry), class: "btn btn-secondary" %>
+    <%= link_to "Delete", @entry, data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete this entry?" }, class: "btn btn-danger" %>
+    <%= link_to "Back to Timeline", root_path, class: "btn btn-primary" %>
+  </div>
+</div>
+
+<div class="card">
+  <div class="detail-grid">
+    <div class="detail-item">
+      <label>Date</label>
+      <div class="value"><%= @entry.date_display %></div>
+    </div>
+    <% if @entry.location.present? %>
+      <div class="detail-item">
+        <label>Location</label>
+        <div class="value"><%= @entry.location %></div>
+      </div>
+    <% end %>
+    <% if @entry.entry_type.present? %>
+      <div class="detail-item">
+        <label>Event Type</label>
+        <div class="value"><span class="tag tag-type"><%= @entry.entry_type.titleize %></span></div>
+      </div>
+    <% end %>
+    <div class="detail-item">
+      <label>Verification Status</label>
+      <div class="value">
+        <% if @entry.verified? %>
+          <span class="tag tag-verified">Verified</span>
+          <% if @entry.entry_sources.count > 1 %>
+            <span class="source-count">(<%= @entry.entry_sources.count %> sources)</span>
+          <% end %>
+        <% else %>
+          <span class="tag tag-unverified">Unverified</span>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<% if @entry.description.present? %>
+  <div class="detail-section">
+    <h2>Description</h2>
+    <div class="card">
+      <p><%= simple_format(@entry.description) %></p>
+    </div>
+  </div>
+<% end %>
+
+<% if @entry.significance.present? %>
+  <div class="detail-section">
+    <h2>Historical Significance</h2>
+    <div class="card">
+      <p><%= simple_format(@entry.significance) %></p>
+    </div>
+  </div>
+<% end %>
+
+<% if @entry.characters.any? %>
+  <div class="detail-section">
+    <h2>People Involved</h2>
+    <div class="character-list">
+      <% @entry.characters.each do |character| %>
+        <%= link_to character_path(character), class: "character-badge" do %>
+          <%= character.name %>
+          <% if character.relationship.present? %>
+            <span class="tag"><%= character.relationship %></span>
+          <% end %>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+<% end %>
+
+<% if @entry.entry_sources.any? %>
+  <div class="detail-section">
+    <h2>Sources (<%= @entry.entry_sources.count %>)</h2>
+    <% @entry.entry_sources.includes(:source).each do |entry_source| %>
+      <div class="card source-card">
+        <div class="source-header">
+          <strong><%= link_to entry_source.source.display_name, entry_source.source %></strong>
+          <% if entry_source.source.source_type.present? %>
+            <span class="tag"><%= entry_source.source.source_type.titleize %></span>
+          <% end %>
+        </div>
+        <% if entry_source.author.present? %>
+          <p class="source-author">By <%= entry_source.author %></p>
+        <% end %>
+        <% if entry_source.page_reference.present? %>
+          <p class="source-pages">Reference: <%= entry_source.page_reference %></p>
+        <% end %>
+        <% if entry_source.link.present? %>
+          <p class="source-link"><%= link_to entry_source.link, entry_source.link, target: "_blank", rel: "noopener noreferrer" %></p>
+        <% end %>
+        <% if entry_source.notes.present? %>
+          <p class="source-notes"><%= entry_source.notes %></p>
+        <% end %>
+      </div>
+    <% end %>
+    <p class="add-source-link"><%= link_to "Add Another Source", edit_entry_path(@entry, add_source: true, anchor: "entry-sources"), class: "btn btn-secondary btn-small" %></p>
+  </div>
+<% elsif @entry.source.present? %>
+  <%# Legacy single source display %>
+  <div class="detail-section">
+    <h2>Source</h2>
+    <div class="card">
+      <p>
+        <strong><%= link_to @entry.source.display_name, @entry.source %></strong>
+        <% if @entry.source.source_type.present? %>
+          <span class="tag"><%= @entry.source.source_type.titleize %></span>
+        <% end %>
+      </p>
+      <% if @entry.page_reference.present? %>
+        <p>Page Reference: <%= @entry.page_reference %></p>
+      <% end %>
+    </div>
+    <p class="add-source-link"><%= link_to "Add Another Source", edit_entry_path(@entry, add_source: true, anchor: "entry-sources"), class: "btn btn-secondary btn-small" %></p>
+  </div>
+<% else %>
+  <div class="detail-section">
+    <h2>Sources</h2>
+    <p class="add-source-link"><%= link_to "Add a Source", edit_entry_path(@entry, add_source: true, anchor: "entry-sources"), class: "btn btn-secondary btn-small" %></p>
+  </div>
+<% end %>

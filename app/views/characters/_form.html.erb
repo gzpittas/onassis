@@ -1,0 +1,56 @@
+<%= form_with model: @character, local: true do |f| %>
+  <% if @character.errors.any? %>
+    <div class="error-messages">
+      <h3><%= pluralize(@character.errors.count, "error") %> prohibited this character from being saved:</h3>
+      <ul>
+        <% @character.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="form-group">
+    <%= f.label :name %>
+    <%= f.text_field :name, placeholder: "e.g., Jacqueline Kennedy" %>
+  </div>
+
+  <div class="form-row">
+    <div class="form-group">
+      <%= f.label :relationship, "Relationship to Onassis" %>
+      <%= f.select :relationship, Character::RELATIONSHIPS.map { |r| [r.titleize, r] }, { include_blank: "Select relationship..." } %>
+    </div>
+
+    <div class="form-group">
+      <%= f.label :nationality %>
+      <%= f.text_field :nationality, placeholder: "e.g., American" %>
+    </div>
+
+    <div class="form-group">
+      <%= f.label :occupation %>
+      <%= f.text_field :occupation, placeholder: "e.g., First Lady, Editor" %>
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div class="form-group">
+      <%= f.label :birth_date, "Date of Birth" %>
+      <%= f.date_field :birth_date, min: "1800-01-01", max: "2100-12-31" %>
+    </div>
+
+    <div class="form-group">
+      <%= f.label :death_date, "Date of Death" %>
+      <%= f.date_field :death_date, min: "1800-01-01", max: "2100-12-31" %>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :bio, "Biography / Notes" %>
+    <%= f.text_area :bio, placeholder: "Background information, significance to Onassis's life, dramatic potential for the series..." %>
+  </div>
+
+  <div class="form-actions">
+    <%= f.submit class: "btn btn-gold" %>
+    <%= link_to "Cancel", characters_path, class: "btn btn-secondary" %>
+  </div>
+<% end %>

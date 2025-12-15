@@ -1,0 +1,58 @@
+<div class="page-header">
+  <h1>Characters</h1>
+  <%= link_to "Add Character", new_character_path, class: "btn btn-gold" %>
+</div>
+
+<div class="filters">
+  <%= form_with url: characters_path, method: :get, local: true do |f| %>
+    <div class="filter-row">
+      <div class="filter-group">
+        <%= label_tag :relationship, "Relationship" %>
+        <%= select_tag :relationship,
+            options_for_select([["All Relationships", ""]] + Character::RELATIONSHIPS.map { |r| [r.titleize, r] }, params[:relationship]),
+            onchange: "this.form.submit()" %>
+      </div>
+      <div class="filter-group">
+        <%= link_to "Clear Filter", characters_path, class: "btn btn-secondary" %>
+      </div>
+    </div>
+  <% end %>
+</div>
+
+<% if @characters.any? %>
+  <div class="grid">
+    <% @characters.each do |character| %>
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title"><%= link_to character.name, character %></h3>
+          <% if character.relationship.present? %>
+            <span class="tag"><%= character.relationship.titleize %></span>
+          <% end %>
+        </div>
+        <div class="card-body">
+          <% if character.lifespan.present? %>
+            <p class="card-meta"><%= character.lifespan %></p>
+          <% end %>
+          <% if character.occupation.present? %>
+            <p><strong>Occupation:</strong> <%= character.occupation %></p>
+          <% end %>
+          <% if character.nationality.present? %>
+            <p><strong>Nationality:</strong> <%= character.nationality %></p>
+          <% end %>
+          <p class="card-meta"><%= character.entries.count %> timeline entries</p>
+        </div>
+        <div class="card-footer">
+          <%= link_to "View", character, class: "btn btn-small btn-primary" %>
+          <%= link_to "Edit", edit_character_path(character), class: "btn btn-small btn-secondary" %>
+          <%= link_to "Delete", character, data: { turbo_method: :delete, turbo_confirm: "Are you sure?" }, class: "btn btn-small btn-danger" %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+<% else %>
+  <div class="empty-state">
+    <h3>No Characters Yet</h3>
+    <p>Start adding people who interacted with Aristotle Onassis.</p>
+    <%= link_to "Add Your First Character", new_character_path, class: "btn btn-gold" %>
+  </div>
+<% end %>

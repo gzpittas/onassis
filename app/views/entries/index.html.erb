@@ -1,0 +1,59 @@
+<div class="page-header">
+  <h1>All Entries</h1>
+  <%= link_to "Add Entry", new_entry_path, class: "btn btn-gold" %>
+</div>
+
+<% if @entries.any? %>
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Title</th>
+          <th>Type</th>
+          <th>Location</th>
+          <th>Characters</th>
+          <th>Source</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @entries.each do |entry| %>
+          <tr>
+            <td><%= entry.event_date.strftime("%Y-%m-%d") %></td>
+            <td><%= link_to entry.title, entry %></td>
+            <td><%= entry.entry_type&.titleize %></td>
+            <td><%= entry.location %></td>
+            <td>
+              <% entry.characters.limit(3).each do |character| %>
+                <span class="tag tag-character"><%= character.name %></span>
+              <% end %>
+              <% if entry.characters.count > 3 %>
+                <span class="tag">+<%= entry.characters.count - 3 %></span>
+              <% end %>
+            </td>
+            <td><%= entry.source&.title&.truncate(30) %></td>
+            <td>
+              <% if entry.verified? %>
+                <span class="tag tag-verified">Verified</span>
+              <% else %>
+                <span class="tag tag-unverified">Unverified</span>
+              <% end %>
+            </td>
+            <td class="actions">
+              <%= link_to "Edit", edit_entry_path(entry), class: "btn btn-small btn-secondary" %>
+              <%= link_to "Delete", entry, data: { turbo_method: :delete, turbo_confirm: "Are you sure?" }, class: "btn btn-small btn-danger" %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% else %>
+  <div class="empty-state">
+    <h3>No Entries Yet</h3>
+    <p>Start documenting events from the life of Aristotle Onassis.</p>
+    <%= link_to "Add Your First Entry", new_entry_path, class: "btn btn-gold" %>
+  </div>
+<% end %>
