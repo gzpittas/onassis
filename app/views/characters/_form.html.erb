@@ -49,8 +49,80 @@
     <%= f.text_area :bio, placeholder: "Background information, significance to Onassis's life, dramatic potential for the series..." %>
   </div>
 
+  <div class="form-section">
+    <h3>Links</h3>
+    <p class="form-hint">Add links to Wikipedia, biographies, or other relevant resources.</p>
+
+    <div id="character-links">
+      <%= f.fields_for :character_links do |link| %>
+        <%= render "character_link_fields", f: link %>
+      <% end %>
+    </div>
+
+    <div class="form-group">
+      <%= link_to "Add Link", "#", class: "btn btn-secondary btn-small", id: "add-character-link-btn" %>
+    </div>
+  </div>
+
   <div class="form-actions">
     <%= f.submit class: "btn btn-gold" %>
     <%= link_to "Cancel", characters_path, class: "btn btn-secondary" %>
   </div>
 <% end %>
+
+<template id="character-link-template">
+  <div class="link-fields">
+    <div class="form-row">
+      <div class="form-group" style="flex: 2;">
+        <label>URL</label>
+        <input type="url" name="character[character_links_attributes][NEW_RECORD][url]" placeholder="https://...">
+      </div>
+      <div class="form-group" style="flex: 1;">
+        <label>Label (optional)</label>
+        <input type="text" name="character[character_links_attributes][NEW_RECORD][label]" placeholder="e.g., Wikipedia">
+      </div>
+      <div class="form-group" style="flex: 0 0 auto; align-self: flex-end;">
+        <a href="#" class="btn btn-danger btn-small remove-link">Remove</a>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+  (function() {
+    let linkIndex = <%= @character.character_links.length %>;
+
+    const addBtn = document.getElementById('add-character-link-btn');
+    const container = document.getElementById('character-links');
+    const template = document.getElementById('character-link-template');
+
+    if (addBtn && container && template) {
+      addBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        const newFields = template.content.cloneNode(true);
+
+        newFields.querySelectorAll('[name*="NEW_RECORD"]').forEach(function(el) {
+          el.name = el.name.replace(/NEW_RECORD/g, linkIndex);
+        });
+
+        container.appendChild(newFields);
+        linkIndex++;
+      });
+
+      container.addEventListener('click', function(e) {
+        if (e.target.classList.contains('remove-link')) {
+          e.preventDefault();
+          const linkField = e.target.closest('.link-fields');
+          const destroyInput = linkField.querySelector('input[name*="_destroy"]');
+
+          if (destroyInput) {
+            destroyInput.value = '1';
+            linkField.style.display = 'none';
+          } else {
+            linkField.remove();
+          }
+        }
+      });
+    }
+  })();
+</script>

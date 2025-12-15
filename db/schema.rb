@@ -10,7 +10,16 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_12_15_170709) do
+ActiveRecord::Schema[8.0].define(version: 2025_12_15_184623) do
+  create_table "character_links", force: :cascade do |t|
+    t.integer "character_id", null: false
+    t.string "url"
+    t.string "label"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["character_id"], name: "index_character_links_on_character_id"
+  end
+
   create_table "characters", force: :cascade do |t|
     t.string "name"
     t.date "birth_date"
@@ -88,6 +97,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_15_170709) do
     t.datetime "updated_at", null: false
   end
 
+  add_foreign_key "character_links", "characters"
   add_foreign_key "entries", "sources"
   add_foreign_key "entry_characters", "characters"
   add_foreign_key "entry_characters", "entries"

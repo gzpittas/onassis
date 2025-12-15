@@ -46,6 +46,22 @@
 <% end %>
 
 <div class="detail-section">
+  <h2>Links</h2>
+  <% if @character.character_links.any? %>
+    <div class="card">
+      <ul class="source-links">
+        <% @character.character_links.each do |link| %>
+          <li>
+            <%= link_to link.label.present? ? link.label : link.url, link.url, target: "_blank", rel: "noopener noreferrer" %>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+  <%= link_to "Add a Link", edit_character_path(@character, anchor: "character-links"), class: "btn btn-secondary btn-small" %>
+</div>
+
+<div class="detail-section">
   <h2>Timeline Appearances (<%= @entries.count %>)</h2>
   <% if @entries.any? %>
     <div class="timeline">
