@@ -27,7 +27,8 @@
             <td><%= entry.location %></td>
             <td>
               <% entry.characters.limit(3).each do |character| %>
-                <span class="tag tag-character"><%= character.name %></span>
+                <% age = character.age_at(entry.event_date) %>
+                <span class="tag tag-character"><%= character.name %><% if age %> - <%= age %><% end %></span>
               <% end %>
               <% if entry.characters.count > 3 %>
                 <span class="tag">+<%= entry.characters.count - 3 %></span>

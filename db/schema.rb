@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_12_15_184623) do
+ActiveRecord::Schema[8.0].define(version: 2025_12_15_223057) do
   create_table "character_links", force: :cascade do |t|
     t.integer "character_id", null: false
     t.string "url"
@@ -30,6 +30,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_15_184623) do
     t.text "bio"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "lead_character", default: false
   end
 
   create_table "entries", force: :cascade do |t|

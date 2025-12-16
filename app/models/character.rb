@@ -15,9 +15,17 @@ class Character < ApplicationRecord
   scope :business, -> { where(relationship: "business") }
   scope :romantic, -> { where(relationship: "romantic") }
   scope :by_name, -> { order(:name) }
+  scope :lead, -> { where(lead_character: true) }
 
   def lifespan
     return nil unless birth_date
     death_date ? "#{birth_date.year}–#{death_date.year}" : "#{birth_date.year}–"
+  end
+
+  def age_at(date)
+    return nil unless birth_date && date
+    age = date.year - birth_date.year
+    age -= 1 if date < birth_date + age.years
+    age
   end
 end

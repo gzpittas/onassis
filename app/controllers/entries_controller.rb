@@ -34,6 +34,7 @@ class EntriesController < ApplicationController
 
   def new
     @entry = Entry.new
+    @entry.character_ids = Character.lead.pluck(:id)
     @entry.entry_sources.build
     @sources = Source.order(:title)
     @characters = Character.by_name
@@ -41,6 +42,7 @@ class EntriesController < ApplicationController
 
   def create
     @entry = Entry.new(entry_params)
+    add_lead_characters
 
     if @entry.save
       redirect_to @entry, notice: "Entry was successfully created."
@@ -101,5 +103,10 @@ class EntriesController < ApplicationController
                                   :description, :significance, :verified,
                                   character_ids: [],
                                   entry_sources_attributes: [:id, :source_id, :page_reference, :author, :notes, :link, :_destroy])
+  end
+
+  def add_lead_characters
+    lead_ids = Character.lead.pluck(:id)
+    @entry.character_ids = (@entry.character_ids + lead_ids).uniq
   end
 end

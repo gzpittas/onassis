@@ -78,6 +78,12 @@
             <% if entry.entry_type.present? %>
               <span class="tag tag-type"><%= entry.entry_type.titleize %></span>
             <% end %>
+            <% entry.characters.each do |character| %>
+              <% age = character.age_at(entry.event_date) %>
+              <%= link_to character, class: "tag tag-character" do %>
+                <%= character.name %><% if age %> - <%= age %><% end %>
+              <% end %>
+            <% end %>
             <% if entry.source.present? %>
               <span>Source: <%= entry.source.title %></span>
             <% end %>

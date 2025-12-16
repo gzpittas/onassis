@@ -51,7 +51,7 @@ class CharactersController < ApplicationController
 
   def character_params
     params.require(:character).permit(:name, :birth_date, :death_date, :relationship,
-                                      :nationality, :occupation, :bio,
+                                      :nationality, :occupation, :bio, :lead_character,
                                       character_links_attributes: [:id, :url, :label, :_destroy])
   end
 end

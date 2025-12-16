@@ -299,11 +299,12 @@ body {
   position: absolute;
   left: -2rem;
   top: 0.5rem;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background-color: var(--gold);
-  border: 2px solid var(--navy);
+  width: 0;
+  height: 0;
+  border-radius: 0;
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;
+  border-left: 14px solid black;
 }
 
 .timeline-date {
@@ -357,8 +358,9 @@ body {
 }
 
 .tag-character {
-  background-color: var(--gold);
-  color: var(--navy);
+  background-color: var(--french-grey-10);
+  color: var(--french-grey-100);
+  border-radius: 0;
 }
 
 .tag-verified {
@@ -498,16 +500,16 @@ td a:hover {
   display: inline-flex;
   align-items: center;
   padding: 0.5rem 0.75rem;
-  background-color: var(--light-gray);
-  border-radius: 20px;
+  background-color: var(--french-grey-10);
+  border-radius: 0;
   text-decoration: none;
-  color: var(--charcoal);
+  color: var(--french-grey-100);
   font-size: 0.875rem;
 }
 
 .character-badge:hover {
-  background-color: var(--gold);
-  color: var(--navy);
+  background-color: var(--french-grey-20);
+  color: var(--french-grey-100);
 }
 
 /* Grid Layout */

@@ -53,7 +53,10 @@
                 <span class="tag tag-type"><%= entry.entry_type.titleize %></span>
               <% end %>
               <% entry.characters.each do |character| %>
-                <%= link_to character.name, character, class: "tag tag-character" %>
+                <% age = character.age_at(entry.event_date) %>
+                <%= link_to character, class: "tag tag-character" do %>
+                  <%= character.name %><% if age %> - <%= age %><% end %>
+                <% end %>
               <% end %>
               <% if entry.verified? %>
                 <span class="tag tag-verified">Verified</span>
