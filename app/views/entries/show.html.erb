@@ -126,3 +126,50 @@
     <p class="add-source-link"><%= link_to "Add a Source", edit_entry_path(@entry, add_source: true, anchor: "entry-sources"), class: "btn btn-secondary btn-small" %></p>
   </div>
 <% end %>
+
+<div class="detail-section">
+  <h2>Related Articles (<%= @entry.articles.count %>)</h2>
+  <% if @entry.articles.any? %>
+    <% @entry.articles.by_date.each do |article| %>
+      <div class="card source-card">
+        <div class="source-header">
+          <strong><%= link_to article.title, article %></strong>
+          <% if article.publication.present? %>
+            <span class="tag"><%= article.publication %></span>
+          <% end %>
+        </div>
+        <% if article.author.present? %>
+          <p class="source-author">By <%= article.author %></p>
+        <% end %>
+        <% if article.publication_date.present? %>
+          <p class="source-pages"><%= article.publication_date.strftime("%B %d, %Y") %></p>
+        <% end %>
+        <p class="source-link"><%= link_to article.url, article.url, target: "_blank", rel: "noopener noreferrer" %></p>
+      </div>
+    <% end %>
+  <% else %>
+    <p class="card-meta">No related newspaper articles yet.</p>
+  <% end %>
+  <%= link_to "Add Article", new_article_path, class: "btn btn-secondary btn-small" %>
+</div>
+
+<div class="detail-section">
+  <h2>Related Images (<%= @entry.images.count %>)</h2>
+  <% if @entry.images.any? %>
+    <div class="related-images-grid">
+      <% @entry.images.by_date.each do |image| %>
+        <div class="related-image-item">
+          <%= link_to image do %>
+            <% if image.file.attached? %>
+              <%= image_tag image.file.variant(resize_to_fill: [150, 120]) %>
+            <% end %>
+          <% end %>
+          <p class="related-image-caption"><%= image.display_title %></p>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <p class="card-meta">No related images yet.</p>
+  <% end %>
+  <%= link_to "Add Image", new_image_path, class: "btn btn-secondary btn-small" %>
+</div>

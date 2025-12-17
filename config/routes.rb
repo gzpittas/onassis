@@ -4,6 +4,8 @@ Rails.application.routes.draw do
   resources :entries
   resources :characters
   resources :sources
+  resources :articles
+  resources :images
 
   get "timeline", to: "timeline#index"
   get "search", to: "search#index"

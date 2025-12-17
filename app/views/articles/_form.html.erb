@@ -1,0 +1,89 @@
+<%= form_with model: @article, local: true do |f| %>
+  <% if @article.errors.any? %>
+    <div class="error-messages">
+      <h3><%= pluralize(@article.errors.count, "error") %> prohibited this article from being saved:</h3>
+      <ul>
+        <% @article.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="form-group">
+    <%= f.label :title, "Article Title" %>
+    <%= f.text_field :title, placeholder: "e.g., Onassis Acquires Olympic Airways" %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :url, "URL" %>
+    <%= f.url_field :url, placeholder: "https://..." %>
+  </div>
+
+  <div class="form-row">
+    <div class="form-group">
+      <%= f.label :publication, "Publication Name" %>
+      <%= f.text_field :publication, placeholder: "e.g., The New York Times" %>
+    </div>
+
+    <div class="form-group">
+      <%= f.label :author %>
+      <%= f.text_field :author, placeholder: "e.g., John Smith" %>
+    </div>
+  </div>
+
+  <div class="form-group" style="max-width: 300px;">
+    <%= f.label :publication_date, "Publication Date" %>
+    <%= f.date_field :publication_date, min: "1800-01-01", max: "2100-12-31" %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :notes, "Notes / Summary" %>
+    <%= f.text_area :notes, placeholder: "Key information from the article, quotes, or other notes..." %>
+  </div>
+
+  <div class="form-section">
+    <h3>Related Entries</h3>
+    <p class="form-hint">Select the timeline entries this article relates to.</p>
+
+    <div class="form-group">
+      <div class="checkbox-list">
+        <% @entries.each do |entry| %>
+          <label class="checkbox-item">
+            <%= check_box_tag "article[entry_ids][]", entry.id, @article.entries.include?(entry), id: "entry_#{entry.id}" %>
+            <span class="checkbox-label">
+              <strong><%= entry.title %></strong>
+              <span class="checkbox-meta"><%= entry.event_date.strftime("%b %d, %Y") %></span>
+            </span>
+          </label>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-section">
+    <h3>Related Characters</h3>
+    <p class="form-hint">Select the people mentioned or relevant to this article.</p>
+
+    <div class="form-group">
+      <div class="checkbox-list">
+        <% @characters.each do |character| %>
+          <label class="checkbox-item">
+            <%= check_box_tag "article[character_ids][]", character.id, @article.characters.include?(character), id: "character_#{character.id}" %>
+            <span class="checkbox-label">
+              <strong><%= character.name %></strong>
+              <% if character.relationship.present? %>
+                <span class="checkbox-meta"><%= character.relationship.titleize %></span>
+              <% end %>
+            </span>
+          </label>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-actions">
+    <%= f.submit class: "btn btn-gold" %>
+    <%= link_to "Cancel", articles_path, class: "btn btn-secondary" %>
+  </div>
+<% end %>

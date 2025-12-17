@@ -1,0 +1,61 @@
+<div class="page-header">
+  <h1>Image Gallery</h1>
+  <%= link_to "Add Image", new_image_path, class: "btn btn-gold" %>
+</div>
+
+<div class="filters">
+  <%= form_with url: images_path, method: :get, local: true do |f| %>
+    <div class="filter-row">
+      <div class="filter-group">
+        <%= label_tag :decade, "Decade" %>
+        <%= select_tag :decade,
+            options_for_select([["All Decades", ""]] + (1900..2020).step(10).map { |d| ["#{d}s", d] }, params[:decade]),
+            onchange: "this.form.submit()" %>
+      </div>
+      <div class="filter-group">
+        <%= label_tag :character_id, "Character" %>
+        <%= select_tag :character_id,
+            options_for_select([["All Characters", ""]] + Character.by_name.map { |c| [c.name, c.id] }, params[:character_id]),
+            onchange: "this.form.submit()" %>
+      </div>
+      <div class="filter-group">
+        <%= link_to "Clear Filters", images_path, class: "btn btn-secondary" %>
+      </div>
+    </div>
+  <% end %>
+</div>
+
+<% if @images.any? %>
+  <div class="image-gallery">
+    <% @images.each do |image| %>
+      <div class="gallery-item">
+        <%= link_to image do %>
+          <% if image.file.attached? %>
+            <%= image_tag image.file.variant(resize_to_fill: [300, 300]), class: "gallery-thumbnail" %>
+          <% end %>
+        <% end %>
+        <div class="gallery-item-info">
+          <h3><%= link_to image.display_title, image %></h3>
+          <p class="gallery-date"><%= image.date_display %></p>
+          <% if image.location.present? %>
+            <p class="gallery-location"><%= image.location %></p>
+          <% end %>
+          <div class="gallery-tags">
+            <% image.characters.limit(3).each do |character| %>
+              <span class="tag tag-character"><%= character.name %></span>
+            <% end %>
+            <% if image.characters.count > 3 %>
+              <span class="tag">+<%= image.characters.count - 3 %> more</span>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+<% else %>
+  <div class="empty-state">
+    <h3>No Images Yet</h3>
+    <p>Start adding historical photos to your research collection.</p>
+    <%= link_to "Add Your First Image", new_image_path, class: "btn btn-gold" %>
+  </div>
+<% end %>

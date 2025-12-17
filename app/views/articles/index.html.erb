@@ -1,0 +1,42 @@
+<div class="page-header">
+  <h1>Newspaper Articles</h1>
+  <%= link_to "Add Article", new_article_path, class: "btn btn-gold" %>
+</div>
+
+<% if @articles.any? %>
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Publication</th>
+          <th>Date</th>
+          <th>Entries</th>
+          <th>Characters</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @articles.each do |article| %>
+          <tr>
+            <td><%= link_to article.title, article %></td>
+            <td><%= article.publication %></td>
+            <td><%= article.publication_date&.strftime("%b %d, %Y") %></td>
+            <td><%= article.entries.count %></td>
+            <td><%= article.characters.count %></td>
+            <td class="actions">
+              <%= link_to "Edit", edit_article_path(article), class: "btn btn-small btn-secondary" %>
+              <%= link_to "Delete", article, data: { turbo_method: :delete, turbo_confirm: "Are you sure?" }, class: "btn btn-small btn-danger" %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% else %>
+  <div class="empty-state">
+    <h3>No Articles Yet</h3>
+    <p>Start adding newspaper articles related to your research.</p>
+    <%= link_to "Add Your First Article", new_article_path, class: "btn btn-gold" %>
+  </div>
+<% end %>

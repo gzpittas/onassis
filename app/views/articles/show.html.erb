@@ -1,0 +1,88 @@
+<div class="page-header">
+  <h1><%= @article.title %></h1>
+  <div class="actions">
+    <%= link_to "Edit", edit_article_path(@article), class: "btn btn-secondary" %>
+    <%= link_to "Delete", @article, data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete this article?" }, class: "btn btn-danger" %>
+    <%= link_to "Back to Articles", articles_path, class: "btn btn-primary" %>
+  </div>
+</div>
+
+<div class="card">
+  <div class="detail-grid">
+    <% if @article.publication.present? %>
+      <div class="detail-item">
+        <label>Publication</label>
+        <div class="value"><%= @article.publication %></div>
+      </div>
+    <% end %>
+    <% if @article.author.present? %>
+      <div class="detail-item">
+        <label>Author</label>
+        <div class="value"><%= @article.author %></div>
+      </div>
+    <% end %>
+    <% if @article.publication_date.present? %>
+      <div class="detail-item">
+        <label>Publication Date</label>
+        <div class="value"><%= @article.publication_date.strftime("%B %d, %Y") %></div>
+      </div>
+    <% end %>
+    <div class="detail-item">
+      <label>URL</label>
+      <div class="value">
+        <%= link_to @article.url, @article.url, target: "_blank", rel: "noopener noreferrer" %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<% if @article.notes.present? %>
+  <div class="detail-section">
+    <h2>Notes</h2>
+    <div class="card">
+      <p><%= simple_format(@article.notes) %></p>
+    </div>
+  </div>
+<% end %>
+
+<% if @article.entries.any? %>
+  <div class="detail-section">
+    <h2>Related Entries (<%= @article.entries.count %>)</h2>
+    <div class="timeline">
+      <% @article.entries.chronological.each do |entry| %>
+        <div class="timeline-entry">
+          <div class="timeline-date"><%= entry.date_display %></div>
+          <h3 class="timeline-title">
+            <%= link_to entry.title, entry %>
+          </h3>
+          <% if entry.description.present? %>
+            <p class="timeline-description"><%= truncate(entry.description, length: 150) %></p>
+          <% end %>
+          <div class="timeline-meta">
+            <% if entry.entry_type.present? %>
+              <span class="tag tag-type"><%= entry.entry_type.titleize %></span>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+<% end %>
+
+<% if @article.characters.any? %>
+  <div class="detail-section">
+    <h2>Related Characters (<%= @article.characters.count %>)</h2>
+    <div class="card">
+      <ul class="character-list">
+        <% @article.characters.by_name.each do |character| %>
+          <li>
+            <%= link_to character.name, character %>
+            <% if character.relationship.present? %>
+              <span class="tag"><%= character.relationship.titleize %></span>
+            <% end %>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+  </div>
+<% end %>

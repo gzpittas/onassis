@@ -910,3 +910,240 @@ td a:hover {
   color: #718096;
   font-weight: bold;
 }
+
+/* Checkbox List for multi-select */
+.checkbox-list {
+  max-height: 300px;
+  overflow-y: auto;
+  border: 1px solid var(--light-gray);
+  border-radius: 4px;
+  background-color: var(--white);
+}
+
+.checkbox-item {
+  display: flex;
+  align-items: flex-start;
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  border-bottom: 1px solid var(--light-gray);
+  gap: 0.75rem;
+}
+
+.checkbox-item:last-child {
+  border-bottom: none;
+}
+
+.checkbox-item:hover {
+  background-color: #f7fafc;
+}
+
+.checkbox-item input[type="checkbox"] {
+  width: 1.25rem;
+  height: 1.25rem;
+  margin-top: 0.125rem;
+  flex-shrink: 0;
+}
+
+.checkbox-label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.checkbox-label strong {
+  color: var(--charcoal);
+  font-weight: 500;
+}
+
+.checkbox-meta {
+  font-size: 0.75rem;
+  color: #718096;
+}
+
+/* Character list in show views */
+.character-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.character-list li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--light-gray);
+}
+
+.character-list li:last-child {
+  border-bottom: none;
+}
+
+.character-list a {
+  color: var(--navy);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.character-list a:hover {
+  text-decoration: underline;
+}
+
+/* Image Gallery */
+.image-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.gallery-item {
+  background-color: var(--white);
+  border-radius: 0;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.gallery-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.gallery-thumbnail {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  display: block;
+}
+
+.gallery-item-info {
+  padding: 1rem;
+}
+
+.gallery-item-info h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1rem;
+}
+
+.gallery-item-info h3 a {
+  color: var(--charcoal);
+  text-decoration: none;
+}
+
+.gallery-item-info h3 a:hover {
+  color: var(--navy);
+}
+
+.gallery-date {
+  color: var(--navy);
+  font-weight: 500;
+  font-size: 0.875rem;
+  margin: 0 0 0.25rem 0;
+}
+
+.gallery-location {
+  color: #718096;
+  font-size: 0.875rem;
+  margin: 0 0 0.5rem 0;
+}
+
+.gallery-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+/* Image Show Page */
+.image-show-container {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+.image-main {
+  background-color: var(--white);
+  padding: 1rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.image-full {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.image-details .detail-section {
+  margin-bottom: 1.5rem;
+}
+
+.image-details .detail-section h2 {
+  font-size: 1.1rem;
+}
+
+/* Image Form */
+.current-image {
+  margin-bottom: 1rem;
+}
+
+.preview-thumbnail {
+  border: 1px solid var(--light-gray);
+  border-radius: 4px;
+}
+
+.file-input {
+  display: block;
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px dashed var(--light-gray);
+  border-radius: 4px;
+  background-color: #f7fafc;
+  cursor: pointer;
+}
+
+.file-input:hover {
+  border-color: var(--navy);
+  background-color: #edf2f7;
+}
+
+/* Related Images Grid (for entry/character show pages) */
+.related-images-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 1rem;
+}
+
+.related-image-item {
+  position: relative;
+}
+
+.related-image-item img {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 4px;
+  display: block;
+}
+
+.related-image-item:hover img {
+  opacity: 0.9;
+}
+
+.related-image-caption {
+  font-size: 0.75rem;
+  color: #718096;
+  margin-top: 0.25rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 768px) {
+  .image-show-container {
+    grid-template-columns: 1fr;
+  }
+
+  .image-gallery {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  }
+}

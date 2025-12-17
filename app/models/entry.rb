@@ -4,6 +4,10 @@ class Entry < ApplicationRecord
   has_many :sources, through: :entry_sources
   has_many :entry_characters, dependent: :destroy
   has_many :characters, through: :entry_characters
+  has_many :entry_articles, dependent: :destroy
+  has_many :articles, through: :entry_articles
+  has_many :entry_images, dependent: :destroy
+  has_many :images, through: :entry_images
 
   accepts_nested_attributes_for :entry_sources, allow_destroy: true, reject_if: :all_blank
 

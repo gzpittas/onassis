@@ -1,0 +1,77 @@
+<div class="page-header">
+  <h1><%= @image.display_title %></h1>
+  <div class="actions">
+    <%= link_to "Edit", edit_image_path(@image), class: "btn btn-secondary" %>
+    <%= link_to "Delete", @image, data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete this image?" }, class: "btn btn-danger" %>
+    <%= link_to "Back to Gallery", images_path, class: "btn btn-primary" %>
+  </div>
+</div>
+
+<div class="image-show-container">
+  <div class="image-main">
+    <% if @image.file.attached? %>
+      <%= image_tag @image.file, class: "image-full" %>
+    <% end %>
+  </div>
+
+  <div class="image-details">
+    <div class="card">
+      <div class="detail-grid">
+        <div class="detail-item">
+          <label>Date Taken</label>
+          <div class="value"><%= @image.date_display %></div>
+        </div>
+        <% if @image.location.present? %>
+          <div class="detail-item">
+            <label>Location</label>
+            <div class="value"><%= @image.location %></div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <% if @image.notes.present? %>
+      <div class="detail-section">
+        <h2>Notes</h2>
+        <div class="card">
+          <p><%= simple_format(@image.notes) %></p>
+        </div>
+      </div>
+    <% end %>
+
+    <% if @image.characters.any? %>
+      <div class="detail-section">
+        <h2>People in this Image (<%= @image.characters.count %>)</h2>
+        <div class="card">
+          <ul class="character-list">
+            <% @image.characters.by_name.each do |character| %>
+              <li>
+                <%= link_to character.name, character %>
+                <% if character.relationship.present? %>
+                  <span class="tag"><%= character.relationship.titleize %></span>
+                <% end %>
+              </li>
+            <% end %>
+          </ul>
+        </div>
+      </div>
+    <% end %>
+
+    <% if @image.entries.any? %>
+      <div class="detail-section">
+        <h2>Related Events (<%= @image.entries.count %>)</h2>
+        <% @image.entries.chronological.each do |entry| %>
+          <div class="card source-card">
+            <div class="source-header">
+              <strong><%= link_to entry.title, entry %></strong>
+              <% if entry.entry_type.present? %>
+                <span class="tag tag-type"><%= entry.entry_type.titleize %></span>
+              <% end %>
+            </div>
+            <p class="source-pages"><%= entry.date_display %></p>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+</div>
