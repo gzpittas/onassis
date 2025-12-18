@@ -1,0 +1,19 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  name: MyString
+  asset_type: MyString
+  description: MyText
+  acquisition_date: 2025-12-18
+  disposition_date: MyString
+  manufacturer: MyString
+  notes: MyText
+
+two:
+  name: MyString
+  asset_type: MyString
+  description: MyText
+  acquisition_date: 2025-12-18
+  disposition_date: MyString
+  manufacturer: MyString
+  notes: MyText

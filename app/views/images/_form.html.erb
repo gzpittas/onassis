@@ -99,6 +99,21 @@
           </label>
         <% end %>
       </div>
+
+      <% if @assets.present? && @assets.any? %>
+        <h3 style="margin-top: 1.5rem;">Assets in this Image</h3>
+        <div class="simple-checkbox-list">
+          <% @assets.each do |asset| %>
+            <label class="simple-checkbox-item">
+              <%= check_box_tag "image[asset_ids][]", asset.id, @image.assets.include?(asset), id: "asset_#{asset.id}" %>
+              <span class="simple-checkbox-content">
+                <span class="simple-checkbox-title"><%= asset.name %></span>
+                <span class="simple-checkbox-meta"><%= asset.type_display %></span>
+              </span>
+            </label>
+          <% end %>
+        </div>
+      <% end %>
     </div>
   </div>
 

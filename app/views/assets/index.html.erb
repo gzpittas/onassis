@@ -1,0 +1,55 @@
+<div class="page-header">
+  <h1>Assets</h1>
+  <%= link_to "Add Asset", new_asset_path, class: "btn btn-gold" %>
+</div>
+
+<div class="filters">
+  <%= form_with url: assets_path, method: :get, local: true do %>
+    <div class="filter-row">
+      <div class="filter-group">
+        <%= label_tag :asset_type, "Type" %>
+        <%= select_tag :asset_type,
+            options_for_select([["All Types", ""]] + Asset::ASSET_TYPES.map { |t| [t.titleize, t] }, params[:asset_type]),
+            onchange: "this.form.submit()" %>
+      </div>
+    </div>
+  <% end %>
+</div>
+
+<% if @assets.any? %>
+  <div class="grid">
+    <% @assets.each do |asset| %>
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title"><%= link_to asset.name, asset %></h3>
+          <span class="tag tag-type"><%= asset.type_display %></span>
+        </div>
+        <div class="card-body">
+          <% if asset.manufacturer.present? %>
+            <p class="card-meta">Made by: <%= asset.manufacturer %></p>
+          <% end %>
+          <% if asset.ownership_period %>
+            <p class="card-meta">Owned: <%= asset.ownership_period %></p>
+          <% end %>
+          <% if asset.description.present? %>
+            <p><%= truncate(asset.description, length: 150) %></p>
+          <% end %>
+        </div>
+        <div class="card-footer">
+          <% if asset.images.any? %>
+            <span class="tag"><%= pluralize(asset.images.count, "image") %></span>
+          <% end %>
+          <% if asset.entries.any? %>
+            <span class="tag"><%= pluralize(asset.entries.count, "event") %></span>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+<% else %>
+  <div class="empty-state">
+    <h3>No assets yet</h3>
+    <p>Add significant objects like vehicles, vessels, residences, and other production-relevant items.</p>
+    <%= link_to "Add First Asset", new_asset_path, class: "btn btn-gold" %>
+  </div>
+<% end %>

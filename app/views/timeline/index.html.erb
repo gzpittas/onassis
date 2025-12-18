@@ -32,57 +32,77 @@
   <% end %>
 </div>
 
-<% if @entries.any? %>
+<% if @timeline_items.any? %>
   <div class="timeline">
-    <% @entries.group_by(&:year).each do |year, entries| %>
+    <% @timeline_items.group_by { |item| item[:date].year }.each do |year, items| %>
       <div class="timeline-year">
-        <% entries.each do |entry| %>
-          <div class="timeline-entry">
-            <div class="timeline-date"><%= entry.date_display %></div>
-            <h3 class="timeline-title">
-              <%= link_to entry.title, entry %>
-            </h3>
-            <% if entry.location.present? %>
-              <div class="timeline-meta"><span><%= entry.location %></span></div>
-            <% end %>
-            <% if entry.description.present? %>
-              <p class="timeline-description"><%= truncate(entry.description, length: 200) %></p>
-            <% end %>
-            <div class="timeline-meta">
-              <% if entry.entry_type.present? %>
-                <span class="tag tag-type"><%= entry.entry_type.titleize %></span>
+        <% items.each do |item| %>
+          <% if item[:type] == :entry %>
+            <% entry = item[:object] %>
+            <div class="timeline-entry">
+              <div class="timeline-date"><%= entry.date_display %></div>
+              <h3 class="timeline-title">
+                <%= link_to entry.title, entry %>
+              </h3>
+              <% if entry.location.present? %>
+                <div class="timeline-meta"><span><%= entry.location %></span></div>
               <% end %>
-              <% entry.characters.each do |character| %>
-                <% age = character.age_at(entry.event_date) %>
-                <%= link_to character, class: "tag tag-character" do %>
-                  <%= character.name %><% if age %> - <%= age %><% end %>
+              <% if entry.description.present? %>
+                <p class="timeline-description"><%= truncate(entry.description, length: 200) %></p>
+              <% end %>
+              <div class="timeline-meta">
+                <% if entry.entry_type.present? %>
+                  <span class="tag tag-type"><%= entry.entry_type.titleize %></span>
                 <% end %>
-              <% end %>
-              <% if entry.verified? %>
-                <span class="tag tag-verified">Verified</span>
-              <% else %>
-                <span class="tag tag-unverified">Unverified</span>
+                <% entry.characters.each do |character| %>
+                  <% age = character.age_at(entry.event_date) %>
+                  <%= link_to character, class: "tag tag-character" do %>
+                    <%= character.name %><% if age %> - <%= age %><% end %>
+                  <% end %>
+                <% end %>
+                <% if entry.verified? %>
+                  <span class="tag tag-verified">Verified</span>
+                <% else %>
+                  <span class="tag tag-unverified">Unverified</span>
+                <% end %>
+              </div>
+              <% if entry.entry_sources.any? %>
+                <div class="source-citation">
+                  <% if entry.entry_sources.count == 1 %>
+                    <% es = entry.entry_sources.first %>
+                    Source: <%= link_to es.source.display_name, es.source %>
+                    <% if es.page_reference.present? %>(p. <%= es.page_reference %>)<% end %>
+                  <% else %>
+                    Sources: <%= entry.entry_sources.includes(:source).map { |es| link_to(es.source.title, es.source) }.join(", ").html_safe %>
+                  <% end %>
+                </div>
+              <% elsif entry.source.present? %>
+                <div class="source-citation">
+                  Source: <%= link_to entry.source.display_name, entry.source %>
+                  <% if entry.page_reference.present? %>
+                    (p. <%= entry.page_reference %>)
+                  <% end %>
+                </div>
               <% end %>
             </div>
-            <% if entry.entry_sources.any? %>
-              <div class="source-citation">
-                <% if entry.entry_sources.count == 1 %>
-                  <% es = entry.entry_sources.first %>
-                  Source: <%= link_to es.source.display_name, es.source %>
-                  <% if es.page_reference.present? %>(p. <%= es.page_reference %>)<% end %>
-                <% else %>
-                  Sources: <%= entry.entry_sources.includes(:source).map { |es| link_to(es.source.title, es.source) }.join(", ").html_safe %>
-                <% end %>
+          <% elsif item[:type] == :asset %>
+            <% asset = item[:object] %>
+            <div class="timeline-entry timeline-asset">
+              <div class="timeline-date"><%= asset.acquisition_date.strftime("%B %d, %Y") %></div>
+              <h3 class="timeline-title">
+                <%= link_to "Acquired: #{asset.name}", asset %>
+              </h3>
+              <% if asset.manufacturer.present? %>
+                <div class="timeline-meta"><span>Made by: <%= asset.manufacturer %></span></div>
+              <% end %>
+              <% if asset.description.present? %>
+                <p class="timeline-description"><%= truncate(asset.description, length: 200) %></p>
+              <% end %>
+              <div class="timeline-meta">
+                <span class="tag tag-asset"><%= asset.type_display %></span>
               </div>
-            <% elsif entry.source.present? %>
-              <div class="source-citation">
-                Source: <%= link_to entry.source.display_name, entry.source %>
-                <% if entry.page_reference.present? %>
-                  (p. <%= entry.page_reference %>)
-                <% end %>
-              </div>
-            <% end %>
-          </div>
+            </div>
+          <% end %>
         <% end %>
       </div>
     <% end %>

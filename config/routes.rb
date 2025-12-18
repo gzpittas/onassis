@@ -6,6 +6,7 @@ Rails.application.routes.draw do
   resources :sources
   resources :articles
   resources :images
+  resources :assets, path: "production_assets"
 
   get "timeline", to: "timeline#index"
   get "search", to: "search#index"

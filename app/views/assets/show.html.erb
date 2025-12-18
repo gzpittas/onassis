@@ -1,0 +1,84 @@
+<div class="page-header">
+  <h1><%= @asset.name %></h1>
+  <div class="actions">
+    <%= link_to "Edit", edit_asset_path(@asset), class: "btn btn-secondary" %>
+    <%= link_to "Delete", @asset, data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete this asset?" }, class: "btn btn-danger" %>
+    <%= link_to "Back to Assets", assets_path, class: "btn btn-primary" %>
+  </div>
+</div>
+
+<div class="detail-grid">
+  <div class="detail-item">
+    <label>Type</label>
+    <div class="value"><%= @asset.type_display %></div>
+  </div>
+  <% if @asset.manufacturer.present? %>
+    <div class="detail-item">
+      <label>Manufacturer</label>
+      <div class="value"><%= @asset.manufacturer %></div>
+    </div>
+  <% end %>
+  <% if @asset.acquisition_date.present? %>
+    <div class="detail-item">
+      <label>Acquired</label>
+      <div class="value"><%= @asset.acquisition_date.strftime("%B %d, %Y") %></div>
+    </div>
+  <% end %>
+  <% if @asset.disposition_date.present? %>
+    <div class="detail-item">
+      <label>Disposition</label>
+      <div class="value"><%= @asset.disposition_date %></div>
+    </div>
+  <% end %>
+</div>
+
+<% if @asset.description.present? %>
+  <div class="detail-section">
+    <h2>Description</h2>
+    <div class="card">
+      <p><%= simple_format(@asset.description) %></p>
+    </div>
+  </div>
+<% end %>
+
+<% if @asset.notes.present? %>
+  <div class="detail-section">
+    <h2>Production Notes</h2>
+    <div class="card">
+      <p><%= simple_format(@asset.notes) %></p>
+    </div>
+  </div>
+<% end %>
+
+<% if @asset.images.any? %>
+  <div class="detail-section">
+    <h2>Images (<%= @asset.images.count %>)</h2>
+    <div class="related-images-grid">
+      <% @asset.images.each do |image| %>
+        <div class="related-image-item">
+          <%= link_to image do %>
+            <%= image_tag image.file.variant(resize_to_fill: [150, 120]), alt: image.display_title %>
+          <% end %>
+          <p class="related-image-caption"><%= image.display_title %></p>
+        </div>
+      <% end %>
+    </div>
+  </div>
+<% end %>
+
+<% if @asset.entries.any? %>
+  <div class="detail-section">
+    <h2>Related Events (<%= @asset.entries.count %>)</h2>
+    <% @asset.entries.chronological.each do |entry| %>
+      <div class="card source-card">
+        <div class="source-header">
+          <strong><%= link_to entry.title, entry %></strong>
+          <% if entry.entry_type.present? %>
+            <span class="tag tag-type"><%= entry.entry_type.titleize %></span>
+          <% end %>
+        </div>
+        <p class="source-pages"><%= entry.date_display %></p>
+      </div>
+    <% end %>
+  </div>
+<% end %>

@@ -27,11 +27,11 @@ This app serves as a research companion for building a comprehensive timeline of
 ### Core Entities
 
 ```
-┌─────────────┐     ┌─────────────┐     ┌─────────────┐     ┌─────────────┐     ┌─────────────┐
-│   Entry     │     │  Character  │     │   Source    │     │   Article   │     │   Image     │
-│  (events)   │     │  (people)   │     │  (books,    │     │ (newspaper  │     │  (photos)   │
-│             │     │             │     │   docs)     │     │  articles)  │     │             │
-└─────────────┘     └─────────────┘     └─────────────┘     └─────────────┘     └─────────────┘
+┌─────────────┐     ┌─────────────┐     ┌─────────────┐     ┌─────────────┐     ┌─────────────┐     ┌─────────────┐
+│   Entry     │     │  Character  │     │   Source    │     │   Article   │     │   Image     │     │   Asset     │
+│  (events)   │     │  (people)   │     │  (books,    │     │ (newspaper  │     │  (photos)   │     │  (props)    │
+│             │     │             │     │   docs)     │     │  articles)  │     │             │     │             │
+└─────────────┘     └─────────────┘     └─────────────┘     └─────────────┘     └─────────────┘     └─────────────┘
 ```
 
 ### Relationships
@@ -41,8 +41,10 @@ Entry ←──────→ Character     (many-to-many via EntryCharacter)
 Entry ←──────→ Source        (many-to-many via EntrySource)
 Entry ←──────→ Article       (many-to-many via EntryArticle)
 Entry ←──────→ Image         (many-to-many via EntryImage)
+Entry ←──────→ Asset         (many-to-many via EntryAsset)
 Character ←──→ Article       (many-to-many via ArticleCharacter)
 Character ←──→ Image         (many-to-many via ImageCharacter)
+Asset ←──────→ Image         (many-to-many via AssetImage)
 Source ───────→ SourceLink   (one-to-many)
 Character ────→ CharacterLink (one-to-many)
 ```
@@ -131,9 +133,31 @@ Photos stored with Active Storage, linked to entries and characters.
 | source_url | string | Original URL if imported from web |
 
 **Key Features:**
-- Images are displayed in a chronological gallery (by `taken_date`) and can be linked to multiple entries and characters
+- Images are displayed in a chronological gallery (by `taken_date`) and can be linked to multiple entries, characters, and assets
 - Gallery supports filtering by decade and character
 - **URL Import:** Images can be imported directly from a URL without downloading first - paste a direct image link and it will be fetched and stored locally
+
+### Asset (Production Assets)
+
+Significant objects relevant to production research: vehicles, vessels, residences, aircraft, jewelry, etc.
+
+| Field | Type | Description |
+|-------|------|-------------|
+| name | string | Asset name (required) |
+| asset_type | string | Category (see types below) |
+| description | text | Historical details |
+| acquisition_date | date | When acquired (appears on timeline) |
+| disposition_date | string | When/how disposed of |
+| manufacturer | string | Who made it |
+| notes | text | Production research notes |
+
+**Asset Types:** vehicle, vessel, aircraft, residence, building, jewelry, artwork, document, other
+
+**Key Features:**
+- Assets with acquisition dates automatically appear on the timeline
+- Can be tagged in images for visual reference
+- Linked to timeline entries for context
+- Production notes field for filming considerations
 
 ### Junction Tables
 
@@ -143,8 +167,10 @@ Photos stored with Active Storage, linked to entries and characters.
 | EntrySource | Links entries to sources, with `page_reference`, `author`, `link`, `notes` |
 | EntryArticle | Links entries to articles |
 | EntryImage | Links entries to images |
+| EntryAsset | Links entries to assets |
 | ArticleCharacter | Links articles to characters |
 | ImageCharacter | Links images to characters |
+| AssetImage | Links assets to images |
 | SourceLink | External URLs for a source |
 | CharacterLink | External URLs for a character (Wikipedia, etc.) |
 
@@ -157,6 +183,7 @@ Photos stored with Active Storage, linked to entries and characters.
 | `/characters` | All people |
 | `/sources` | All research sources |
 | `/articles` | All newspaper articles |
+| `/assets` | Production assets |
 | `/images` | Image gallery |
 | `/search` | Search across all content |
 | `/help` | Usage documentation |
@@ -188,6 +215,13 @@ Photos stored with Active Storage, linked to entries and characters.
 - Thumbnails auto-generated via Active Storage variants
 - **Import from URL:** Add images directly from web URLs without downloading them first - the app fetches and stores them locally, preserving the original source URL for reference
 
+### Production Assets
+- Track significant objects: yachts, aircraft, vehicles, residences, jewelry, artwork
+- Assets with acquisition dates appear automatically on the timeline
+- Tag assets in images for visual reference
+- Link assets to timeline entries
+- Production notes field for filming research and considerations
+
 ## Running the App
 
 ```bash
@@ -212,6 +246,7 @@ app/
 │   ├── characters_controller.rb
 │   ├── sources_controller.rb
 │   ├── articles_controller.rb
+│   ├── assets_controller.rb
 │   ├── images_controller.rb
 │   ├── timeline_controller.rb
 │   └── search_controller.rb
@@ -220,13 +255,16 @@ app/
 │   ├── character.rb
 │   ├── source.rb
 │   ├── article.rb
+│   ├── asset.rb
 │   ├── image.rb
 │   ├── entry_character.rb
 │   ├── entry_source.rb
 │   ├── entry_article.rb
 │   ├── entry_image.rb
+│   ├── entry_asset.rb
 │   ├── article_character.rb
 │   ├── image_character.rb
+│   ├── asset_image.rb
 │   ├── source_link.rb
 │   └── character_link.rb
 ├── views/
@@ -234,6 +272,7 @@ app/
 │   ├── characters/
 │   ├── sources/
 │   ├── articles/
+│   ├── assets/
 │   ├── images/
 │   ├── timeline/
 │   └── layouts/
@@ -255,6 +294,7 @@ Models define scopes for common queries:
 - `Source.books`, `Source.articles`
 - `Article.by_date`, `Article.by_title`
 - `Image.by_date`, `Image.by_date_desc`, `Image.recent_first`
+- `Asset.by_name`, `Asset.by_type(type)`
 
 ### Dependent Destroy
 All associations use `dependent: :destroy` to clean up join records when parent records are deleted.

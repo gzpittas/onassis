@@ -22,6 +22,7 @@ class ImagesController < ApplicationController
     @image = Image.new
     @entries = Entry.chronological
     @characters = Character.by_name
+    @assets = Asset.by_name
   end
 
   def create
@@ -33,6 +34,7 @@ class ImagesController < ApplicationController
         @image.errors.add(:remote_url, "could not be imported") if @image.errors[:remote_url].empty?
         @entries = Entry.chronological
         @characters = Character.by_name
+        @assets = Asset.by_name
         return render :new, status: :unprocessable_entity
       end
     end
@@ -43,6 +45,7 @@ class ImagesController < ApplicationController
     else
       @entries = Entry.chronological
       @characters = Character.by_name
+      @assets = Asset.by_name
       render :new, status: :unprocessable_entity
     end
   end
@@ -50,6 +53,7 @@ class ImagesController < ApplicationController
   def edit
     @entries = Entry.chronological
     @characters = Character.by_name
+    @assets = Asset.by_name
   end
 
   def update
@@ -58,6 +62,7 @@ class ImagesController < ApplicationController
     else
       @entries = Entry.chronological
       @characters = Character.by_name
+      @assets = Asset.by_name
       render :edit, status: :unprocessable_entity
     end
   end
@@ -76,6 +81,6 @@ class ImagesController < ApplicationController
 
   def image_params
     params.require(:image).permit(:title, :file, :taken_date, :location, :notes, :remote_url, :source_url,
-                                  entry_ids: [], character_ids: [])
+                                  entry_ids: [], character_ids: [], asset_ids: [])
   end
 end

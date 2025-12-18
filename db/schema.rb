@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_12_18_155823) do
+ActiveRecord::Schema[8.0].define(version: 2025_12_18_163751) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -54,6 +54,27 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_18_155823) do
     t.string "author"
     t.date "publication_date"
     t.string "url"
+    t.text "notes"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "asset_images", force: :cascade do |t|
+    t.integer "asset_id", null: false
+    t.integer "image_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["asset_id"], name: "index_asset_images_on_asset_id"
+    t.index ["image_id"], name: "index_asset_images_on_image_id"
+  end
+
+  create_table "assets", force: :cascade do |t|
+    t.string "name"
+    t.string "asset_type"
+    t.text "description"
+    t.date "acquisition_date"
+    t.string "disposition_date"
+    t.string "manufacturer"
     t.text "notes"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -110,6 +131,16 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_18_155823) do
     t.datetime "updated_at", null: false
     t.index ["article_id"], name: "index_entry_articles_on_article_id"
     t.index ["entry_id"], name: "index_entry_articles_on_entry_id"
+  end
+
+  create_table "entry_assets", force: :cascade do |t|
+    t.integer "entry_id", null: false
+    t.integer "asset_id", null: false
+    t.string "notes"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["asset_id"], name: "index_entry_assets_on_asset_id"
+    t.index ["entry_id"], name: "index_entry_assets_on_entry_id"
   end
 
   create_table "entry_characters", force: :cascade do |t|
@@ -187,10 +218,14 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_18_155823) do
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "article_characters", "articles"
   add_foreign_key "article_characters", "characters"
+  add_foreign_key "asset_images", "assets"
+  add_foreign_key "asset_images", "images"
   add_foreign_key "character_links", "characters"
   add_foreign_key "entries", "sources"
   add_foreign_key "entry_articles", "articles"
   add_foreign_key "entry_articles", "entries"
+  add_foreign_key "entry_assets", "assets"
+  add_foreign_key "entry_assets", "entries"
   add_foreign_key "entry_characters", "characters"
   add_foreign_key "entry_characters", "entries"
   add_foreign_key "entry_images", "entries"

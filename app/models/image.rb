@@ -8,6 +8,8 @@ class Image < ApplicationRecord
   has_many :entries, through: :entry_images
   has_many :image_characters, dependent: :destroy
   has_many :characters, through: :image_characters
+  has_many :asset_images, dependent: :destroy
+  has_many :assets, through: :asset_images
 
   validates :file, presence: true, unless: :importing_from_url?
 

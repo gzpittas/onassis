@@ -30,8 +30,8 @@ body {
 
 /* Navigation */
 .main-nav {
-  background-color: var(--french-grey-10);
-  color: var(--french-grey-100);
+  background-color: var(--french-grey-70);
+  color: var(--french-grey-001);
   padding: 1rem 2rem;
   display: flex;
   justify-content: space-between;
@@ -41,7 +41,7 @@ body {
 }
 
 .nav-brand a {
-  color: var(--french-grey-100);
+  color: var(--french-grey-001);
   text-decoration: none;
   font-family: 'Montserrat', sans-serif;
   font-size: 1.5rem;
@@ -361,6 +361,16 @@ body {
   background-color: var(--french-grey-10);
   color: var(--french-grey-100);
   border-radius: 0;
+}
+
+.tag-asset {
+  background-color: #805ad5;
+  color: var(--white);
+}
+
+.timeline-asset {
+  border-left: 3px solid #805ad5;
+  padding-left: 1rem;
 }
 
 .tag-verified {

@@ -8,6 +8,8 @@ class Entry < ApplicationRecord
   has_many :articles, through: :entry_articles
   has_many :entry_images, dependent: :destroy
   has_many :images, through: :entry_images
+  has_many :entry_assets, dependent: :destroy
+  has_many :assets, through: :entry_assets
 
   accepts_nested_attributes_for :entry_sources, allow_destroy: true, reject_if: :all_blank
 
