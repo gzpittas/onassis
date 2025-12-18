@@ -10,7 +10,7 @@
     </div>
   <% end %>
 
-  <div class="form-group">
+  <div class="form-group" data-controller="image-source">
     <%= f.label :file, "Image File" %>
     <% if @image.file.attached? %>
       <div class="current-image">
@@ -18,8 +18,29 @@
         <p class="form-hint">Current image. Upload a new file to replace it.</p>
       </div>
     <% end %>
-    <%= f.file_field :file, accept: "image/*", class: "file-input" %>
-    <p class="form-hint">Accepted formats: JPG, PNG, GIF, WebP</p>
+
+    <div class="image-source-tabs">
+      <button type="button" class="source-tab active" data-image-source-target="uploadTab" data-action="click->image-source#showUpload">
+        Upload File
+      </button>
+      <button type="button" class="source-tab" data-image-source-target="urlTab" data-action="click->image-source#showUrl">
+        Import from URL
+      </button>
+    </div>
+
+    <div class="image-source-panel" data-image-source-target="uploadPanel">
+      <%= f.file_field :file, accept: "image/*", class: "file-input" %>
+      <p class="form-hint">Accepted formats: JPG, PNG, GIF, WebP</p>
+    </div>
+
+    <div class="image-source-panel hidden" data-image-source-target="urlPanel">
+      <%= f.text_field :remote_url, placeholder: "https://example.com/image.jpg", class: "url-input", data: { image_source_target: "urlInput" } %>
+      <p class="form-hint">Paste a direct link to an image. The image will be downloaded and stored locally.</p>
+      <div class="url-preview hidden" data-image-source-target="preview">
+        <img data-image-source-target="previewImage" class="preview-thumbnail" alt="URL Preview">
+        <p class="preview-status" data-image-source-target="previewStatus"></p>
+      </div>
+    </div>
   </div>
 
   <div class="form-group">
@@ -46,40 +67,35 @@
     <%= f.text_area :notes, placeholder: "Context, source of image, or other details..." %>
   </div>
 
-  <div class="form-section">
-    <h3>Related Events</h3>
-    <p class="form-hint">Select the timeline entries this image relates to.</p>
-
-    <div class="form-group">
-      <div class="checkbox-list">
+  <div class="form-columns">
+    <div class="form-column">
+      <h3>Related Events</h3>
+      <div class="simple-checkbox-list">
+        <% current_decade = nil %>
         <% @entries.each do |entry| %>
-          <label class="checkbox-item">
+          <% entry_decade = (entry.event_date.year / 10) * 10 %>
+          <% if entry_decade != current_decade %>
+            <% current_decade = entry_decade %>
+            <div class="decade-divider"><%= current_decade %>s</div>
+          <% end %>
+          <label class="simple-checkbox-item">
             <%= check_box_tag "image[entry_ids][]", entry.id, @image.entries.include?(entry), id: "entry_#{entry.id}" %>
-            <span class="checkbox-label">
-              <strong><%= entry.title %></strong>
-              <span class="checkbox-meta"><%= entry.event_date.strftime("%b %d, %Y") %></span>
+            <span class="simple-checkbox-content">
+              <span class="simple-checkbox-title"><%= entry.title %></span>
+              <span class="simple-checkbox-meta"><%= entry.event_date.strftime("%Y %b %d").upcase %></span>
             </span>
           </label>
         <% end %>
       </div>
     </div>
-  </div>
 
-  <div class="form-section">
-    <h3>People in this Image</h3>
-    <p class="form-hint">Select the people visible or relevant to this image.</p>
-
-    <div class="form-group">
-      <div class="checkbox-list">
+    <div class="form-column">
+      <h3>People in this Image</h3>
+      <div class="simple-checkbox-list">
         <% @characters.each do |character| %>
-          <label class="checkbox-item">
+          <label class="simple-checkbox-item">
             <%= check_box_tag "image[character_ids][]", character.id, @image.characters.include?(character), id: "character_#{character.id}" %>
-            <span class="checkbox-label">
-              <strong><%= character.name %></strong>
-              <% if character.relationship.present? %>
-                <span class="checkbox-meta"><%= character.relationship.titleize %></span>
-              <% end %>
-            </span>
+            <span class="simple-checkbox-title"><%= character.name %></span>
           </label>
         <% end %>
       </div>

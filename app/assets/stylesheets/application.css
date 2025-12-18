@@ -1147,3 +1147,188 @@ td a:hover {
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   }
 }
+
+/* Image Source Tabs */
+.image-source-tabs {
+  display: flex;
+  gap: 0;
+  margin-bottom: 1rem;
+  border: 1px solid var(--light-gray);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.source-tab {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  background-color: var(--white);
+  border: none;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #718096;
+  transition: all 0.2s;
+}
+
+.source-tab:first-child {
+  border-right: 1px solid var(--light-gray);
+}
+
+.source-tab:hover {
+  background-color: #f7fafc;
+  color: var(--charcoal);
+}
+
+.source-tab.active {
+  background-color: var(--navy);
+  color: var(--white);
+}
+
+.image-source-panel {
+  margin-bottom: 0;
+}
+
+.image-source-panel.hidden {
+  display: none;
+}
+
+.url-input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--light-gray);
+  border-radius: 4px;
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+  font-size: 0.875rem;
+  background-color: var(--white);
+}
+
+.url-input:focus {
+  outline: none;
+  border-color: var(--navy);
+  box-shadow: 0 0 0 2px rgba(26, 54, 93, 0.1);
+}
+
+.url-preview {
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: #f7fafc;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.url-preview.hidden {
+  display: none;
+}
+
+.url-preview img {
+  max-width: 200px;
+  max-height: 200px;
+  margin-bottom: 0.5rem;
+}
+
+.preview-status {
+  font-size: 0.875rem;
+  margin: 0.5rem 0 0 0;
+}
+
+.preview-status.success {
+  color: var(--green);
+}
+
+.preview-status.error {
+  color: var(--red);
+}
+
+/* Source URL display on image show page */
+.image-source-url {
+  word-break: break-all;
+  font-size: 0.875rem;
+}
+
+.image-source-url a {
+  color: var(--navy);
+}
+
+.image-source-url a:hover {
+  text-decoration: underline;
+}
+
+/* Two-column form layout */
+.form-columns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  margin: 2rem 0;
+}
+
+.form-column h3 {
+  color: var(--navy);
+  margin: 0 0 1rem 0;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--gold);
+}
+
+/* Simple checkbox lists (no scroll, full display) */
+.simple-checkbox-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.simple-checkbox-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 0.125rem 0;
+  cursor: pointer;
+}
+
+.simple-checkbox-item:hover {
+  background-color: #f7fafc;
+}
+
+.simple-checkbox-item input[type="checkbox"] {
+  width: 1rem;
+  height: 1rem;
+  margin-top: 0.125rem;
+  flex-shrink: 0;
+}
+
+.simple-checkbox-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.simple-checkbox-title {
+  color: var(--charcoal);
+  font-size: 0.875rem;
+  line-height: 1.2;
+}
+
+.simple-checkbox-meta {
+  color: #718096;
+  font-size: 0.7rem;
+}
+
+/* Decade dividers */
+.decade-divider {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--navy);
+  background-color: var(--light-gray);
+  padding: 0.25rem 0.5rem;
+  margin: 0.5rem 0 0.25rem 0;
+  border-radius: 2px;
+}
+
+.decade-divider:first-child {
+  margin-top: 0;
+}
+
+@media (max-width: 768px) {
+  .form-columns {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}

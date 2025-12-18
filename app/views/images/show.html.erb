@@ -39,6 +39,17 @@
       </div>
     <% end %>
 
+    <% if @image.source_url.present? %>
+      <div class="detail-section">
+        <h2>Source</h2>
+        <div class="card">
+          <p class="image-source-url">
+            Imported from: <%= link_to @image.source_url, @image.source_url, target: "_blank", rel: "noopener noreferrer" %>
+          </p>
+        </div>
+      </div>
+    <% end %>
+
     <% if @image.characters.any? %>
       <div class="detail-section">
         <h2>People in this Image (<%= @image.characters.count %>)</h2>

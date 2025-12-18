@@ -27,8 +27,19 @@ class ImagesController < ApplicationController
   def create
     @image = Image.new(image_params)
 
+    if params[:image][:remote_url].present?
+      @image.remote_url = params[:image][:remote_url]
+      unless @image.attach_from_url(params[:image][:remote_url])
+        @image.errors.add(:remote_url, "could not be imported") if @image.errors[:remote_url].empty?
+        @entries = Entry.chronological
+        @characters = Character.by_name
+        return render :new, status: :unprocessable_entity
+      end
+    end
+
     if @image.save
-      redirect_to @image, notice: "Image was successfully uploaded."
+      notice = params[:image][:remote_url].present? ? "Image was successfully imported from URL." : "Image was successfully uploaded."
+      redirect_to @image, notice: notice
     else
       @entries = Entry.chronological
       @characters = Character.by_name
@@ -64,7 +75,7 @@ class ImagesController < ApplicationController
   end
 
   def image_params
-    params.require(:image).permit(:title, :file, :taken_date, :location, :notes,
+    params.require(:image).permit(:title, :file, :taken_date, :location, :notes, :remote_url, :source_url,
                                   entry_ids: [], character_ids: [])
   end
 end

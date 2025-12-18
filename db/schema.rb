@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_12_17_213942) do
+ActiveRecord::Schema[8.0].define(version: 2025_12_18_155823) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -160,6 +160,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_17_213942) do
     t.text "notes"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "source_url"
   end
 
   create_table "source_links", force: :cascade do |t|

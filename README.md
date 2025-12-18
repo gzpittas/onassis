@@ -128,8 +128,12 @@ Photos stored with Active Storage, linked to entries and characters.
 | taken_date | date | When the photo was taken |
 | location | string | Where it was taken |
 | notes | text | Context or source info |
+| source_url | string | Original URL if imported from web |
 
-**Key Feature:** Images are displayed in a chronological gallery (by `taken_date`) and can be linked to multiple entries and characters. The gallery supports filtering by decade and character.
+**Key Features:**
+- Images are displayed in a chronological gallery (by `taken_date`) and can be linked to multiple entries and characters
+- Gallery supports filtering by decade and character
+- **URL Import:** Images can be imported directly from a URL without downloading first - paste a direct image link and it will be fetched and stored locally
 
 ### Junction Tables
 
@@ -182,6 +186,7 @@ Photos stored with Active Storage, linked to entries and characters.
 - Images display on Entry and Character show pages
 - Supports JPG, PNG, GIF, WebP formats
 - Thumbnails auto-generated via Active Storage variants
+- **Import from URL:** Add images directly from web URLs without downloading them first - the app fetches and stores them locally, preserving the original source URL for reference
 
 ## Running the App
 
