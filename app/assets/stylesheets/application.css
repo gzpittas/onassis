@@ -368,6 +368,11 @@ body {
   color: var(--white);
 }
 
+.tag-location {
+  background-color: #2b6cb0;
+  color: var(--white);
+}
+
 .timeline-asset {
   border-left: 3px solid #805ad5;
   padding-left: 1rem;

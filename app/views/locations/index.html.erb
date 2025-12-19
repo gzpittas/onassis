@@ -1,0 +1,58 @@
+<div class="page-header">
+  <h1>Locations</h1>
+  <%= link_to "Add Location", new_location_path, class: "btn btn-gold" %>
+</div>
+
+<div class="filters">
+  <%= form_with url: locations_path, method: :get, local: true do %>
+    <div class="filter-row">
+      <div class="filter-group">
+        <%= label_tag :location_type, "Type" %>
+        <%= select_tag :location_type,
+            options_for_select([["All Types", ""]] + Location::LOCATION_TYPES.map { |t| [t.titleize, t] }, params[:location_type]),
+            onchange: "this.form.submit()" %>
+      </div>
+      <div class="filter-group">
+        <%= label_tag :country, "Country" %>
+        <%= select_tag :country,
+            options_for_select([["All Countries", ""]] + Location.where.not(country: [nil, ""]).distinct.pluck(:country).sort, params[:country]),
+            onchange: "this.form.submit()" %>
+      </div>
+    </div>
+  <% end %>
+</div>
+
+<% if @locations.any? %>
+  <div class="grid">
+    <% @locations.each do |location| %>
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title"><%= link_to location.name, location %></h3>
+          <span class="tag tag-location"><%= location.type_display %></span>
+        </div>
+        <div class="card-body">
+          <% if location.full_location.present? %>
+            <p class="card-meta"><%= location.full_location %></p>
+          <% end %>
+          <% if location.description.present? %>
+            <p><%= truncate(location.description, length: 150) %></p>
+          <% end %>
+        </div>
+        <div class="card-footer">
+          <% if location.images.any? %>
+            <span class="tag"><%= pluralize(location.images.count, "image") %></span>
+          <% end %>
+          <% if location.entries.any? %>
+            <span class="tag"><%= pluralize(location.entries.count, "event") %></span>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+<% else %>
+  <div class="empty-state">
+    <h3>No locations yet</h3>
+    <p>Add filming locations: cities, buildings, residences, and other significant places.</p>
+    <%= link_to "Add First Location", new_location_path, class: "btn btn-gold" %>
+  </div>
+<% end %>

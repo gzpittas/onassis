@@ -84,5 +84,44 @@
         <% end %>
       </div>
     <% end %>
+
+    <% if @image.locations.any? %>
+      <div class="detail-section">
+        <h2>Locations (<%= @image.locations.count %>)</h2>
+        <div class="card">
+          <ul class="character-list">
+            <% @image.locations.by_name.each do |location| %>
+              <li>
+                <%= link_to location.name, location %>
+                <% if location.location_type.present? %>
+                  <span class="tag tag-location"><%= location.location_type.titleize %></span>
+                <% end %>
+                <% if location.short_location.present? && location.short_location != location.name %>
+                  <span class="location-meta"><%= location.short_location %></span>
+                <% end %>
+              </li>
+            <% end %>
+          </ul>
+        </div>
+      </div>
+    <% end %>
+
+    <% if @image.assets.any? %>
+      <div class="detail-section">
+        <h2>Assets (<%= @image.assets.count %>)</h2>
+        <div class="card">
+          <ul class="character-list">
+            <% @image.assets.by_name.each do |asset| %>
+              <li>
+                <%= link_to asset.name, asset %>
+                <% if asset.asset_type.present? %>
+                  <span class="tag tag-asset"><%= asset.type_display %></span>
+                <% end %>
+              </li>
+            <% end %>
+          </ul>
+        </div>
+      </div>
+    <% end %>
   </div>
 </div>

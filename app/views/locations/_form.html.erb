@@ -1,0 +1,133 @@
+<%= form_with model: @location, local: true do |f| %>
+  <% if @location.errors.any? %>
+    <div class="error-messages">
+      <h3><%= pluralize(@location.errors.count, "error") %> prohibited this location from being saved:</h3>
+      <ul>
+        <% @location.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="form-row">
+    <div class="form-group">
+      <%= f.label :name, "Location Name" %>
+      <%= f.text_field :name, placeholder: "e.g., Avenue Foch Apartment, Christina O, Buenos Aires" %>
+      <p class="form-hint">A memorable name for this location.</p>
+    </div>
+
+    <div class="form-group">
+      <%= f.label :location_type, "Type" %>
+      <%= f.select :location_type, Location::LOCATION_TYPES.map { |t| [t.titleize, t] }, { include_blank: "Select type..." } %>
+    </div>
+  </div>
+
+  <div class="form-section">
+    <h3>Geographic Hierarchy</h3>
+    <p class="form-hint">Fill in as many fields as apply. All fields are optional.</p>
+
+    <div class="form-row">
+      <div class="form-group">
+        <%= f.label :continent %>
+        <%= f.text_field :continent, placeholder: "e.g., Europe, South America" %>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :country %>
+        <%= f.text_field :country, placeholder: "e.g., Greece, Argentina, France" %>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <%= f.label :region, "Region / State" %>
+        <%= f.text_field :region, placeholder: "e.g., Attica, Île-de-France" %>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :city %>
+        <%= f.text_field :city, placeholder: "e.g., Athens, Paris, Buenos Aires" %>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <%= f.label :neighborhood %>
+        <%= f.text_field :neighborhood, placeholder: "e.g., 16th Arrondissement, Glyfada" %>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :address %>
+        <%= f.text_field :address, placeholder: "e.g., 88 Avenue Foch" %>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <%= f.label :building %>
+        <%= f.text_field :building, placeholder: "e.g., Olympic Tower, Château de la Croë" %>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :room %>
+        <%= f.text_field :room, placeholder: "e.g., Main Salon, Master Suite" %>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :description %>
+    <%= f.text_area :description, placeholder: "Historical details about this location..." %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :notes, "Production Notes" %>
+    <%= f.text_area :notes, placeholder: "Notes for production: filming permits, current condition, alternatives..." %>
+  </div>
+
+  <div class="form-columns">
+    <div class="form-column">
+      <h3>Related Events</h3>
+      <div class="simple-checkbox-list">
+        <% current_decade = nil %>
+        <% @entries.each do |entry| %>
+          <% entry_decade = (entry.event_date.year / 10) * 10 %>
+          <% if entry_decade != current_decade %>
+            <% current_decade = entry_decade %>
+            <div class="decade-divider"><%= current_decade %>s</div>
+          <% end %>
+          <label class="simple-checkbox-item">
+            <%= check_box_tag "location[entry_ids][]", entry.id, @location.entries.include?(entry), id: "entry_#{entry.id}" %>
+            <span class="simple-checkbox-content">
+              <span class="simple-checkbox-title"><%= entry.title %></span>
+              <span class="simple-checkbox-meta"><%= entry.event_date.strftime("%Y %b %d").upcase %></span>
+            </span>
+          </label>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="form-column">
+      <h3>Images of this Location</h3>
+      <div class="simple-checkbox-list">
+        <% @images.each do |image| %>
+          <label class="simple-checkbox-item">
+            <%= check_box_tag "location[image_ids][]", image.id, @location.images.include?(image), id: "image_#{image.id}" %>
+            <span class="simple-checkbox-content">
+              <span class="simple-checkbox-title"><%= image.display_title %></span>
+              <% if image.taken_date.present? %>
+                <span class="simple-checkbox-meta"><%= image.taken_date.year %></span>
+              <% end %>
+            </span>
+          </label>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-actions">
+    <%= f.submit class: "btn btn-gold" %>
+    <%= link_to "Cancel", locations_path, class: "btn btn-secondary" %>
+  </div>
+<% end %>

@@ -27,11 +27,11 @@ This app serves as a research companion for building a comprehensive timeline of
 ### Core Entities
 
 ```
-┌─────────────┐     ┌─────────────┐     ┌─────────────┐     ┌─────────────┐     ┌─────────────┐     ┌─────────────┐
-│   Entry     │     │  Character  │     │   Source    │     │   Article   │     │   Image     │     │   Asset     │
-│  (events)   │     │  (people)   │     │  (books,    │     │ (newspaper  │     │  (photos)   │     │  (props)    │
-│             │     │             │     │   docs)     │     │  articles)  │     │             │     │             │
-└─────────────┘     └─────────────┘     └─────────────┘     └─────────────┘     └─────────────┘     └─────────────┘
+┌─────────────┐     ┌─────────────┐     ┌─────────────┐     ┌─────────────┐     ┌─────────────┐     ┌─────────────┐     ┌─────────────┐
+│   Entry     │     │  Character  │     │   Source    │     │   Article   │     │   Image     │     │   Asset     │     │  Location   │
+│  (events)   │     │  (people)   │     │  (books,    │     │ (newspaper  │     │  (photos)   │     │  (props)    │     │  (filming)  │
+│             │     │             │     │   docs)     │     │  articles)  │     │             │     │             │     │             │
+└─────────────┘     └─────────────┘     └─────────────┘     └─────────────┘     └─────────────┘     └─────────────┘     └─────────────┘
 ```
 
 ### Relationships
@@ -42,9 +42,11 @@ Entry ←──────→ Source        (many-to-many via EntrySource)
 Entry ←──────→ Article       (many-to-many via EntryArticle)
 Entry ←──────→ Image         (many-to-many via EntryImage)
 Entry ←──────→ Asset         (many-to-many via EntryAsset)
+Entry ←──────→ Location      (many-to-many via EntryLocation)
 Character ←──→ Article       (many-to-many via ArticleCharacter)
 Character ←──→ Image         (many-to-many via ImageCharacter)
 Asset ←──────→ Image         (many-to-many via AssetImage)
+Location ←───→ Image         (many-to-many via ImageLocation)
 Source ───────→ SourceLink   (one-to-many)
 Character ────→ CharacterLink (one-to-many)
 ```
@@ -159,6 +161,34 @@ Significant objects relevant to production research: vehicles, vessels, residenc
 - Linked to timeline entries for context
 - Production notes field for filming considerations
 
+### Location (Filming Locations)
+
+Filming locations with flexible geographic hierarchy.
+
+| Field | Type | Description |
+|-------|------|-------------|
+| name | string | Location name (required) |
+| location_type | string | Category (see types below) |
+| continent | string | Continent |
+| country | string | Country |
+| region | string | Region or state |
+| city | string | City |
+| neighborhood | string | Neighborhood or district |
+| address | string | Street address |
+| building | string | Building name |
+| room | string | Specific room or space |
+| description | text | Historical details |
+| notes | text | Production research notes |
+
+**Location Types:** aircraft, airport, building, city, continent, country, embassy, estate, harbor, hospital, hotel, island, neighborhood, office, port, region, residence, restaurant, room, vessel, villa
+
+**Key Features:**
+- Flexible hierarchy allows recording as much or as little location detail as needed
+- Vessel and aircraft types for scenes aboard ships/planes
+- Link to timeline entries for historical context
+- Tag in images for visual reference
+- Production notes field for filming permits, current condition, alternatives
+
 ### Junction Tables
 
 | Table | Purpose |
@@ -168,9 +198,11 @@ Significant objects relevant to production research: vehicles, vessels, residenc
 | EntryArticle | Links entries to articles |
 | EntryImage | Links entries to images |
 | EntryAsset | Links entries to assets |
+| EntryLocation | Links entries to locations |
 | ArticleCharacter | Links articles to characters |
 | ImageCharacter | Links images to characters |
 | AssetImage | Links assets to images |
+| ImageLocation | Links images to locations |
 | SourceLink | External URLs for a source |
 | CharacterLink | External URLs for a character (Wikipedia, etc.) |
 
@@ -183,7 +215,8 @@ Significant objects relevant to production research: vehicles, vessels, residenc
 | `/characters` | All people |
 | `/sources` | All research sources |
 | `/articles` | All newspaper articles |
-| `/assets` | Production assets |
+| `/production_assets` | Production assets |
+| `/locations` | Filming locations |
 | `/images` | Image gallery |
 | `/search` | Search across all content |
 | `/help` | Usage documentation |
@@ -222,6 +255,13 @@ Significant objects relevant to production research: vehicles, vessels, residenc
 - Link assets to timeline entries
 - Production notes field for filming research and considerations
 
+### Filming Locations
+- Track real-world locations for production research
+- Flexible geographic hierarchy: continent, country, region, city, neighborhood, address, building, room
+- Special types for vessels and aircraft (for scenes aboard Christina O, etc.)
+- Link locations to timeline entries and images
+- Production notes for filming permits, current condition, alternatives
+
 ## Running the App
 
 ```bash
@@ -247,6 +287,7 @@ app/
 │   ├── sources_controller.rb
 │   ├── articles_controller.rb
 │   ├── assets_controller.rb
+│   ├── locations_controller.rb
 │   ├── images_controller.rb
 │   ├── timeline_controller.rb
 │   └── search_controller.rb
@@ -256,14 +297,17 @@ app/
 │   ├── source.rb
 │   ├── article.rb
 │   ├── asset.rb
+│   ├── location.rb
 │   ├── image.rb
 │   ├── entry_character.rb
 │   ├── entry_source.rb
 │   ├── entry_article.rb
 │   ├── entry_image.rb
 │   ├── entry_asset.rb
+│   ├── entry_location.rb
 │   ├── article_character.rb
 │   ├── image_character.rb
+│   ├── image_location.rb
 │   ├── asset_image.rb
 │   ├── source_link.rb
 │   └── character_link.rb
@@ -273,6 +317,7 @@ app/
 │   ├── sources/
 │   ├── articles/
 │   ├── assets/
+│   ├── locations/
 │   ├── images/
 │   ├── timeline/
 │   └── layouts/
@@ -295,6 +340,7 @@ Models define scopes for common queries:
 - `Article.by_date`, `Article.by_title`
 - `Image.by_date`, `Image.by_date_desc`, `Image.recent_first`
 - `Asset.by_name`, `Asset.by_type(type)`
+- `Location.by_name`, `Location.by_type(type)`, `Location.by_country(country)`
 
 ### Dependent Destroy
 All associations use `dependent: :destroy` to clean up join records when parent records are deleted.

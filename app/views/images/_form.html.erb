@@ -114,6 +114,21 @@
           <% end %>
         </div>
       <% end %>
+
+      <% if @locations.present? && @locations.any? %>
+        <h3 style="margin-top: 1.5rem;">Locations in this Image</h3>
+        <div class="simple-checkbox-list">
+          <% @locations.each do |location| %>
+            <label class="simple-checkbox-item">
+              <%= check_box_tag "image[location_ids][]", location.id, @image.locations.include?(location), id: "location_#{location.id}" %>
+              <span class="simple-checkbox-content">
+                <span class="simple-checkbox-title"><%= location.name %></span>
+                <span class="simple-checkbox-meta"><%= location.short_location %></span>
+              </span>
+            </label>
+          <% end %>
+        </div>
+      <% end %>
     </div>
   </div>
 

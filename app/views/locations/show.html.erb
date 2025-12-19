@@ -1,0 +1,135 @@
+<div class="page-header">
+  <h1><%= @location.name %></h1>
+  <div class="actions">
+    <%= link_to "Edit", edit_location_path(@location), class: "btn btn-secondary" %>
+    <%= link_to "Delete", @location, data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete this location?" }, class: "btn btn-danger" %>
+    <%= link_to "Back to Locations", locations_path, class: "btn btn-primary" %>
+  </div>
+</div>
+
+<div class="detail-grid">
+  <div class="detail-item">
+    <label>Type</label>
+    <div class="value"><%= @location.type_display %></div>
+  </div>
+  <% if @location.full_location.present? %>
+    <div class="detail-item">
+      <label>Full Location</label>
+      <div class="value"><%= @location.full_location %></div>
+    </div>
+  <% end %>
+</div>
+
+<% if @location.continent.present? || @location.country.present? || @location.region.present? || @location.city.present? %>
+  <div class="detail-section">
+    <h2>Location Details</h2>
+    <div class="card">
+      <div class="detail-grid">
+        <% if @location.continent.present? %>
+          <div class="detail-item">
+            <label>Continent</label>
+            <div class="value"><%= @location.continent %></div>
+          </div>
+        <% end %>
+        <% if @location.country.present? %>
+          <div class="detail-item">
+            <label>Country</label>
+            <div class="value"><%= @location.country %></div>
+          </div>
+        <% end %>
+        <% if @location.region.present? %>
+          <div class="detail-item">
+            <label>Region</label>
+            <div class="value"><%= @location.region %></div>
+          </div>
+        <% end %>
+        <% if @location.city.present? %>
+          <div class="detail-item">
+            <label>City</label>
+            <div class="value"><%= @location.city %></div>
+          </div>
+        <% end %>
+        <% if @location.neighborhood.present? %>
+          <div class="detail-item">
+            <label>Neighborhood</label>
+            <div class="value"><%= @location.neighborhood %></div>
+          </div>
+        <% end %>
+        <% if @location.address.present? %>
+          <div class="detail-item">
+            <label>Address</label>
+            <div class="value"><%= @location.address %></div>
+          </div>
+        <% end %>
+        <% if @location.building.present? %>
+          <div class="detail-item">
+            <label>Building</label>
+            <div class="value"><%= @location.building %></div>
+          </div>
+        <% end %>
+        <% if @location.room.present? %>
+          <div class="detail-item">
+            <label>Room</label>
+            <div class="value"><%= @location.room %></div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+<% end %>
+
+<% if @location.description.present? %>
+  <div class="detail-section">
+    <h2>Description</h2>
+    <div class="card">
+      <p><%= simple_format(@location.description) %></p>
+    </div>
+  </div>
+<% end %>
+
+<% if @location.notes.present? %>
+  <div class="detail-section">
+    <h2>Production Notes</h2>
+    <div class="card">
+      <p><%= simple_format(@location.notes) %></p>
+    </div>
+  </div>
+<% end %>
+
+<% if @location.images.any? %>
+  <div class="detail-section">
+    <h2>Images (<%= @location.images.count %>)</h2>
+    <div class="related-images-grid">
+      <% @location.images.by_date.each do |image| %>
+        <div class="related-image-item">
+          <%= link_to image do %>
+            <%= image_tag image.file.variant(resize_to_fill: [150, 120]), alt: image.display_title %>
+          <% end %>
+          <p class="related-image-caption">
+            <%= image.display_title %>
+            <% if image.taken_date.present? %>
+              <br><small><%= image.taken_date.year %></small>
+            <% end %>
+          </p>
+        </div>
+      <% end %>
+    </div>
+  </div>
+<% end %>
+
+<% if @location.entries.any? %>
+  <div class="detail-section">
+    <h2>Related Events (<%= @location.entries.count %>)</h2>
+    <% @location.entries.chronological.each do |entry| %>
+      <div class="card source-card">
+        <div class="source-header">
+          <strong><%= link_to entry.title, entry %></strong>
+          <% if entry.entry_type.present? %>
+            <span class="tag tag-type"><%= entry.entry_type.titleize %></span>
+          <% end %>
+        </div>
+        <p class="source-pages"><%= entry.date_display %></p>
+      </div>
+    <% end %>
+  </div>
+<% end %>
