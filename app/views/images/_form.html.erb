@@ -20,20 +20,20 @@
     <% end %>
 
     <div class="image-source-tabs">
-      <button type="button" class="source-tab active" data-image-source-target="uploadTab" data-action="click->image-source#showUpload">
+      <button type="button" class="source-tab" data-image-source-target="uploadTab" data-action="click->image-source#showUpload">
         Upload File
       </button>
-      <button type="button" class="source-tab" data-image-source-target="urlTab" data-action="click->image-source#showUrl">
+      <button type="button" class="source-tab active" data-image-source-target="urlTab" data-action="click->image-source#showUrl">
         Import from URL
       </button>
     </div>
 
-    <div class="image-source-panel" data-image-source-target="uploadPanel">
+    <div class="image-source-panel hidden" data-image-source-target="uploadPanel">
       <%= f.file_field :file, accept: "image/*", class: "file-input" %>
       <p class="form-hint">Accepted formats: JPG, PNG, GIF, WebP</p>
     </div>
 
-    <div class="image-source-panel hidden" data-image-source-target="urlPanel">
+    <div class="image-source-panel" data-image-source-target="urlPanel">
       <%= f.text_field :remote_url, placeholder: "https://example.com/image.jpg", class: "url-input", data: { image_source_target: "urlInput" } %>
       <p class="form-hint">Paste a direct link to an image. The image will be downloaded and stored locally.</p>
       <div class="url-preview hidden" data-image-source-target="preview">
