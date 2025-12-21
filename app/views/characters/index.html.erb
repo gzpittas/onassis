@@ -23,6 +23,13 @@
   <div class="grid">
     <% @characters.each do |character| %>
       <div class="card">
+        <% if character.card_image&.file&.attached? %>
+          <div class="card-image">
+            <%= link_to character do %>
+              <%= image_tag character.card_image.file.variant(resize_to_fill: [300, 200]), alt: character.name %>
+            <% end %>
+          </div>
+        <% end %>
         <div class="card-header">
           <h3 class="card-title"><%= link_to character.name, character %></h3>
           <% if character.relationship.present? %>

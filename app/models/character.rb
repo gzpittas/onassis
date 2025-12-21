@@ -6,6 +6,7 @@ class Character < ApplicationRecord
   has_many :articles, through: :article_characters
   has_many :image_characters, dependent: :destroy
   has_many :images, through: :image_characters
+  belongs_to :featured_image, class_name: "Image", optional: true
 
   accepts_nested_attributes_for :character_links, allow_destroy: true, reject_if: :all_blank
 
@@ -31,5 +32,9 @@ class Character < ApplicationRecord
     age = date.year - birth_date.year
     age -= 1 if date < birth_date + age.years
     age
+  end
+
+  def card_image
+    featured_image || images.first
   end
 end

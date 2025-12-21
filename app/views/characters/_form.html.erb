@@ -71,6 +71,77 @@
     </div>
   </div>
 
+  <div class="form-section" data-controller="gallery-picker" data-gallery-picker-featured-value="<%= @character.featured_image_id %>">
+    <h3>Images of this Person</h3>
+    <button type="button" class="btn btn-secondary btn-small" style="margin-bottom: 1rem;" data-action="click->gallery-picker#open">
+      Select from Gallery
+    </button>
+    <p class="form-hint">Click the star on an image to set it as the card thumbnail.</p>
+
+    <input type="hidden" name="character[featured_image_id]" value="<%= @character.featured_image_id %>" data-gallery-picker-target="featuredInput">
+
+    <div class="selected-images-preview" data-gallery-picker-target="preview">
+      <% @character.images.each do |image| %>
+        <div class="selected-image-thumb <%= 'is-featured' if @character.featured_image_id == image.id %>" data-image-id="<%= image.id %>">
+          <% if image.file.attached? %>
+            <%= image_tag image.file.variant(resize_to_fill: [100, 100]),
+                alt: image.display_title,
+                data: { action: "click->gallery-picker#showLightbox", full_url: url_for(image.file), title: image.display_title } %>
+          <% end %>
+          <button type="button" class="featured-image-btn" data-action="click->gallery-picker#setFeatured" data-image-id="<%= image.id %>" title="Set as card image">&#9733;</button>
+          <button type="button" class="remove-image-btn" data-action="click->gallery-picker#removeImage" data-image-id="<%= image.id %>">&times;</button>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="selected-image-ids" data-gallery-picker-target="hiddenInputs">
+      <% @character.images.each do |image| %>
+        <input type="hidden" name="character[image_ids][]" value="<%= image.id %>" data-image-id="<%= image.id %>">
+      <% end %>
+    </div>
+
+    <div class="gallery-picker-modal hidden" data-gallery-picker-target="modal">
+      <div class="gallery-picker-overlay" data-action="click->gallery-picker#close"></div>
+      <div class="gallery-picker-content">
+        <div class="gallery-picker-header">
+          <h3>Select Images</h3>
+          <button type="button" class="gallery-picker-close" data-action="click->gallery-picker#close">&times;</button>
+        </div>
+        <div class="gallery-picker-grid">
+          <% @images.each do |image| %>
+            <div class="gallery-picker-item"
+                 data-action="click->gallery-picker#toggleImage"
+                 data-image-id="<%= image.id %>"
+                 data-image-title="<%= image.display_title %>"
+                 data-image-url="<%= image.file.attached? ? url_for(image.file.variant(resize_to_fill: [100, 100])) : '' %>"
+                 data-image-full-url="<%= image.file.attached? ? url_for(image.file) : '' %>"
+                 data-gallery-picker-target="item"
+                 data-selected="<%= @character.images.include?(image) %>">
+              <% if image.file.attached? %>
+                <%= image_tag image.file.variant(resize_to_fill: [120, 100]), alt: image.display_title %>
+              <% end %>
+              <p class="gallery-picker-item-title"><%= truncate(image.display_title, length: 30) %></p>
+              <div class="gallery-picker-check">&#10003;</div>
+            </div>
+          <% end %>
+        </div>
+        <div class="gallery-picker-footer">
+          <button type="button" class="btn btn-gold" data-action="click->gallery-picker#confirm">Done</button>
+          <button type="button" class="btn btn-secondary" data-action="click->gallery-picker#close">Cancel</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="image-lightbox hidden" data-gallery-picker-target="lightbox">
+      <div class="image-lightbox-overlay" data-action="click->gallery-picker#closeLightbox"></div>
+      <div class="image-lightbox-content">
+        <button type="button" class="image-lightbox-close" data-action="click->gallery-picker#closeLightbox">&times;</button>
+        <img data-gallery-picker-target="lightboxImage" src="" alt="">
+        <p class="image-lightbox-title" data-gallery-picker-target="lightboxTitle"></p>
+      </div>
+    </div>
+  </div>
+
   <div class="form-actions">
     <%= f.submit class: "btn btn-gold" %>
     <%= link_to "Cancel", characters_path, class: "btn btn-secondary" %>
