@@ -26,6 +26,13 @@
   <div class="grid">
     <% @locations.each do |location| %>
       <div class="card">
+        <% if location.card_image&.file&.attached? %>
+          <div class="card-image">
+            <%= link_to location do %>
+              <%= image_tag location.card_image.file.variant(resize_to_fill: [300, 200]), alt: location.name %>
+            <% end %>
+          </div>
+        <% end %>
         <div class="card-header">
           <h3 class="card-title"><%= link_to location.name, location %></h3>
           <span class="tag tag-location"><%= location.type_display %></span>

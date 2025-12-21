@@ -1,0 +1,61 @@
+<div class="page-header">
+  <h1>Videos</h1>
+  <%= link_to "Add Video", new_video_path, class: "btn btn-gold" %>
+</div>
+
+<div class="filters">
+  <%= form_with url: videos_path, method: :get, local: true do %>
+    <div class="filter-row">
+      <div class="filter-group">
+        <%= label_tag :video_type, "Type" %>
+        <%= select_tag :video_type,
+            options_for_select([["All Types", ""]] + Video::VIDEO_TYPES.map { |t| [t.titleize, t] }, params[:video_type]),
+            onchange: "this.form.submit()" %>
+      </div>
+      <div class="filter-group">
+        <%= link_to "Clear Filter", videos_path, class: "btn btn-secondary" %>
+      </div>
+    </div>
+  <% end %>
+</div>
+
+<% if @videos.any? %>
+  <div class="video-grid">
+    <% @videos.each do |video| %>
+      <div class="video-card">
+        <% if video.youtube_thumbnail_url %>
+          <div class="video-thumbnail">
+            <%= link_to video do %>
+              <%= image_tag video.youtube_thumbnail_url, alt: video.title %>
+              <div class="video-play-icon">&#9658;</div>
+            <% end %>
+          </div>
+        <% else %>
+          <div class="video-thumbnail video-thumbnail-placeholder">
+            <%= link_to video do %>
+              <div class="video-play-icon">&#9658;</div>
+            <% end %>
+          </div>
+        <% end %>
+        <div class="video-card-info">
+          <h3 class="video-title"><%= link_to video.title, video %></h3>
+          <% if video.creator.present? %>
+            <p class="video-creator"><%= video.creator %></p>
+          <% end %>
+          <div class="video-meta">
+            <span class="tag tag-video-type"><%= video.type_display %></span>
+            <% if video.duration.present? %>
+              <span class="video-duration"><%= video.duration %></span>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+<% else %>
+  <div class="empty-state">
+    <h3>No Videos Yet</h3>
+    <p>Start adding documentaries, interviews, and footage for research.</p>
+    <%= link_to "Add Your First Video", new_video_path, class: "btn btn-gold" %>
+  </div>
+<% end %>

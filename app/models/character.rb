@@ -6,6 +6,8 @@ class Character < ApplicationRecord
   has_many :articles, through: :article_characters
   has_many :image_characters, dependent: :destroy
   has_many :images, through: :image_characters
+  has_many :video_characters, dependent: :destroy
+  has_many :videos, through: :video_characters
   belongs_to :featured_image, class_name: "Image", optional: true
 
   accepts_nested_attributes_for :character_links, allow_destroy: true, reject_if: :all_blank

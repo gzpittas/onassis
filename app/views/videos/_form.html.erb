@@ -1,0 +1,148 @@
+<%= form_with model: @video, local: true do |f| %>
+  <% if @video.errors.any? %>
+    <div class="error-messages">
+      <h3><%= pluralize(@video.errors.count, "error") %> prohibited this video from being saved:</h3>
+      <ul>
+        <% @video.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="form-group">
+    <%= f.label :title, "Title" %>
+    <%= f.text_field :title, placeholder: "e.g., Onassis: The Richest Man in the World (Documentary)" %>
+  </div>
+
+  <div class="form-section">
+    <h3>Video Links</h3>
+    <p class="form-hint">Add at least one link. YouTube and Vimeo videos will display an embedded player.</p>
+
+    <div class="form-group">
+      <%= f.label :youtube_url, "YouTube URL" %>
+      <%= f.url_field :youtube_url, placeholder: "https://www.youtube.com/watch?v=..." %>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <%= f.label :vimeo_url, "Vimeo URL" %>
+        <%= f.url_field :vimeo_url, placeholder: "https://vimeo.com/..." %>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :other_url, "Other URL" %>
+        <%= f.url_field :other_url, placeholder: "https://..." %>
+        <p class="form-hint">For videos hosted elsewhere</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-section">
+    <h3>Video Details</h3>
+
+    <div class="form-row">
+      <div class="form-group">
+        <%= f.label :video_type, "Type" %>
+        <%= f.select :video_type, Video::VIDEO_TYPES.map { |t| [t.titleize, t] }, { include_blank: "Select type..." } %>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :duration, "Duration" %>
+        <%= f.text_field :duration, placeholder: "e.g., 52 min, 1h 30m" %>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :publication_date, "Publication Date" %>
+        <%= f.date_field :publication_date %>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <%= f.label :creator, "Creator / Director" %>
+        <%= f.text_field :creator, placeholder: "e.g., BBC, Peter Evans" %>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :source, "Source / Network" %>
+        <%= f.text_field :source, placeholder: "e.g., YouTube, BBC Archive, Pathe" %>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :notes, "Notes" %>
+    <%= f.text_area :notes, placeholder: "Key moments, timestamps, research value..." %>
+  </div>
+
+  <div class="form-columns">
+    <div class="form-column">
+      <h3>Related Events</h3>
+      <div class="simple-checkbox-list">
+        <% current_decade = nil %>
+        <% @entries.each do |entry| %>
+          <% entry_decade = (entry.event_date.year / 10) * 10 %>
+          <% if entry_decade != current_decade %>
+            <% current_decade = entry_decade %>
+            <div class="decade-divider"><%= current_decade %>s</div>
+          <% end %>
+          <label class="simple-checkbox-item">
+            <%= check_box_tag "video[entry_ids][]", entry.id, @video.entries.include?(entry), id: "entry_#{entry.id}" %>
+            <span class="simple-checkbox-content">
+              <span class="simple-checkbox-title"><%= entry.title %></span>
+              <span class="simple-checkbox-meta"><%= entry.event_date.strftime("%Y %b %d").upcase %></span>
+            </span>
+          </label>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="form-column">
+      <h3>People in Video</h3>
+      <div class="simple-checkbox-list">
+        <% @characters.each do |character| %>
+          <label class="simple-checkbox-item">
+            <%= check_box_tag "video[character_ids][]", character.id, @video.characters.include?(character), id: "character_#{character.id}" %>
+            <span class="simple-checkbox-title"><%= character.name %></span>
+          </label>
+        <% end %>
+      </div>
+
+      <% if @assets.any? %>
+        <h3 style="margin-top: 1.5rem;">Assets Featured</h3>
+        <div class="simple-checkbox-list">
+          <% @assets.each do |asset| %>
+            <label class="simple-checkbox-item">
+              <%= check_box_tag "video[asset_ids][]", asset.id, @video.assets.include?(asset), id: "asset_#{asset.id}" %>
+              <span class="simple-checkbox-content">
+                <span class="simple-checkbox-title"><%= asset.name %></span>
+                <span class="simple-checkbox-meta"><%= asset.type_display %></span>
+              </span>
+            </label>
+          <% end %>
+        </div>
+      <% end %>
+
+      <% if @locations.any? %>
+        <h3 style="margin-top: 1.5rem;">Locations</h3>
+        <div class="simple-checkbox-list">
+          <% @locations.each do |location| %>
+            <label class="simple-checkbox-item">
+              <%= check_box_tag "video[location_ids][]", location.id, @video.locations.include?(location), id: "location_#{location.id}" %>
+              <span class="simple-checkbox-content">
+                <span class="simple-checkbox-title"><%= location.name %></span>
+                <span class="simple-checkbox-meta"><%= location.short_location %></span>
+              </span>
+            </label>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="form-actions">
+    <%= f.submit class: "btn btn-gold" %>
+    <%= link_to "Cancel", videos_path, class: "btn btn-secondary" %>
+  </div>
+<% end %>

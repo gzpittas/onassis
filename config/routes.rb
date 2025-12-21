@@ -9,6 +9,7 @@ Rails.application.routes.draw do
   resources :assets, path: "production_assets"
   resources :locations
   resources :musics, path: "music"
+  resources :videos
 
   get "timeline", to: "timeline#index"
   get "search", to: "search#index"

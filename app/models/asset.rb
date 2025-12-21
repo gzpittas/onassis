@@ -3,6 +3,8 @@ class Asset < ApplicationRecord
   has_many :entries, through: :entry_assets
   has_many :asset_images, dependent: :destroy
   has_many :images, through: :asset_images
+  has_many :video_assets, dependent: :destroy
+  has_many :videos, through: :video_assets
   belongs_to :featured_image, class_name: "Image", optional: true
 
   validates :name, presence: true

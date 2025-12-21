@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_12_21_135806) do
+ActiveRecord::Schema[8.0].define(version: 2025_12_21_224409) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -239,6 +239,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_21_135806) do
     t.text "notes"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "featured_image_id"
   end
 
   create_table "musics", force: :cascade do |t|
@@ -277,6 +278,57 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_21_135806) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "video_assets", force: :cascade do |t|
+    t.integer "video_id", null: false
+    t.integer "asset_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["asset_id"], name: "index_video_assets_on_asset_id"
+    t.index ["video_id"], name: "index_video_assets_on_video_id"
+  end
+
+  create_table "video_characters", force: :cascade do |t|
+    t.integer "video_id", null: false
+    t.integer "character_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["character_id"], name: "index_video_characters_on_character_id"
+    t.index ["video_id"], name: "index_video_characters_on_video_id"
+  end
+
+  create_table "video_entries", force: :cascade do |t|
+    t.integer "video_id", null: false
+    t.integer "entry_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["entry_id"], name: "index_video_entries_on_entry_id"
+    t.index ["video_id"], name: "index_video_entries_on_video_id"
+  end
+
+  create_table "video_locations", force: :cascade do |t|
+    t.integer "video_id", null: false
+    t.integer "location_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["location_id"], name: "index_video_locations_on_location_id"
+    t.index ["video_id"], name: "index_video_locations_on_video_id"
+  end
+
+  create_table "videos", force: :cascade do |t|
+    t.string "title"
+    t.string "youtube_url"
+    t.string "vimeo_url"
+    t.string "other_url"
+    t.string "video_type"
+    t.string "duration"
+    t.date "publication_date"
+    t.string "source"
+    t.string "creator"
+    t.text "notes"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "article_characters", "articles"
@@ -302,4 +354,12 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_21_135806) do
   add_foreign_key "image_locations", "images"
   add_foreign_key "image_locations", "locations"
   add_foreign_key "source_links", "sources"
+  add_foreign_key "video_assets", "assets"
+  add_foreign_key "video_assets", "videos"
+  add_foreign_key "video_characters", "characters"
+  add_foreign_key "video_characters", "videos"
+  add_foreign_key "video_entries", "entries"
+  add_foreign_key "video_entries", "videos"
+  add_foreign_key "video_locations", "locations"
+  add_foreign_key "video_locations", "videos"
 end

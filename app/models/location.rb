@@ -3,6 +3,9 @@ class Location < ApplicationRecord
   has_many :entries, through: :entry_locations
   has_many :image_locations, dependent: :destroy
   has_many :images, through: :image_locations
+  has_many :video_locations, dependent: :destroy
+  has_many :videos, through: :video_locations
+  belongs_to :featured_image, class_name: "Image", optional: true
 
   validates :name, presence: true
 
@@ -67,5 +70,9 @@ class Location < ApplicationRecord
 
   def type_display
     location_type&.titleize || "Unspecified"
+  end
+
+  def card_image
+    featured_image || images.first
   end
 end
