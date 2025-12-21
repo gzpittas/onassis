@@ -157,3 +157,53 @@
     <%= link_to "Add Your First Entry", new_entry_path, class: "btn btn-gold" %>
   </div>
 <% end %>
+
+<% if @undated_images.any? %>
+  <div class="undated-images-section" data-controller="timeline-lightbox">
+    <h2>Undated Images (<%= @undated_images.count %>)</h2>
+    <p class="section-hint">These images don't have dates assigned yet. Edit an image to add a date and it will appear on the timeline above.</p>
+
+    <div class="undated-images-grid">
+      <% @undated_images.each do |image| %>
+        <div class="undated-image-item">
+          <% if image.file.attached? %>
+            <%= image_tag image.file.variant(resize_to_fill: [150, 120]),
+                alt: image.display_title,
+                class: "undated-thumbnail",
+                data: {
+                  action: "click->timeline-lightbox#open",
+                  full_url: url_for(image.file),
+                  title: image.display_title,
+                  image_path: image_path(image)
+                } %>
+          <% end %>
+          <div class="undated-image-info">
+            <p class="undated-image-title"><%= link_to image.display_title, image %></p>
+            <% if image.characters.any? %>
+              <div class="undated-image-characters">
+                <% image.characters.limit(3).each do |character| %>
+                  <span class="tag tag-character-small"><%= character.name %></span>
+                <% end %>
+                <% if image.characters.count > 3 %>
+                  <span class="tag tag-more">+<%= image.characters.count - 3 %></span>
+                <% end %>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="timeline-lightbox hidden" data-timeline-lightbox-target="modal">
+      <div class="timeline-lightbox-overlay" data-action="click->timeline-lightbox#close"></div>
+      <div class="timeline-lightbox-content">
+        <button type="button" class="timeline-lightbox-close" data-action="click->timeline-lightbox#close">&times;</button>
+        <img data-timeline-lightbox-target="image" src="" alt="">
+        <div class="timeline-lightbox-footer">
+          <p class="timeline-lightbox-title" data-timeline-lightbox-target="title"></p>
+          <a href="#" class="btn btn-secondary btn-small" data-timeline-lightbox-target="link">View Image Details</a>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>
