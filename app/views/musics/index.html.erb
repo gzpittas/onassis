@@ -1,0 +1,91 @@
+<div class="page-header">
+  <h1>Music Library</h1>
+  <%= link_to "Add Music", new_music_path, class: "btn btn-gold" %>
+</div>
+
+<div class="filters">
+  <%= form_with url: musics_path, method: :get, local: true do |f| %>
+    <div class="filter-row">
+      <div class="filter-group">
+        <%= label_tag :genre, "Genre" %>
+        <%= select_tag :genre,
+            options_for_select([["All Genres", ""]] + Music::GENRES.map { |g| [g.titleize, g] }, params[:genre]),
+            onchange: "this.form.submit()" %>
+      </div>
+      <div class="filter-group">
+        <%= label_tag :mood, "Mood" %>
+        <%= select_tag :mood,
+            options_for_select([["All Moods", ""]] + Music::MOODS.map { |m| [m.titleize, m] }, params[:mood]),
+            onchange: "this.form.submit()" %>
+      </div>
+      <div class="filter-group">
+        <%= label_tag :era, "Era" %>
+        <%= select_tag :era,
+            options_for_select([["All Eras", ""]] + Music::ERAS.map { |e| [e, e] }, params[:era]),
+            onchange: "this.form.submit()" %>
+      </div>
+      <div class="filter-group">
+        <%= link_to "Clear Filters", musics_path, class: "btn btn-secondary" %>
+      </div>
+    </div>
+  <% end %>
+</div>
+
+<% if @musics.any? %>
+  <div class="music-list">
+    <% @musics.each do |music| %>
+      <div class="music-card">
+        <div class="music-card-info">
+          <h3 class="music-title"><%= link_to music.title, music %></h3>
+          <% if music.artist.present? %>
+            <p class="music-artist"><%= music.artist %></p>
+          <% end %>
+          <% if music.composer.present? && music.composer != music.artist %>
+            <p class="music-composer">Composed by <%= music.composer %></p>
+          <% end %>
+          <div class="music-tags">
+            <% if music.genre.present? %>
+              <span class="tag tag-genre"><%= music.genre.titleize %></span>
+            <% end %>
+            <% if music.mood.present? %>
+              <span class="tag tag-mood"><%= music.mood.titleize %></span>
+            <% end %>
+            <% if music.era.present? %>
+              <span class="tag tag-era"><%= music.era %></span>
+            <% end %>
+            <% if music.usage_type.present? %>
+              <span class="tag tag-usage"><%= music.usage_type.titleize %></span>
+            <% end %>
+          </div>
+        </div>
+        <div class="music-card-player">
+          <% if music.spotify_embed_url %>
+            <iframe
+              src="<%= music.spotify_embed_url %>"
+              width="300"
+              height="80"
+              frameborder="0"
+              allowtransparency="true"
+              allow="encrypted-media"
+              loading="lazy">
+            </iframe>
+          <% elsif music.youtube_url.present? %>
+            <a href="<%= music.youtube_url %>" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-small">
+              Play on YouTube
+            </a>
+          <% end %>
+        </div>
+        <div class="music-card-actions">
+          <%= link_to "View", music, class: "btn btn-small btn-primary" %>
+          <%= link_to "Edit", edit_music_path(music), class: "btn btn-small btn-secondary" %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+<% else %>
+  <div class="empty-state">
+    <h3>No Music Yet</h3>
+    <p>Start building your soundtrack by adding songs and compositions.</p>
+    <%= link_to "Add Your First Track", new_music_path, class: "btn btn-gold" %>
+  </div>
+<% end %>

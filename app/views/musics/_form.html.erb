@@ -1,0 +1,92 @@
+<%= form_with model: @music, local: true do |f| %>
+  <% if @music.errors.any? %>
+    <div class="error-messages">
+      <h3><%= pluralize(@music.errors.count, "error") %> prohibited this music from being saved:</h3>
+      <ul>
+        <% @music.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="form-group">
+    <%= f.label :title, "Title / Song Name" %>
+    <%= f.text_field :title, placeholder: "e.g., Never on Sunday, Zorba's Dance" %>
+  </div>
+
+  <div class="form-row">
+    <div class="form-group">
+      <%= f.label :artist, "Artist / Performer" %>
+      <%= f.text_field :artist, placeholder: "e.g., Melina Mercouri, Mikis Theodorakis" %>
+    </div>
+
+    <div class="form-group">
+      <%= f.label :composer %>
+      <%= f.text_field :composer, placeholder: "e.g., Manos Hadjidakis" %>
+      <p class="form-hint">Leave blank if same as artist</p>
+    </div>
+  </div>
+
+  <div class="form-section">
+    <h3>Streaming Links</h3>
+    <p class="form-hint">Add at least one link to enable playback. Spotify tracks will display an embedded player.</p>
+
+    <div class="form-group">
+      <%= f.label :spotify_url, "Spotify URL" %>
+      <%= f.url_field :spotify_url, placeholder: "https://open.spotify.com/track/..." %>
+      <p class="form-hint">Paste the share link from Spotify (track, album, or playlist)</p>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <%= f.label :youtube_url, "YouTube URL" %>
+        <%= f.url_field :youtube_url, placeholder: "https://www.youtube.com/watch?v=..." %>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :apple_music_url, "Apple Music URL" %>
+        <%= f.url_field :apple_music_url, placeholder: "https://music.apple.com/..." %>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-section">
+    <h3>Classification</h3>
+
+    <div class="form-row">
+      <div class="form-group">
+        <%= f.label :genre %>
+        <%= f.select :genre, Music::GENRES.map { |g| [g.titleize, g] }, { include_blank: "Select genre..." } %>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :era, "Era / Period" %>
+        <%= f.select :era, Music::ERAS.map { |e| [e, e] }, { include_blank: "Select era..." } %>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <%= f.label :mood %>
+        <%= f.select :mood, Music::MOODS.map { |m| [m.titleize, m] }, { include_blank: "Select mood..." } %>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :usage_type, "Intended Usage" %>
+        <%= f.select :usage_type, Music::USAGE_TYPES.map { |u| [u.titleize, u] }, { include_blank: "Select usage..." } %>
+        <p class="form-hint">Background, montage, diegetic (playing in scene), theme, etc.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :notes, "Production Notes" %>
+    <%= f.text_area :notes, placeholder: "Scene ideas, character associations, why this track fits the project..." %>
+  </div>
+
+  <div class="form-actions">
+    <%= f.submit class: "btn btn-gold" %>
+    <%= link_to "Cancel", musics_path, class: "btn btn-secondary" %>
+  </div>
+<% end %>
