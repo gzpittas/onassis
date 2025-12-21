@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_12_19_171238) do
+ActiveRecord::Schema[8.0].define(version: 2025_12_21_000451) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -78,6 +78,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_19_171238) do
     t.text "notes"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "reference_url"
+    t.string "reference_title"
+    t.integer "featured_image_id"
+    t.string "acquisition_date_precision", default: "exact"
   end
 
   create_table "character_links", force: :cascade do |t|
@@ -121,6 +125,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_19_171238) do
     t.integer "end_year"
     t.integer "end_month"
     t.integer "end_day"
+    t.string "date_precision", default: "exact"
     t.index ["source_id"], name: "index_entries_on_source_id"
   end
 
@@ -210,6 +215,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_19_171238) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "source_url"
+    t.string "taken_date_precision", default: "exact"
   end
 
   create_table "locations", force: :cascade do |t|

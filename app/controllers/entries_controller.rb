@@ -99,7 +99,7 @@ class EntriesController < ApplicationController
   end
 
   def entry_params
-    params.require(:entry).permit(:title, :event_date, :end_date, :location, :entry_type,
+    params.require(:entry).permit(:title, :event_date, :end_date, :date_precision, :location, :entry_type,
                                   :description, :significance, :verified,
                                   character_ids: [],
                                   entry_sources_attributes: [:id, :source_id, :page_reference, :author, :notes, :link, :_destroy])

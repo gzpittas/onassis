@@ -33,11 +33,42 @@
 </div>
 
 <% if @timeline_items.any? %>
-  <div class="timeline">
+  <div class="timeline" data-controller="timeline-lightbox">
     <% @timeline_items.group_by { |item| item[:date].year }.each do |year, items| %>
       <div class="timeline-year">
         <% items.each do |item| %>
-          <% if item[:type] == :entry %>
+          <% if item[:type] == :image %>
+            <% image = item[:object] %>
+            <div class="timeline-entry timeline-image">
+              <div class="timeline-date"><%= image.date_display %></div>
+              <div class="timeline-image-container">
+                <% if image.file.attached? %>
+                  <%= image_tag image.file.variant(resize_to_fill: [200, 150]),
+                      alt: image.display_title,
+                      class: "timeline-thumbnail",
+                      data: {
+                        action: "click->timeline-lightbox#open",
+                        full_url: url_for(image.file),
+                        title: image.display_title,
+                        image_path: image_path(image)
+                      } %>
+                <% end %>
+                <div class="timeline-image-info">
+                  <h3 class="timeline-title"><%= image.display_title %></h3>
+                  <% if image.location.present? %>
+                    <p class="timeline-meta"><%= image.location %></p>
+                  <% end %>
+                  <% if image.characters.any? %>
+                    <div class="timeline-meta">
+                      <% image.characters.each do |character| %>
+                        <%= link_to character.name, character, class: "tag tag-character" %>
+                      <% end %>
+                    </div>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+          <% elsif item[:type] == :entry %>
             <% entry = item[:object] %>
             <div class="timeline-entry">
               <div class="timeline-date"><%= entry.date_display %></div>
@@ -88,7 +119,7 @@
           <% elsif item[:type] == :asset %>
             <% asset = item[:object] %>
             <div class="timeline-entry timeline-asset">
-              <div class="timeline-date"><%= asset.acquisition_date.strftime("%B %d, %Y") %></div>
+              <div class="timeline-date"><%= asset.acquisition_date_display %></div>
               <h3 class="timeline-title">
                 <%= link_to "Acquired: #{asset.name}", asset %>
               </h3>
@@ -106,6 +137,18 @@
         <% end %>
       </div>
     <% end %>
+
+    <div class="timeline-lightbox hidden" data-timeline-lightbox-target="modal">
+      <div class="timeline-lightbox-overlay" data-action="click->timeline-lightbox#close"></div>
+      <div class="timeline-lightbox-content">
+        <button type="button" class="timeline-lightbox-close" data-action="click->timeline-lightbox#close">&times;</button>
+        <img data-timeline-lightbox-target="image" src="" alt="">
+        <div class="timeline-lightbox-footer">
+          <p class="timeline-lightbox-title" data-timeline-lightbox-target="title"></p>
+          <a href="#" class="btn btn-secondary btn-small" data-timeline-lightbox-target="link">View Image Details</a>
+        </div>
+      </div>
+    </div>
   </div>
 <% else %>
   <div class="empty-state">

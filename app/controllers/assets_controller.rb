@@ -58,7 +58,8 @@ class AssetsController < ApplicationController
 
   def asset_params
     params.require(:asset).permit(:name, :asset_type, :description, :acquisition_date,
-                                  :disposition_date, :manufacturer, :notes,
+                                  :acquisition_date_precision, :disposition_date, :manufacturer, :notes,
+                                  :reference_url, :reference_title, :featured_image_id,
                                   entry_ids: [], image_ids: [])
   end
 end

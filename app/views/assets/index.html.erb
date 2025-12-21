@@ -20,6 +20,13 @@
   <div class="grid">
     <% @assets.each do |asset| %>
       <div class="card">
+        <% if asset.card_image %>
+          <div class="card-image">
+            <%= link_to asset do %>
+              <%= image_tag asset.card_image.file.variant(resize_to_fill: [300, 180]), alt: asset.name, class: "card-thumbnail" %>
+            <% end %>
+          </div>
+        <% end %>
         <div class="card-header">
           <h3 class="card-title"><%= link_to asset.name, asset %></h3>
           <span class="tag tag-type"><%= asset.type_display %></span>

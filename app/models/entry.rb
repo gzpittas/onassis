@@ -19,8 +19,10 @@ class Entry < ApplicationRecord
   validates :event_date, presence: true
 
   ENTRY_TYPES = %w[birth death marriage divorce business deal acquisition political travel scandal meeting speech party other].freeze
+  DATE_PRECISIONS = %w[exact month year decade approximate].freeze
 
   validates :entry_type, inclusion: { in: ENTRY_TYPES }, allow_blank: true
+  validates :date_precision, inclusion: { in: DATE_PRECISIONS }, allow_blank: true
 
   scope :chronological, -> { order(:event_date) }
   scope :reverse_chronological, -> { order(event_date: :desc) }
@@ -32,9 +34,26 @@ class Entry < ApplicationRecord
 
   def date_display
     if end_date.present? && end_date != event_date
-      "#{event_date.strftime('%B %d, %Y')} – #{end_date.strftime('%B %d, %Y')}"
+      "#{format_date_with_precision(event_date)} – #{format_date_with_precision(end_date)}"
     else
-      event_date.strftime("%B %d, %Y")
+      format_date_with_precision(event_date)
+    end
+  end
+
+  def format_date_with_precision(date)
+    return nil unless date
+
+    case date_precision
+    when 'decade'
+      "#{(date.year / 10) * 10}s"
+    when 'year'
+      date.year.to_s
+    when 'month'
+      date.strftime("%B %Y")
+    when 'approximate'
+      "c. #{date.year}"
+    else # exact or nil
+      date.strftime("%B %d, %Y")
     end
   end
 

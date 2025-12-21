@@ -53,7 +53,19 @@
     <div class="form-group">
       <%= f.label :taken_date, "Date Taken" %>
       <%= f.date_field :taken_date, min: "1800-01-01", max: "2100-12-31" %>
-      <p class="form-hint">When was this photo taken?</p>
+      <p class="form-hint">Enter a full date. If you only know the year or month, use Jan 1st as a placeholder.</p>
+    </div>
+
+    <div class="form-group">
+      <%= f.label :taken_date_precision, "Date Precision" %>
+      <%= f.select :taken_date_precision, [
+        ["Exact date", "exact"],
+        ["Month only", "month"],
+        ["Year only", "year"],
+        ["Decade only", "decade"],
+        ["Approximate", "approximate"]
+      ], {}, { class: "precision-select" } %>
+      <p class="form-hint">Controls how the date is displayed (e.g., "1968" vs "October 1968").</p>
     </div>
 
     <div class="form-group">

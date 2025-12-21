@@ -21,7 +21,7 @@
   <% if @asset.acquisition_date.present? %>
     <div class="detail-item">
       <label>Acquired</label>
-      <div class="value"><%= @asset.acquisition_date.strftime("%B %d, %Y") %></div>
+      <div class="value"><%= @asset.acquisition_date_display %></div>
     </div>
   <% end %>
   <% if @asset.disposition_date.present? %>
@@ -46,6 +46,17 @@
     <h2>Production Notes</h2>
     <div class="card">
       <p><%= simple_format(@asset.notes) %></p>
+    </div>
+  </div>
+<% end %>
+
+<% if @asset.reference_url.present? %>
+  <div class="detail-section">
+    <h2>Reference</h2>
+    <div class="card">
+      <p>
+        <%= link_to (@asset.reference_title.presence || @asset.reference_url), @asset.reference_url, target: "_blank", rel: "noopener noreferrer" %>
+      </p>
     </div>
   </div>
 <% end %>

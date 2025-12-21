@@ -15,6 +15,10 @@ class Image < ApplicationRecord
 
   validates :file, presence: true, unless: :importing_from_url?
 
+  DATE_PRECISIONS = %w[exact month year decade approximate].freeze
+
+  validates :taken_date_precision, inclusion: { in: DATE_PRECISIONS }, allow_blank: true
+
   attr_accessor :remote_url
 
   def attach_from_url(url)
@@ -78,7 +82,20 @@ class Image < ApplicationRecord
   end
 
   def date_display
-    taken_date&.strftime("%B %d, %Y") || "Date unknown"
+    return "Date unknown" unless taken_date
+
+    case taken_date_precision
+    when 'decade'
+      "#{(taken_date.year / 10) * 10}s"
+    when 'year'
+      taken_date.year.to_s
+    when 'month'
+      taken_date.strftime("%B %Y")
+    when 'approximate'
+      "c. #{taken_date.year}"
+    else # exact or nil
+      taken_date.strftime("%B %d, %Y")
+    end
   end
 
   private
