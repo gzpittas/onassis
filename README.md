@@ -1,6 +1,6 @@
 # Onassis Timeline
 
-A Rails 8 application for researching and documenting the life of Aristotle Onassis. This is a personal research tool that organizes biographical events, people, sources, and newspaper articles into an interconnected timeline.
+A Rails 8 application for researching and documenting the life of Aristotle Onassis. This is a personal research tool that organizes biographical events, people, sources, newspaper articles, images, assets, and locations into an interconnected timeline.
 
 ## Purpose
 
@@ -11,6 +11,8 @@ This app serves as a research companion for building a comprehensive timeline of
 - Cite sources (books, documentaries, archives) for verification
 - Link newspaper articles that may relate to multiple events and people
 - Store historical images in a gallery, linked to events and people
+- Track significant assets (yachts, aircraft, residences, vehicles)
+- Document filming locations for production research
 - Search and filter the timeline by date, event type, or person
 
 ## Tech Stack
@@ -22,16 +24,73 @@ This app serves as a research companion for building a comprehensive timeline of
 - **CSS:** Custom stylesheet (no framework)
 - **File Storage:** Active Storage (local disk)
 
+## Key Features
+
+### Interactive Timeline
+- Chronological display of entries, assets, and images
+- Filter by decade, event type, or character
+- Character badges show ages at time of event
+- Clickable image thumbnails with lightbox preview
+- Assets with acquisition dates appear automatically on timeline
+- **Undated Images Section:** Images without dates appear in a separate grid below the timeline
+
+### Date Precision
+All date fields support flexible precision levels for when exact dates are unknown:
+- **Exact date** - Full date display (e.g., "October 20, 1968")
+- **Month only** - Month and year (e.g., "October 1968")
+- **Year only** - Just the year (e.g., "1968")
+- **Decade only** - Decade format (e.g., "1960s")
+- **Approximate** - With "circa" prefix (e.g., "c. 1968")
+
+### Image Gallery
+- Chronological gallery ordered by `taken_date`
+- Filter by decade or character
+- **Import from URL:** Add images directly from web URLs - the app fetches and stores them locally
+- **Source Attribution:** Track article URL, article title, author, website name, and website URL for each image
+- Thumbnails auto-generated via Active Storage variants
+- Supports JPG, PNG, GIF, WebP formats
+
+### Production Assets
+- Track significant objects: yachts, aircraft, vehicles, residences, jewelry, artwork
+- **Visual Gallery Picker:** Select images from a visual grid modal
+- **Featured Image:** Choose which image appears as the card thumbnail
+- **Reference Links:** Link to auction pages, museum records, Wikipedia articles
+- Assets with acquisition dates appear automatically on the timeline
+- Production notes field for filming research
+
+### Multi-Source Citations
+- Entries can cite multiple sources via EntrySource
+- Each citation can include page references, specific authors, notes, and direct links
+- Sources have external links for online references
+
+### Character Management
+- Track birth/death dates with automatic age calculation
+- **Lead Characters:** Mark primary figures who auto-attach to new entries
+- External links (Wikipedia, IMDB, etc.)
+- Relationship types: family, business, romantic, political, social, rival, employee
+
+### Filming Locations
+- Flexible geographic hierarchy: continent → country → region → city → neighborhood → address → building → room
+- Special types for vessels and aircraft (for scenes aboard ships/planes)
+- Link to timeline entries and images
+- Production notes for filming permits, current condition, alternatives
+
 ## Data Model
 
 ### Core Entities
 
 ```
-┌─────────────┐     ┌─────────────┐     ┌─────────────┐     ┌─────────────┐     ┌─────────────┐     ┌─────────────┐     ┌─────────────┐
-│   Entry     │     │  Character  │     │   Source    │     │   Article   │     │   Image     │     │   Asset     │     │  Location   │
-│  (events)   │     │  (people)   │     │  (books,    │     │ (newspaper  │     │  (photos)   │     │  (props)    │     │  (filming)  │
-│             │     │             │     │   docs)     │     │  articles)  │     │             │     │             │     │             │
-└─────────────┘     └─────────────┘     └─────────────┘     └─────────────┘     └─────────────┘     └─────────────┘     └─────────────┘
+┌─────────────┐     ┌─────────────┐     ┌─────────────┐     ┌─────────────┐
+│   Entry     │     │  Character  │     │   Source    │     │   Article   │
+│  (events)   │     │  (people)   │     │  (books,    │     │ (newspaper  │
+│             │     │             │     │   docs)     │     │  articles)  │
+└─────────────┘     └─────────────┘     └─────────────┘     └─────────────┘
+
+┌─────────────┐     ┌─────────────┐     ┌─────────────┐
+│   Image     │     │   Asset     │     │  Location   │
+│  (photos)   │     │  (props)    │     │  (filming)  │
+│             │     │             │     │             │
+└─────────────┘     └─────────────┘     └─────────────┘
 ```
 
 ### Relationships
@@ -47,6 +106,7 @@ Character ←──→ Article       (many-to-many via ArticleCharacter)
 Character ←──→ Image         (many-to-many via ImageCharacter)
 Asset ←──────→ Image         (many-to-many via AssetImage)
 Location ←───→ Image         (many-to-many via ImageLocation)
+Asset ────────→ Image        (featured_image - belongs_to)
 Source ───────→ SourceLink   (one-to-many)
 Character ────→ CharacterLink (one-to-many)
 ```
@@ -60,6 +120,7 @@ The central model representing historical events.
 | title | string | Event title (required) |
 | event_date | date | When it happened (required) |
 | end_date | date | For events spanning multiple days |
+| date_precision | string | How precise the date is (exact/month/year/decade/approximate) |
 | location | string | Where it happened |
 | entry_type | string | Category (see types below) |
 | description | text | Detailed description |
@@ -81,7 +142,7 @@ People connected to Onassis's life.
 | nationality | string | Country of origin |
 | occupation | string | Profession |
 | bio | text | Biography |
-| lead_character | boolean | Mark as primary figure |
+| lead_character | boolean | Mark as primary figure (auto-added to new entries) |
 
 **Relationship Types:** family, business, romantic, political, social, rival, employee, other
 
@@ -119,8 +180,6 @@ Newspaper articles that can relate to multiple entries and characters.
 | publication_date | date | When published |
 | notes | text | Summary or key quotes |
 
-**Key Feature:** Articles have many-to-many relationships with both Entries and Characters, allowing a single article to be linked to multiple events and people.
-
 ### Image (Historical Photos)
 
 Photos stored with Active Storage, linked to entries and characters.
@@ -130,18 +189,19 @@ Photos stored with Active Storage, linked to entries and characters.
 | title | string | Caption/description (optional) |
 | file | attachment | Image file via Active Storage (required) |
 | taken_date | date | When the photo was taken |
+| taken_date_precision | string | Date precision (exact/month/year/decade/approximate) |
 | location | string | Where it was taken |
 | notes | text | Context or source info |
 | source_url | string | Original URL if imported from web |
-
-**Key Features:**
-- Images are displayed in a chronological gallery (by `taken_date`) and can be linked to multiple entries, characters, and assets
-- Gallery supports filtering by decade and character
-- **URL Import:** Images can be imported directly from a URL without downloading first - paste a direct image link and it will be fetched and stored locally
+| article_url | string | URL of article where image was found |
+| article_title | string | Title of the source article |
+| article_author | string | Author of the source article |
+| website_name | string | Name of the publication/website |
+| website_url | string | Base URL of the website (auto-extracted) |
 
 ### Asset (Production Assets)
 
-Significant objects relevant to production research: vehicles, vessels, residences, aircraft, jewelry, etc.
+Significant objects relevant to production research.
 
 | Field | Type | Description |
 |-------|------|-------------|
@@ -149,17 +209,15 @@ Significant objects relevant to production research: vehicles, vessels, residenc
 | asset_type | string | Category (see types below) |
 | description | text | Historical details |
 | acquisition_date | date | When acquired (appears on timeline) |
+| acquisition_date_precision | string | Date precision |
 | disposition_date | string | When/how disposed of |
 | manufacturer | string | Who made it |
 | notes | text | Production research notes |
+| reference_url | string | Link to auction page, museum record, etc. |
+| reference_title | string | Title for the reference link |
+| featured_image_id | integer | Which image to show on card |
 
 **Asset Types:** vehicle, vessel, aircraft, residence, building, jewelry, artwork, document, other
-
-**Key Features:**
-- Assets with acquisition dates automatically appear on the timeline
-- Can be tagged in images for visual reference
-- Linked to timeline entries for context
-- Production notes field for filming considerations
 
 ### Location (Filming Locations)
 
@@ -182,13 +240,6 @@ Filming locations with flexible geographic hierarchy.
 
 **Location Types:** aircraft, airport, building, city, continent, country, embassy, estate, harbor, hospital, hotel, island, neighborhood, office, port, region, residence, restaurant, room, vessel, villa
 
-**Key Features:**
-- Flexible hierarchy allows recording as much or as little location detail as needed
-- Vessel and aircraft types for scenes aboard ships/planes
-- Link to timeline entries for historical context
-- Tag in images for visual reference
-- Production notes field for filming permits, current condition, alternatives
-
 ### Junction Tables
 
 | Table | Purpose |
@@ -210,57 +261,16 @@ Filming locations with flexible geographic hierarchy.
 
 | Path | Description |
 |------|-------------|
-| `/` | Timeline view (chronological entries) |
+| `/` | Timeline view (chronological entries, assets, images) |
 | `/entries` | All entries list |
 | `/characters` | All people |
 | `/sources` | All research sources |
 | `/articles` | All newspaper articles |
-| `/production_assets` | Production assets |
+| `/production_assets` | Production assets with card images |
 | `/locations` | Filming locations |
 | `/images` | Image gallery |
 | `/search` | Search across all content |
 | `/help` | Usage documentation |
-
-## Key Features
-
-### Timeline View
-- Displays entries chronologically
-- Shows character tags with ages at time of event
-- Filter by decade, year, event type
-
-### Character Ages
-- When viewing an entry, character badges show their age at the time of the event
-- Calculated from birth_date using `character.age_at(entry.event_date)`
-
-### Multi-Source Citations
-- Entries can cite multiple sources via EntrySource
-- Each citation can include page references, specific authors (for edited volumes), notes, and direct links
-
-### Related Articles Section
-- Entry and Character show pages display related newspaper articles
-- Articles can span multiple events and involve multiple people
-
-### Image Gallery
-- Chronological gallery view ordered by `taken_date`
-- Filter by decade or character
-- Images display on Entry and Character show pages
-- Supports JPG, PNG, GIF, WebP formats
-- Thumbnails auto-generated via Active Storage variants
-- **Import from URL:** Add images directly from web URLs without downloading them first - the app fetches and stores them locally, preserving the original source URL for reference
-
-### Production Assets
-- Track significant objects: yachts, aircraft, vehicles, residences, jewelry, artwork
-- Assets with acquisition dates appear automatically on the timeline
-- Tag assets in images for visual reference
-- Link assets to timeline entries
-- Production notes field for filming research and considerations
-
-### Filming Locations
-- Track real-world locations for production research
-- Flexible geographic hierarchy: continent, country, region, city, neighborhood, address, building, room
-- Special types for vessels and aircraft (for scenes aboard Christina O, etc.)
-- Link locations to timeline entries and images
-- Production notes for filming permits, current condition, alternatives
 
 ## Running the App
 
@@ -299,18 +309,12 @@ app/
 │   ├── asset.rb
 │   ├── location.rb
 │   ├── image.rb
-│   ├── entry_character.rb
-│   ├── entry_source.rb
-│   ├── entry_article.rb
-│   ├── entry_image.rb
-│   ├── entry_asset.rb
-│   ├── entry_location.rb
-│   ├── article_character.rb
-│   ├── image_character.rb
-│   ├── image_location.rb
-│   ├── asset_image.rb
-│   ├── source_link.rb
-│   └── character_link.rb
+│   └── [junction tables...]
+├── javascript/
+│   └── controllers/
+│       ├── gallery_picker_controller.js
+│       ├── timeline_lightbox_controller.js
+│       └── image_source_controller.js
 ├── views/
 │   ├── entries/
 │   ├── characters/
@@ -326,6 +330,14 @@ app/
         ├── application.css
         └── color_palette.css
 ```
+
+## Stimulus Controllers
+
+| Controller | Purpose |
+|------------|---------|
+| `gallery_picker_controller` | Visual image selection modal for assets with featured image support |
+| `timeline_lightbox_controller` | Lightbox for viewing images on the timeline |
+| `image_source_controller` | Toggle between file upload and URL import tabs |
 
 ## Design Patterns Used
 
@@ -356,3 +368,5 @@ When helping with this codebase:
 5. **Custom CSS** - Uses CSS custom properties defined in `color_palette.css` and `application.css`
 6. **Many-to-many relationships** - Most entities connect through junction tables with additional metadata fields
 7. **Active Storage** - Images use Active Storage with local disk storage; variants are used for thumbnails
+8. **Date Precision** - Entry, Asset, and Image models support imprecise dates via `*_precision` fields
+9. **Stimulus Controllers** - Interactive features use Stimulus.js controllers in `app/javascript/controllers/`
