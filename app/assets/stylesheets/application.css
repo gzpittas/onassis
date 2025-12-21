@@ -703,6 +703,44 @@ td a:hover {
   font-size: 1rem;
 }
 
+/* Source Info */
+.source-info-item {
+  display: flex;
+  gap: 1rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--french-grey-10);
+}
+
+.source-info-item:last-child {
+  border-bottom: none;
+}
+
+.source-info-item label {
+  flex: 0 0 80px;
+  font-weight: 600;
+  color: var(--french-grey-70);
+  font-size: 0.85rem;
+}
+
+.source-info-item .value {
+  flex: 1;
+  color: var(--charcoal);
+}
+
+.source-info-item .value a {
+  color: var(--navy);
+}
+
+.source-info-item .value a:hover {
+  color: var(--gold);
+}
+
+.article-author {
+  color: var(--french-grey-70);
+  font-size: 0.9rem;
+  margin-left: 0.5rem;
+}
+
 /* Character List */
 .character-list {
   display: flex;

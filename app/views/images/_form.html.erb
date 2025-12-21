@@ -79,6 +79,40 @@
     <%= f.text_area :notes, placeholder: "Context, source of image, or other details..." %>
   </div>
 
+  <div class="form-section">
+    <h3>Source Information</h3>
+    <p class="form-hint">Where did you find this image? This helps track provenance and attribution.</p>
+
+    <div class="form-row">
+      <div class="form-group">
+        <%= f.label :website_name, "Website / Publication" %>
+        <%= f.text_field :website_name, placeholder: "e.g., Greek City Times" %>
+      </div>
+      <div class="form-group">
+        <%= f.label :website_url, "Website URL" %>
+        <%= f.url_field :website_url, placeholder: "https://greekcitytimes.com" %>
+        <p class="form-hint">Auto-filled from image URL if imported.</p>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <%= f.label :article_title, "Article Title" %>
+        <%= f.text_field :article_title, placeholder: "e.g., Aristotle Onassis: 50 Years After His Death" %>
+      </div>
+      <div class="form-group">
+        <%= f.label :article_author, "Article Author" %>
+        <%= f.text_field :article_author, placeholder: "e.g., Stella Mazonakis" %>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <%= f.label :article_url, "Article URL" %>
+      <%= f.url_field :article_url, placeholder: "https://greekcitytimes.com/2025/03/15/aristotle-onassis-50-years/" %>
+      <p class="form-hint">Link to the article where you found this image.</p>
+    </div>
+  </div>
+
   <div class="form-columns">
     <div class="form-column">
       <h3>Related Events</h3>

@@ -39,13 +39,47 @@
       </div>
     <% end %>
 
-    <% if @image.source_url.present? %>
+    <% if @image.source_url.present? || @image.has_source_info? %>
       <div class="detail-section">
         <h2>Source</h2>
         <div class="card">
-          <p class="image-source-url">
-            Imported from: <%= link_to @image.source_url, @image.source_url, target: "_blank", rel: "noopener noreferrer" %>
-          </p>
+          <% if @image.article_title.present? || @image.article_url.present? %>
+            <div class="source-info-item">
+              <label>Article</label>
+              <div class="value">
+                <% if @image.article_url.present? %>
+                  <%= link_to (@image.article_title.presence || "View Article"), @image.article_url, target: "_blank", rel: "noopener noreferrer" %>
+                <% else %>
+                  <%= @image.article_title %>
+                <% end %>
+                <% if @image.article_author.present? %>
+                  <span class="article-author">by <%= @image.article_author %></span>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+
+          <% if @image.website_name.present? || @image.website_url.present? %>
+            <div class="source-info-item">
+              <label>Website</label>
+              <div class="value">
+                <% if @image.website_url.present? %>
+                  <%= link_to (@image.website_name.presence || @image.website_url), @image.website_url, target: "_blank", rel: "noopener noreferrer" %>
+                <% else %>
+                  <%= @image.website_name %>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+
+          <% if @image.source_url.present? %>
+            <div class="source-info-item">
+              <label>Image URL</label>
+              <div class="value">
+                <%= link_to truncate(@image.source_url, length: 60), @image.source_url, target: "_blank", rel: "noopener noreferrer" %>
+              </div>
+            </div>
+          <% end %>
         </div>
       </div>
     <% end %>

@@ -66,6 +66,7 @@ class Image < ApplicationRecord
     )
 
     self.source_url = url
+    extract_website_from_url(url)
     true
   rescue URI::InvalidURIError, SocketError, Errno::ECONNREFUSED, Errno::ETIMEDOUT,
          Net::OpenTimeout, Net::ReadTimeout, OpenSSL::SSL::SSLError => e
@@ -98,9 +99,22 @@ class Image < ApplicationRecord
     end
   end
 
+  def has_source_info?
+    article_url.present? || article_title.present? || website_name.present?
+  end
+
   private
 
   def importing_from_url?
     remote_url.present? && !file.attached?
+  end
+
+  def extract_website_from_url(url)
+    return if website_url.present? # Don't overwrite if already set
+
+    uri = URI.parse(url)
+    self.website_url = "#{uri.scheme}://#{uri.host}"
+  rescue URI::InvalidURIError
+    # Ignore invalid URLs
   end
 end
