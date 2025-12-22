@@ -14,7 +14,7 @@
     <%= f.label :file, "Image File" %>
     <% if @image.file.attached? %>
       <div class="current-image">
-        <%= image_tag @image.file.variant(resize_to_limit: [200, 200]), class: "preview-thumbnail" %>
+        <%= image_tag @image.file.variant(:timeline), class: "preview-thumbnail" %>
         <p class="form-hint">Current image. Upload a new file to replace it.</p>
       </div>
     <% end %>

@@ -2,7 +2,7 @@ class ImagesController < ApplicationController
   before_action :set_image, only: %i[show edit update destroy]
 
   def index
-    @images = Image.by_date.includes(:entries, :characters)
+    @images = Image.by_date.includes(:entries, :characters, file_attachment: :blob)
 
     if params[:decade].present?
       decade_start = Date.new(params[:decade].to_i, 1, 1)

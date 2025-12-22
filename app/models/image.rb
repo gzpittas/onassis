@@ -2,7 +2,16 @@ require "net/http"
 require "openssl"
 
 class Image < ApplicationRecord
-  has_one_attached :file
+  has_one_attached :file do |attachable|
+    attachable.variant :thumbnail, resize_to_fill: [300, 300], preprocessed: true
+    attachable.variant :card, resize_to_fill: [300, 200], preprocessed: true
+    attachable.variant :card_wide, resize_to_fill: [300, 180], preprocessed: true
+    attachable.variant :picker, resize_to_fill: [100, 100], preprocessed: true
+    attachable.variant :picker_wide, resize_to_fill: [120, 100], preprocessed: true
+    attachable.variant :small, resize_to_fill: [150, 120], preprocessed: true
+    attachable.variant :timeline, resize_to_fill: [200, 150], preprocessed: true
+    attachable.variant :medium, resize_to_limit: [800, 800], preprocessed: true
+  end
 
   has_many :entry_images, dependent: :destroy
   has_many :entries, through: :entry_images

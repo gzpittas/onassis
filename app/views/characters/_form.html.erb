@@ -84,7 +84,7 @@
       <% @character.images.each do |image| %>
         <div class="selected-image-thumb <%= 'is-featured' if @character.featured_image_id == image.id %>" data-image-id="<%= image.id %>">
           <% if image.file.attached? %>
-            <%= image_tag image.file.variant(resize_to_fill: [100, 100]),
+            <%= image_tag image.file.variant(:picker),
                 alt: image.display_title,
                 data: { action: "click->gallery-picker#showLightbox", full_url: url_for(image.file), title: image.display_title } %>
           <% end %>
@@ -113,12 +113,12 @@
                  data-action="click->gallery-picker#toggleImage"
                  data-image-id="<%= image.id %>"
                  data-image-title="<%= image.display_title %>"
-                 data-image-url="<%= image.file.attached? ? url_for(image.file.variant(resize_to_fill: [100, 100])) : '' %>"
+                 data-image-url="<%= image.file.attached? ? url_for(image.file.variant(:picker)) : '' %>"
                  data-image-full-url="<%= image.file.attached? ? url_for(image.file) : '' %>"
                  data-gallery-picker-target="item"
                  data-selected="<%= @character.images.include?(image) %>">
               <% if image.file.attached? %>
-                <%= image_tag image.file.variant(resize_to_fill: [120, 100]), alt: image.display_title %>
+                <%= image_tag image.file.variant(:picker_wide), alt: image.display_title %>
               <% end %>
               <p class="gallery-picker-item-title"><%= truncate(image.display_title, length: 30) %></p>
               <div class="gallery-picker-check">&#10003;</div>

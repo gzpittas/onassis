@@ -23,7 +23,7 @@
         <% if asset.card_image %>
           <div class="card-image">
             <%= link_to asset do %>
-              <%= image_tag asset.card_image.file.variant(resize_to_fill: [300, 180]), alt: asset.name, class: "card-thumbnail" %>
+              <%= image_tag asset.card_image.file.variant(:card_wide), alt: asset.name, class: "card-thumbnail", loading: "lazy" %>
             <% end %>
           </div>
         <% end %>

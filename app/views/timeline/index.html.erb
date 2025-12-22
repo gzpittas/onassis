@@ -43,9 +43,10 @@
               <div class="timeline-date"><%= image.date_display %></div>
               <div class="timeline-image-container">
                 <% if image.file.attached? %>
-                  <%= image_tag image.file.variant(resize_to_fill: [200, 150]),
+                  <%= image_tag image.file.variant(:timeline),
                       alt: image.display_title,
                       class: "timeline-thumbnail",
+                      loading: "lazy",
                       data: {
                         action: "click->timeline-lightbox#open",
                         full_url: url_for(image.file),
@@ -167,9 +168,10 @@
       <% @undated_images.each do |image| %>
         <div class="undated-image-item">
           <% if image.file.attached? %>
-            <%= image_tag image.file.variant(resize_to_fill: [150, 120]),
+            <%= image_tag image.file.variant(:small),
                 alt: image.display_title,
                 class: "undated-thumbnail",
+                loading: "lazy",
                 data: {
                   action: "click->timeline-lightbox#open",
                   full_url: url_for(image.file),

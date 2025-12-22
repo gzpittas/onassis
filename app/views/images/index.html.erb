@@ -31,7 +31,7 @@
       <div class="gallery-item">
         <%= link_to image do %>
           <% if image.file.attached? %>
-            <%= image_tag image.file.variant(resize_to_fill: [300, 300]), class: "gallery-thumbnail" %>
+            <%= image_tag image.file.variant(:thumbnail), class: "gallery-thumbnail", loading: "lazy" %>
           <% end %>
         <% end %>
         <div class="gallery-item-info">

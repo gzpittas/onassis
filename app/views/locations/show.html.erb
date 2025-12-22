@@ -103,7 +103,7 @@
       <% @location.images.by_date.each do |image| %>
         <div class="related-image-item">
           <%= link_to image do %>
-            <%= image_tag image.file.variant(resize_to_fill: [150, 120]), alt: image.display_title %>
+            <%= image_tag image.file.variant(:small), alt: image.display_title, loading: "lazy" %>
           <% end %>
           <p class="related-image-caption">
             <%= image.display_title %>

@@ -161,7 +161,7 @@
         <div class="related-image-item">
           <%= link_to image do %>
             <% if image.file.attached? %>
-              <%= image_tag image.file.variant(resize_to_fill: [150, 120]) %>
+              <%= image_tag image.file.variant(:small), loading: "lazy" %>
             <% end %>
           <% end %>
           <p class="related-image-caption"><%= image.display_title %></p>
