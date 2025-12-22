@@ -2,7 +2,7 @@ class AssetsController < ApplicationController
   before_action :set_asset, only: %i[show edit update destroy]
 
   def index
-    @assets = Asset.by_name.includes(:entries, :images)
+    @assets = Asset.by_name.includes(:entries, images: { file_attachment: :blob }, featured_image: { file_attachment: :blob })
 
     if params[:asset_type].present?
       @assets = @assets.by_type(params[:asset_type])

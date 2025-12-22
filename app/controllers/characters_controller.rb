@@ -2,7 +2,7 @@ class CharactersController < ApplicationController
   before_action :set_character, only: %i[show edit update destroy]
 
   def index
-    @characters = Character.by_name
+    @characters = Character.by_name.includes(images: { file_attachment: :blob }, featured_image: { file_attachment: :blob })
 
     if params[:relationship].present?
       @characters = @characters.where(relationship: params[:relationship])

@@ -2,7 +2,7 @@ class LocationsController < ApplicationController
   before_action :set_location, only: %i[show edit update destroy]
 
   def index
-    @locations = Location.by_name.includes(:entries, :images)
+    @locations = Location.by_name.includes(:entries, images: { file_attachment: :blob }, featured_image: { file_attachment: :blob })
 
     if params[:location_type].present?
       @locations = @locations.by_type(params[:location_type])
