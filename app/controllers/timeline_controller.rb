@@ -19,7 +19,7 @@ class TimelineController < ApplicationController
     end
 
     # Get assets with acquisition dates for timeline
-    @assets_with_dates = Asset.where.not(acquisition_date: nil).order(:acquisition_date)
+    @assets_with_dates = Asset.where.not(acquisition_date: nil).includes(images: { file_attachment: :blob }, featured_image: { file_attachment: :blob }).order(:acquisition_date)
 
     # Get images with taken dates for timeline
     @images_with_dates = Image.where.not(taken_date: nil).includes(:characters, file_attachment: :blob).order(:taken_date)

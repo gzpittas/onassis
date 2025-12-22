@@ -132,17 +132,28 @@
             <% asset = item[:object] %>
             <div class="timeline-entry timeline-asset">
               <div class="timeline-date"><%= asset.acquisition_date_display %></div>
-              <h3 class="timeline-title">
-                <%= link_to "Acquired: #{asset.name}", asset %>
-              </h3>
-              <% if asset.manufacturer.present? %>
-                <div class="timeline-meta"><span>Made by: <%= asset.manufacturer %></span></div>
-              <% end %>
-              <% if asset.description.present? %>
-                <p class="timeline-description"><%= truncate(asset.description, length: 200) %></p>
-              <% end %>
-              <div class="timeline-meta">
-                <span class="tag tag-asset"><%= asset.type_display %></span>
+              <div class="timeline-entry-content">
+                <% if asset.card_image&.file&.attached? %>
+                  <div class="timeline-entry-image">
+                    <%= link_to asset do %>
+                      <%= image_tag asset.card_image.file.variant(:timeline), alt: asset.name, loading: "lazy", class: "timeline-thumbnail" %>
+                    <% end %>
+                  </div>
+                <% end %>
+                <div class="timeline-entry-text">
+                  <h3 class="timeline-title">
+                    <%= link_to "Acquired: #{asset.name}", asset %>
+                  </h3>
+                  <% if asset.manufacturer.present? %>
+                    <div class="timeline-meta"><span>Made by: <%= asset.manufacturer %></span></div>
+                  <% end %>
+                  <% if asset.description.present? %>
+                    <p class="timeline-description"><%= truncate(asset.description, length: 200) %></p>
+                  <% end %>
+                  <div class="timeline-meta">
+                    <span class="tag tag-asset"><%= asset.type_display %></span>
+                  </div>
+                </div>
               </div>
             </div>
           <% end %>
