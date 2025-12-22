@@ -77,7 +77,7 @@
                 <% if entry.card_image&.file&.attached? %>
                   <div class="timeline-entry-image">
                     <%= link_to entry do %>
-                      <%= image_tag entry.card_image.file.variant(:small), alt: entry.title, loading: "lazy" %>
+                      <%= image_tag entry.card_image.file.variant(:timeline), alt: entry.title, loading: "lazy", class: "timeline-thumbnail" %>
                     <% end %>
                   </div>
                 <% end %>
