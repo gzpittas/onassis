@@ -22,10 +22,10 @@ class TimelineController < ApplicationController
     @assets_with_dates = Asset.where.not(acquisition_date: nil).order(:acquisition_date)
 
     # Get images with taken dates for timeline
-    @images_with_dates = Image.where.not(taken_date: nil).with_attached_file.order(:taken_date)
+    @images_with_dates = Image.where.not(taken_date: nil).includes(:characters, file_attachment: :blob).order(:taken_date)
 
     # Get undated images (only when not filtering by decade)
-    @undated_images = params[:decade].blank? ? Image.where(taken_date: nil).with_attached_file.includes(:characters).recent_first : []
+    @undated_images = params[:decade].blank? ? Image.where(taken_date: nil).includes(:characters, file_attachment: :blob).recent_first : []
 
     if params[:decade].present?
       decade_start = Date.new(params[:decade].to_i, 1, 1)
