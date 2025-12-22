@@ -1,6 +1,6 @@
 class TimelineController < ApplicationController
   def index
-    @entries = Entry.chronological.includes(:source, :characters, entry_sources: :source)
+    @entries = Entry.chronological.includes(:source, :characters, entry_sources: :source, images: { file_attachment: :blob }, featured_image: { file_attachment: :blob })
 
     if params[:year].present?
       @entries = @entries.by_year(params[:year])

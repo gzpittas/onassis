@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_12_21_224409) do
+ActiveRecord::Schema[8.0].define(version: 2025_12_22_011649) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -127,6 +127,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_21_224409) do
     t.integer "end_month"
     t.integer "end_day"
     t.string "date_precision", default: "exact"
+    t.integer "featured_image_id"
     t.index ["source_id"], name: "index_entries_on_source_id"
   end
 

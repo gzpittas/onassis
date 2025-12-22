@@ -343,6 +343,48 @@ body {
   margin-bottom: 0.5rem;
 }
 
+/* Timeline entry with image */
+.timeline-entry-content {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.timeline-entry-image {
+  flex-shrink: 0;
+}
+
+.timeline-entry-image img {
+  width: 120px;
+  height: 90px;
+  object-fit: cover;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.timeline-entry-image img:hover {
+  transform: scale(1.02);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.timeline-entry-text {
+  flex: 1;
+  min-width: 0;
+}
+
+@media (max-width: 480px) {
+  .timeline-entry-content {
+    flex-direction: column;
+  }
+
+  .timeline-entry-image img {
+    width: 100%;
+    height: auto;
+    max-height: 150px;
+  }
+}
+
 .timeline-meta {
   font-size: 0.875rem;
   color: #718096;

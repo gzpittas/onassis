@@ -71,17 +71,28 @@
             </div>
           <% elsif item[:type] == :entry %>
             <% entry = item[:object] %>
-            <div class="timeline-entry">
+            <div class="timeline-entry <%= 'has-image' if entry.card_image&.file&.attached? %>">
               <div class="timeline-date"><%= entry.date_display %></div>
-              <h3 class="timeline-title">
-                <%= link_to entry.title, entry %>
-              </h3>
-              <% if entry.location.present? %>
-                <div class="timeline-meta"><span><%= entry.location %></span></div>
-              <% end %>
-              <% if entry.description.present? %>
-                <p class="timeline-description"><%= truncate(entry.description, length: 200) %></p>
-              <% end %>
+              <div class="timeline-entry-content">
+                <% if entry.card_image&.file&.attached? %>
+                  <div class="timeline-entry-image">
+                    <%= link_to entry do %>
+                      <%= image_tag entry.card_image.file.variant(:small), alt: entry.title, loading: "lazy" %>
+                    <% end %>
+                  </div>
+                <% end %>
+                <div class="timeline-entry-text">
+                  <h3 class="timeline-title">
+                    <%= link_to entry.title, entry %>
+                  </h3>
+                  <% if entry.location.present? %>
+                    <div class="timeline-meta"><span><%= entry.location %></span></div>
+                  <% end %>
+                  <% if entry.description.present? %>
+                    <p class="timeline-description"><%= truncate(entry.description, length: 200) %></p>
+                  <% end %>
+                </div>
+              </div>
               <div class="timeline-meta">
                 <% if entry.entry_type.present? %>
                   <span class="tag tag-type"><%= entry.entry_type.titleize %></span>

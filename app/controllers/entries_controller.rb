@@ -38,6 +38,7 @@ class EntriesController < ApplicationController
     @entry.entry_sources.build
     @sources = Source.order(:title)
     @characters = Character.by_name
+    @images = Image.includes(file_attachment: :blob).recent_first
   end
 
   def create
@@ -49,6 +50,7 @@ class EntriesController < ApplicationController
     else
       @sources = Source.order(:title)
       @characters = Character.by_name
+      @images = Image.includes(file_attachment: :blob).recent_first
       render :new, status: :unprocessable_entity
     end
   end
@@ -57,6 +59,7 @@ class EntriesController < ApplicationController
     @entry.entry_sources.build if @entry.entry_sources.empty? || params[:add_source]
     @sources = Source.order(:title)
     @characters = Character.by_name
+    @images = Image.includes(file_attachment: :blob).recent_first
   end
 
   def update
@@ -65,6 +68,7 @@ class EntriesController < ApplicationController
     else
       @sources = Source.order(:title)
       @characters = Character.by_name
+      @images = Image.includes(file_attachment: :blob).recent_first
       render :edit, status: :unprocessable_entity
     end
   end
@@ -100,8 +104,8 @@ class EntriesController < ApplicationController
 
   def entry_params
     params.require(:entry).permit(:title, :event_date, :end_date, :date_precision, :location, :entry_type,
-                                  :description, :significance, :verified,
-                                  character_ids: [],
+                                  :description, :significance, :verified, :featured_image_id,
+                                  character_ids: [], image_ids: [],
                                   entry_sources_attributes: [:id, :source_id, :page_reference, :author, :notes, :link, :_destroy])
   end
 

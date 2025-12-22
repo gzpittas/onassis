@@ -1,5 +1,6 @@
 class Entry < ApplicationRecord
   belongs_to :source, optional: true # Legacy - keeping for backward compatibility
+  belongs_to :featured_image, class_name: "Image", optional: true
   has_many :entry_sources, dependent: :destroy
   has_many :sources, through: :entry_sources
   has_many :entry_characters, dependent: :destroy
@@ -14,6 +15,11 @@ class Entry < ApplicationRecord
   has_many :locations, through: :entry_locations
   has_many :video_entries, dependent: :destroy
   has_many :videos, through: :video_entries
+
+  # Returns the featured image or first associated image for display
+  def card_image
+    featured_image || images.first
+  end
 
   accepts_nested_attributes_for :entry_sources, allow_destroy: true, reject_if: :all_blank
 
