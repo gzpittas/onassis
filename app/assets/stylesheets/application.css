@@ -38,6 +38,9 @@ body {
   align-items: center;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   border-radius: 0;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
 }
 
 .nav-brand a {
