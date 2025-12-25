@@ -7,6 +7,12 @@
   </div>
 </div>
 
+<% if @character.card_image&.file&.attached? %>
+  <div class="character-featured-image">
+    <%= image_tag @character.card_image.file.variant(:medium), alt: @character.name %>
+  </div>
+<% end %>
+
 <div class="card">
   <div class="detail-grid">
     <% if @character.relationship.present? %>
@@ -44,6 +50,88 @@
     </div>
   </div>
 <% end %>
+
+<div class="detail-section">
+  <h2>Casting Candidates (<%= @character.casting_candidates.count %>)</h2>
+  <% if @character.casting_candidates.any? %>
+    <div class="candidate-thumbnails">
+      <% @character.casting_candidates.by_priority.each do |candidate| %>
+        <div class="candidate-thumbnail-item">
+          <% if candidate.image_url.present? %>
+            <%= link_to character_casting_candidate_path(@character, candidate) do %>
+              <%= image_tag candidate.image_url, alt: candidate.actor_name, class: "candidate-thumb", loading: "lazy" %>
+            <% end %>
+          <% end %>
+          <span class="candidate-thumb-name"><%= link_to candidate.actor_name, character_casting_candidate_path(@character, candidate) %></span>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <p class="card-meta">No casting candidates yet.</p>
+  <% end %>
+  <%= link_to "Add Casting Candidate", new_character_casting_candidate_path(@character), class: "btn btn-secondary btn-small" %>
+</div>
+
+<div class="detail-section" data-controller="gallery-lightbox">
+  <h2>Images (<%= @character.images.count %>)</h2>
+  <% if @character.images.any? %>
+    <div class="related-images-grid">
+      <% @character.images.by_date.each do |image| %>
+        <div class="related-image-item"
+             data-gallery-lightbox-target="item"
+             data-image-id="<%= image.id %>"
+             data-full-url="<%= image.file.attached? ? url_for(image.file) : '' %>"
+             data-title="<%= image.display_title %>"
+             data-path="<%= image_path(image) %>">
+          <%= link_to image do %>
+            <% if image.file.attached? %>
+              <%= image_tag image.file.variant(:small), loading: "lazy" %>
+            <% end %>
+          <% end %>
+          <button type="button"
+                  class="gallery-expand-btn"
+                  data-action="click->gallery-lightbox#open"
+                  data-image-id="<%= image.id %>"
+                  title="View in lightbox">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="15 3 21 3 21 9"></polyline>
+              <polyline points="9 21 3 21 3 15"></polyline>
+              <line x1="21" y1="3" x2="14" y2="10"></line>
+              <line x1="3" y1="21" x2="10" y2="14"></line>
+            </svg>
+          </button>
+          <p class="related-image-caption"><%= image.display_title %></p>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="gallery-lightbox hidden" data-gallery-lightbox-target="modal">
+      <div class="gallery-lightbox-overlay" data-action="click->gallery-lightbox#close"></div>
+      <button type="button" class="gallery-lightbox-nav gallery-lightbox-prev" data-action="click->gallery-lightbox#previous">
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+      </button>
+      <div class="gallery-lightbox-content">
+        <button type="button" class="gallery-lightbox-close" data-action="click->gallery-lightbox#close">&times;</button>
+        <img data-gallery-lightbox-target="image" src="" alt="">
+        <div class="gallery-lightbox-footer">
+          <p class="gallery-lightbox-title" data-gallery-lightbox-target="title"></p>
+          <p class="gallery-lightbox-counter" data-gallery-lightbox-target="counter"></p>
+          <%= link_to "View Details", "#", class: "btn btn-secondary btn-small", data: { gallery_lightbox_target: "link" } %>
+        </div>
+      </div>
+      <button type="button" class="gallery-lightbox-nav gallery-lightbox-next" data-action="click->gallery-lightbox#next">
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+      </button>
+    </div>
+  <% else %>
+    <p class="card-meta">No images yet.</p>
+  <% end %>
+  <%= link_to "Add Image", new_image_path, class: "btn btn-secondary btn-small" %>
+</div>
 
 <div class="detail-section">
   <h2>Links</h2>
@@ -85,67 +173,6 @@
     <p class="card-meta">No related newspaper articles yet.</p>
   <% end %>
   <%= link_to "Add Article", new_article_path, class: "btn btn-secondary btn-small" %>
-</div>
-
-<div class="detail-section">
-  <h2>Images (<%= @character.images.count %>)</h2>
-  <% if @character.images.any? %>
-    <div class="related-images-grid">
-      <% @character.images.by_date.each do |image| %>
-        <div class="related-image-item">
-          <%= link_to image do %>
-            <% if image.file.attached? %>
-              <%= image_tag image.file.variant(:small), loading: "lazy" %>
-            <% end %>
-          <% end %>
-          <p class="related-image-caption"><%= image.display_title %></p>
-        </div>
-      <% end %>
-    </div>
-  <% else %>
-    <p class="card-meta">No images yet.</p>
-  <% end %>
-  <%= link_to "Add Image", new_image_path, class: "btn btn-secondary btn-small" %>
-</div>
-
-<div class="detail-section">
-  <h2>Casting Candidates (<%= @character.casting_candidates.count %>)</h2>
-  <% if @character.casting_candidates.any? %>
-    <div class="grid">
-      <% @character.casting_candidates.by_priority.each do |candidate| %>
-        <div class="card">
-          <% if candidate.image_url.present? %>
-            <div class="card-image">
-              <%= link_to character_casting_candidate_path(@character, candidate) do %>
-                <%= image_tag candidate.image_url, alt: candidate.actor_name, loading: "lazy" %>
-              <% end %>
-            </div>
-          <% end %>
-          <div class="card-header">
-            <h3 class="card-title"><%= link_to candidate.actor_name, character_casting_candidate_path(@character, candidate) %></h3>
-            <% if candidate.priority.present? %>
-              <span class="tag">#<%= candidate.priority %></span>
-            <% end %>
-          </div>
-          <div class="card-body">
-            <% if candidate.imdb_url.present? %>
-              <p><%= link_to "IMDb", candidate.imdb_url, target: "_blank", rel: "noopener noreferrer" %></p>
-            <% end %>
-            <% if candidate.notes.present? %>
-              <p class="card-meta"><%= truncate(candidate.notes, length: 100) %></p>
-            <% end %>
-          </div>
-          <div class="card-footer">
-            <%= link_to "Edit", edit_character_casting_candidate_path(@character, candidate), class: "btn btn-small btn-secondary" %>
-            <%= link_to "Remove", character_casting_candidate_path(@character, candidate), data: { turbo_method: :delete, turbo_confirm: "Are you sure?" }, class: "btn btn-small btn-danger" %>
-          </div>
-        </div>
-      <% end %>
-    </div>
-  <% else %>
-    <p class="card-meta">No casting candidates yet.</p>
-  <% end %>
-  <%= link_to "Add Casting Candidate", new_character_casting_candidate_path(@character), class: "btn btn-secondary btn-small" %>
 </div>
 
 <div class="detail-section">
