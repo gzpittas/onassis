@@ -1,0 +1,17 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  credit: one
+  person_name: MyString
+  notes: MyText
+  imdb_url: MyString
+  image_url: MyString
+  priority: 1
+
+two:
+  credit: two
+  person_name: MyString
+  notes: MyText
+  imdb_url: MyString
+  image_url: MyString
+  priority: 1

@@ -8,6 +8,7 @@ class Character < ApplicationRecord
   has_many :images, through: :image_characters
   has_many :video_characters, dependent: :destroy
   has_many :videos, through: :video_characters
+  has_many :casting_candidates, dependent: :destroy
   belongs_to :featured_image, class_name: "Image", optional: true
 
   accepts_nested_attributes_for :character_links, allow_destroy: true, reject_if: :all_blank
@@ -34,6 +35,20 @@ class Character < ApplicationRecord
     age = date.year - birth_date.year
     age -= 1 if date < birth_date + age.years
     age
+  end
+
+  def final_age
+    return nil unless birth_date
+    if death_date
+      age_at(death_date)
+    else
+      age_at(Date.current)
+    end
+  end
+
+  def age_label
+    return nil unless final_age
+    death_date ? "died at #{final_age}" : "age #{final_age}"
   end
 
   def card_image

@@ -38,7 +38,7 @@
         </div>
         <div class="card-body">
           <% if character.lifespan.present? %>
-            <p class="card-meta"><%= character.lifespan %></p>
+            <p class="card-meta"><%= character.lifespan %><% if character.age_label %> (<%= character.age_label %>)<% end %></p>
           <% end %>
           <% if character.occupation.present? %>
             <p><strong>Occupation:</strong> <%= character.occupation %></p>

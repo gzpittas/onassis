@@ -1,0 +1,42 @@
+<div class="page-header">
+  <h1><%= @credit_candidate.person_name %></h1>
+  <div class="actions">
+    <%= link_to "Edit", edit_credit_credit_candidate_path(@credit, @credit_candidate), class: "btn btn-secondary" %>
+    <%= link_to "Delete", credit_credit_candidate_path(@credit, @credit_candidate), data: { turbo_method: :delete, turbo_confirm: "Are you sure?" }, class: "btn btn-danger" %>
+    <%= link_to "Back to #{@credit.title}", @credit, class: "btn btn-primary" %>
+  </div>
+</div>
+
+<div class="card">
+  <div class="detail-grid">
+    <div class="detail-item">
+      <label>Credit</label>
+      <div class="value"><%= link_to @credit.title, @credit %></div>
+    </div>
+    <% if @credit_candidate.priority.present? %>
+      <div class="detail-item">
+        <label>Priority</label>
+        <div class="value"><%= @credit_candidate.priority %></div>
+      </div>
+    <% end %>
+    <% if @credit_candidate.imdb_url.present? %>
+      <div class="detail-item">
+        <label>IMDb</label>
+        <div class="value"><%= link_to "View on IMDb", @credit_candidate.imdb_url, target: "_blank", rel: "noopener noreferrer" %></div>
+      </div>
+    <% end %>
+  </div>
+
+  <% if @credit_candidate.image_url.present? %>
+    <div class="detail-section">
+      <%= image_tag @credit_candidate.image_url, alt: @credit_candidate.person_name, style: "max-width: 300px; border-radius: 8px;" %>
+    </div>
+  <% end %>
+
+  <% if @credit_candidate.notes.present? %>
+    <div class="detail-section">
+      <h3>Notes</h3>
+      <p><%= simple_format(@credit_candidate.notes) %></p>
+    </div>
+  <% end %>
+</div>

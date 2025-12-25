@@ -1,0 +1,44 @@
+<%= form_with model: [@credit, @credit_candidate], local: true do |f| %>
+  <% if @credit_candidate.errors.any? %>
+    <div class="error-messages">
+      <h3><%= pluralize(@credit_candidate.errors.count, "error") %> prohibited this candidate from being saved:</h3>
+      <ul>
+        <% @credit_candidate.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="form-group">
+    <%= f.label :person_name, "Name" %>
+    <%= f.text_field :person_name, placeholder: "e.g., Martin Scorsese" %>
+  </div>
+
+  <div class="form-row">
+    <div class="form-group">
+      <%= f.label :imdb_url, "IMDb URL" %>
+      <%= f.url_field :imdb_url, placeholder: "https://www.imdb.com/name/..." %>
+    </div>
+
+    <div class="form-group">
+      <%= f.label :priority, "Priority" %>
+      <%= f.number_field :priority, placeholder: "1 = highest", min: 1 %>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :image_url, "Photo URL" %>
+    <%= f.url_field :image_url, placeholder: "https://..." %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :notes %>
+    <%= f.text_area :notes, placeholder: "Why this person would be a good fit, previous work, availability, etc." %>
+  </div>
+
+  <div class="form-actions">
+    <%= f.submit class: "btn btn-gold" %>
+    <%= link_to "Cancel", @credit, class: "btn btn-secondary" %>
+  </div>
+<% end %>

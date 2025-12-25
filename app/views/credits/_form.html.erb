@@ -1,0 +1,34 @@
+<%= form_with model: @credit, local: true do |f| %>
+  <% if @credit.errors.any? %>
+    <div class="error-messages">
+      <h3><%= pluralize(@credit.errors.count, "error") %> prohibited this credit from being saved:</h3>
+      <ul>
+        <% @credit.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="form-row">
+    <div class="form-group">
+      <%= f.label :title %>
+      <%= f.text_field :title, placeholder: "e.g., Director, Producer, Cinematographer" %>
+    </div>
+
+    <div class="form-group">
+      <%= f.label :priority, "Priority" %>
+      <%= f.number_field :priority, placeholder: "1 = highest", min: 1 %>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :description %>
+    <%= f.text_area :description, placeholder: "Description of this role in the production..." %>
+  </div>
+
+  <div class="form-actions">
+    <%= f.submit class: "btn btn-gold" %>
+    <%= link_to "Cancel", credits_path, class: "btn btn-secondary" %>
+  </div>
+<% end %>

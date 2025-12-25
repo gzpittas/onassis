@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_12_22_011649) do
+ActiveRecord::Schema[8.0].define(version: 2025_12_24_192516) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -84,6 +84,18 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_22_011649) do
     t.string "acquisition_date_precision", default: "exact"
   end
 
+  create_table "casting_candidates", force: :cascade do |t|
+    t.integer "character_id", null: false
+    t.string "actor_name"
+    t.text "notes"
+    t.string "imdb_url"
+    t.string "image_url"
+    t.integer "priority"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["character_id"], name: "index_casting_candidates_on_character_id"
+  end
+
   create_table "character_links", force: :cascade do |t|
     t.integer "character_id", null: false
     t.string "url"
@@ -105,6 +117,26 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_22_011649) do
     t.datetime "updated_at", null: false
     t.boolean "lead_character", default: false
     t.integer "featured_image_id"
+  end
+
+  create_table "credit_candidates", force: :cascade do |t|
+    t.integer "credit_id", null: false
+    t.string "person_name"
+    t.text "notes"
+    t.string "imdb_url"
+    t.string "image_url"
+    t.integer "priority"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["credit_id"], name: "index_credit_candidates_on_credit_id"
+  end
+
+  create_table "credits", force: :cascade do |t|
+    t.string "title"
+    t.text "description"
+    t.integer "priority"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "entries", force: :cascade do |t|
@@ -336,7 +368,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_22_011649) do
   add_foreign_key "article_characters", "characters"
   add_foreign_key "asset_images", "assets"
   add_foreign_key "asset_images", "images"
+  add_foreign_key "casting_candidates", "characters"
   add_foreign_key "character_links", "characters"
+  add_foreign_key "credit_candidates", "credits"
   add_foreign_key "entries", "sources"
   add_foreign_key "entry_articles", "articles"
   add_foreign_key "entry_articles", "entries"

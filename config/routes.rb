@@ -2,7 +2,9 @@ Rails.application.routes.draw do
   root "timeline#index"
 
   resources :entries
-  resources :characters
+  resources :characters do
+    resources :casting_candidates, except: [:index]
+  end
   resources :sources
   resources :articles
   resources :images
@@ -10,6 +12,9 @@ Rails.application.routes.draw do
   resources :locations
   resources :musics, path: "music"
   resources :videos
+  resources :credits do
+    resources :credit_candidates, except: [:index]
+  end
 
   get "timeline", to: "timeline#index"
   get "search", to: "search#index"

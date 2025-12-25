@@ -62,7 +62,10 @@
                   <% if image.characters.any? %>
                     <div class="timeline-meta">
                       <% image.characters.each do |character| %>
-                        <%= link_to character.name, character, class: "tag tag-character" %>
+                        <% age = character.age_at(image.taken_date) %>
+                        <%= link_to character, class: "tag tag-character" do %>
+                          <%= character.name %><% if age %> - <%= age %><% end %>
+                        <% end %>
                       <% end %>
                     </div>
                   <% end %>

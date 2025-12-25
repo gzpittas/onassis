@@ -18,7 +18,7 @@
     <% if @character.lifespan.present? %>
       <div class="detail-item">
         <label>Lifespan</label>
-        <div class="value"><%= @character.lifespan %></div>
+        <div class="value"><%= @character.lifespan %><% if @character.age_label %> (<%= @character.age_label %>)<% end %></div>
       </div>
     <% end %>
     <% if @character.nationality.present? %>
@@ -106,6 +106,46 @@
     <p class="card-meta">No images yet.</p>
   <% end %>
   <%= link_to "Add Image", new_image_path, class: "btn btn-secondary btn-small" %>
+</div>
+
+<div class="detail-section">
+  <h2>Casting Candidates (<%= @character.casting_candidates.count %>)</h2>
+  <% if @character.casting_candidates.any? %>
+    <div class="grid">
+      <% @character.casting_candidates.by_priority.each do |candidate| %>
+        <div class="card">
+          <% if candidate.image_url.present? %>
+            <div class="card-image">
+              <%= link_to character_casting_candidate_path(@character, candidate) do %>
+                <%= image_tag candidate.image_url, alt: candidate.actor_name, loading: "lazy" %>
+              <% end %>
+            </div>
+          <% end %>
+          <div class="card-header">
+            <h3 class="card-title"><%= link_to candidate.actor_name, character_casting_candidate_path(@character, candidate) %></h3>
+            <% if candidate.priority.present? %>
+              <span class="tag">#<%= candidate.priority %></span>
+            <% end %>
+          </div>
+          <div class="card-body">
+            <% if candidate.imdb_url.present? %>
+              <p><%= link_to "IMDb", candidate.imdb_url, target: "_blank", rel: "noopener noreferrer" %></p>
+            <% end %>
+            <% if candidate.notes.present? %>
+              <p class="card-meta"><%= truncate(candidate.notes, length: 100) %></p>
+            <% end %>
+          </div>
+          <div class="card-footer">
+            <%= link_to "Edit", edit_character_casting_candidate_path(@character, candidate), class: "btn btn-small btn-secondary" %>
+            <%= link_to "Remove", character_casting_candidate_path(@character, candidate), data: { turbo_method: :delete, turbo_confirm: "Are you sure?" }, class: "btn btn-small btn-danger" %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <p class="card-meta">No casting candidates yet.</p>
+  <% end %>
+  <%= link_to "Add Casting Candidate", new_character_casting_candidate_path(@character), class: "btn btn-secondary btn-small" %>
 </div>
 
 <div class="detail-section">
