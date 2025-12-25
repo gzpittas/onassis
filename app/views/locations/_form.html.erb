@@ -108,7 +108,7 @@
       </div>
     </div>
 
-    <div class="form-column" data-controller="gallery-picker" data-gallery-picker-featured-value="<%= @location.featured_image_id %>">
+    <div class="form-column" data-controller="gallery-picker" data-gallery-picker-featured-value="<%= @location.featured_image_id %>" data-gallery-picker-input-name-value="location[image_ids][]">
       <h3>Images of this Location</h3>
       <button type="button" class="btn btn-secondary btn-small" style="margin-bottom: 1rem;" data-action="click->gallery-picker#open">
         Select from Gallery

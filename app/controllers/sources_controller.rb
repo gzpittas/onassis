@@ -10,7 +10,7 @@ class SourcesController < ApplicationController
   end
 
   def show
-    @entries = @source.entries.chronological.includes(:characters)
+    @entries = @source.cited_entries.chronological.includes(:characters)
   end
 
   def new

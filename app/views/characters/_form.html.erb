@@ -71,7 +71,7 @@
     </div>
   </div>
 
-  <div class="form-section" data-controller="gallery-picker" data-gallery-picker-featured-value="<%= @character.featured_image_id %>">
+  <div class="form-section" data-controller="gallery-picker" data-gallery-picker-featured-value="<%= @character.featured_image_id %>" data-gallery-picker-input-name-value="character[image_ids][]">
     <h3>Images of this Person</h3>
     <button type="button" class="btn btn-secondary btn-small" style="margin-bottom: 1rem;" data-action="click->gallery-picker#open">
       Select from Gallery

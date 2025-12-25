@@ -2,7 +2,7 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
   static targets = ["modal", "item", "preview", "hiddenInputs", "lightbox", "lightboxImage", "lightboxTitle", "featuredInput"]
-  static values = { featured: String }
+  static values = { featured: String, inputName: String }
 
   connect() {
     this.selectedImages = new Map()
@@ -132,10 +132,12 @@ export default class extends Controller {
   updateHiddenInputs() {
     this.hiddenInputsTarget.innerHTML = ""
 
+    const inputName = this.hasInputNameValue ? this.inputNameValue : "asset[image_ids][]"
+
     this.selectedImages.forEach((image) => {
       const input = document.createElement("input")
       input.type = "hidden"
-      input.name = "asset[image_ids][]"
+      input.name = inputName
       input.value = image.id
       input.dataset.imageId = image.id
       this.hiddenInputsTarget.appendChild(input)

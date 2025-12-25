@@ -73,7 +73,7 @@
     <p class="form-hint"><%= link_to "Add a new character", new_character_path %></p>
   </div>
 
-  <div class="form-section" data-controller="gallery-picker" data-gallery-picker-featured-value="<%= @entry.featured_image_id %>">
+  <div class="form-section" data-controller="gallery-picker" data-gallery-picker-featured-value="<%= @entry.featured_image_id %>" data-gallery-picker-input-name-value="entry[image_ids][]">
     <h3>Images</h3>
     <button type="button" class="btn btn-secondary btn-small" style="margin-bottom: 1rem;" data-action="click->gallery-picker#open">
       Select from Gallery
