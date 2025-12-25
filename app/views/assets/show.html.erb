@@ -62,17 +62,57 @@
 <% end %>
 
 <% if @asset.images.any? %>
-  <div class="detail-section">
+  <div class="detail-section" data-controller="gallery-lightbox">
     <h2>Images (<%= @asset.images.count %>)</h2>
-    <div class="related-images-grid">
+    <div class="asset-images-grid">
       <% @asset.images.each do |image| %>
-        <div class="related-image-item">
+        <div class="asset-image-item"
+             data-gallery-lightbox-target="item"
+             data-image-id="<%= image.id %>"
+             data-full-url="<%= image.file.attached? ? url_for(image.file) : '' %>"
+             data-title="<%= image.display_title %>"
+             data-path="<%= image_path(image) %>">
           <%= link_to image do %>
-            <%= image_tag image.file.variant(:small), alt: image.display_title, loading: "lazy" %>
+            <%= image_tag image.file.variant(:medium), alt: image.display_title, loading: "lazy" %>
           <% end %>
-          <p class="related-image-caption"><%= image.display_title %></p>
+          <button type="button"
+                  class="gallery-expand-btn"
+                  data-action="click->gallery-lightbox#open"
+                  data-image-id="<%= image.id %>"
+                  title="View in lightbox">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="15 3 21 3 21 9"></polyline>
+              <polyline points="9 21 3 21 3 15"></polyline>
+              <line x1="21" y1="3" x2="14" y2="10"></line>
+              <line x1="3" y1="21" x2="10" y2="14"></line>
+            </svg>
+          </button>
+          <p class="asset-image-caption"><%= image.display_title %></p>
         </div>
       <% end %>
+    </div>
+
+    <div class="gallery-lightbox hidden" data-gallery-lightbox-target="modal">
+      <div class="gallery-lightbox-overlay" data-action="click->gallery-lightbox#close"></div>
+      <button type="button" class="gallery-lightbox-nav gallery-lightbox-prev" data-action="click->gallery-lightbox#previous">
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+      </button>
+      <div class="gallery-lightbox-content">
+        <button type="button" class="gallery-lightbox-close" data-action="click->gallery-lightbox#close">&times;</button>
+        <img data-gallery-lightbox-target="image" src="" alt="">
+        <div class="gallery-lightbox-footer">
+          <p class="gallery-lightbox-title" data-gallery-lightbox-target="title"></p>
+          <p class="gallery-lightbox-counter" data-gallery-lightbox-target="counter"></p>
+          <%= link_to "View Details", "#", class: "btn btn-secondary btn-small", data: { gallery_lightbox_target: "link" } %>
+        </div>
+      </div>
+      <button type="button" class="gallery-lightbox-nav gallery-lightbox-next" data-action="click->gallery-lightbox#next">
+        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+      </button>
     </div>
   </div>
 <% end %>
