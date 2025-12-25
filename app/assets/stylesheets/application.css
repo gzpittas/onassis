@@ -436,8 +436,8 @@ body {
 }
 
 .timeline-thumbnail {
-  width: 240px;
-  height: 180px;
+  width: 300px;
+  height: 220px;
   object-fit: cover;
   cursor: pointer;
   border: 2px solid var(--light-gray);
