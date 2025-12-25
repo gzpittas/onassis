@@ -1998,8 +1998,8 @@ td a:hover {
 /* Asset Images - Larger display */
 .asset-images-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 1.25rem;
 }
 
 .asset-image-item {
@@ -2008,7 +2008,7 @@ td a:hover {
 
 .asset-image-item img {
   width: 100%;
-  height: 250px;
+  height: 180px;
   object-fit: cover;
   border-radius: 4px;
   display: block;
