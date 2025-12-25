@@ -1982,6 +1982,10 @@ td a:hover {
   opacity: 0.9;
 }
 
+.related-image-item:hover .gallery-expand-btn {
+  opacity: 1;
+}
+
 .related-image-caption {
   font-size: 0.75rem;
   color: #718096;
