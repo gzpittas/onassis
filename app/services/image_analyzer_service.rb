@@ -118,16 +118,30 @@ class ImageAnalyzerService
       }
     )
 
-    response.dig("choices", 0, "message", "content")
+    Rails.logger.info "OpenAI raw response keys: #{response.keys}" if response.is_a?(Hash)
+
+    content = response.dig("choices", 0, "message", "content")
+
+    if content.nil?
+      error_msg = response.dig("error", "message") || "Unknown error"
+      raise AnalysisError, "OpenAI API error: #{error_msg}"
+    end
+
+    content
   end
 
   def parse_response(response_text)
-    # Extract JSON from the response
-    json_match = response_text.match(/\{[\s\S]*\}/)
-    raise AnalysisError, "No JSON found in response" unless json_match
+    raise AnalysisError, "Empty response from AI" if response_text.blank?
+
+    Rails.logger.info "OpenAI response: #{response_text[0..500]}"
+
+    # Extract JSON from the response (handle markdown code blocks)
+    cleaned = response_text.gsub(/```json\s*/, "").gsub(/```\s*/, "")
+    json_match = cleaned.match(/\{[\s\S]*\}/)
+    raise AnalysisError, "No JSON found in response. Got: #{response_text[0..200]}" unless json_match
 
     JSON.parse(json_match[0]).with_indifferent_access
   rescue JSON::ParserError => e
-    raise AnalysisError, "Failed to parse AI response: #{e.message}"
+    raise AnalysisError, "Failed to parse AI response: #{e.message}. Response: #{response_text[0..200]}"
   end
 end
