@@ -8,6 +8,11 @@ Rails.application.routes.draw do
   resources :sources
   resources :articles
   resources :images
+
+  # Smart AI-powered import
+  get "smart_import", to: "smart_imports#new", as: :smart_import
+  post "smart_import/analyze", to: "smart_imports#analyze", as: :smart_import_analyze
+  post "smart_import", to: "smart_imports#create", as: :create_smart_import
   resources :assets, path: "production_assets"
   resources :locations
   resources :musics, path: "music"

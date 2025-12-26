@@ -15,6 +15,7 @@
     <%= link_to "Videos", videos_path, class: controller_name == "videos" ? "active" : "" %>
     <%= link_to "Credits", credits_path, class: %w[credits credit_candidates].include?(controller_name) ? "active" : "" %>
     <%= link_to "Gallery", images_path, class: controller_name == "images" ? "active" : "" %>
+    <%= link_to "Smart Import", smart_import_path, class: controller_name == "smart_imports" ? "active" : "" %>
     <%= link_to "Search", search_path, class: controller_name == "search" ? "active" : "" %>
     <%= link_to "Help", help_path, class: controller_name == "help" ? "active" : "" %>
   </div>

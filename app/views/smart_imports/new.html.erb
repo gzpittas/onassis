@@ -1,0 +1,155 @@
+<div class="page-header">
+  <h1>Smart Import</h1>
+  <p class="page-subtitle">Paste an image URL and let AI analyze it for you</p>
+</div>
+
+<div class="smart-import-container" data-controller="smart-import">
+  <div class="smart-import-step" data-smart-import-target="step1">
+    <div class="card">
+      <h2>Step 1: Paste Image URL</h2>
+      <p class="form-hint">Paste the URL of an image you found online. The AI will analyze it and extract metadata.</p>
+
+      <div class="form-group">
+        <label for="image-url">Image URL</label>
+        <input type="url"
+               id="image-url"
+               placeholder="https://example.com/image.jpg"
+               data-smart-import-target="urlInput"
+               class="smart-import-url-input">
+      </div>
+
+      <div class="smart-import-preview hidden" data-smart-import-target="preview">
+        <img src="" alt="Preview" data-smart-import-target="previewImage">
+      </div>
+
+      <div class="form-actions">
+        <button type="button"
+                class="btn btn-gold"
+                data-action="click->smart-import#analyze"
+                data-smart-import-target="analyzeBtn">
+          Analyze with AI
+        </button>
+      </div>
+
+      <div class="smart-import-loading hidden" data-smart-import-target="loading">
+        <div class="loading-spinner"></div>
+        <p>Analyzing image... This may take a few seconds.</p>
+      </div>
+
+      <div class="smart-import-error hidden" data-smart-import-target="error">
+        <p data-smart-import-target="errorMessage"></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="smart-import-step hidden" data-smart-import-target="step2">
+    <div class="card">
+      <h2>Step 2: Review & Save</h2>
+      <p class="form-hint">Review the AI-extracted data below. Edit anything that needs correction, then save.</p>
+
+      <div class="smart-import-confidence hidden" data-smart-import-target="confidence">
+        <strong>AI Notes:</strong>
+        <p data-smart-import-target="confidenceText"></p>
+      </div>
+
+      <%= form_with url: create_smart_import_path, method: :post, local: true, data: { smart_import_target: "form" } do |f| %>
+        <input type="hidden" name="image[remote_url]" data-smart-import-target="remoteUrl">
+
+        <div class="form-row">
+          <div class="form-group" style="flex: 2;">
+            <label for="image_title">Title</label>
+            <input type="text" name="image[title]" id="image_title" data-smart-import-target="title">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="image_notes">Description / Notes</label>
+          <textarea name="image[notes]" id="image_notes" rows="4" data-smart-import-target="notes"></textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="image_taken_date">Date Taken</label>
+            <input type="date" name="image[taken_date]" id="image_taken_date" data-smart-import-target="takenDate">
+          </div>
+          <div class="form-group">
+            <label for="image_taken_date_precision">Date Precision</label>
+            <select name="image[taken_date_precision]" id="image_taken_date_precision" data-smart-import-target="datePrecision">
+              <option value="">Select precision...</option>
+              <option value="exact">Exact date</option>
+              <option value="month">Month/Year only</option>
+              <option value="year">Year only</option>
+              <option value="decade">Decade</option>
+              <option value="approximate">Approximate</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="image_location">Location</label>
+            <input type="text" name="image[location]" id="image_location" data-smart-import-target="location">
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h3>People in this Image</h3>
+          <div class="checkbox-grid" data-smart-import-target="charactersGrid">
+            <% @characters.each do |character| %>
+              <label class="checkbox-item" data-character-id="<%= character.id %>">
+                <input type="checkbox" name="image[character_ids][]" value="<%= character.id %>">
+                <%= character.name %>
+              </label>
+            <% end %>
+          </div>
+
+          <div class="suggested-additions hidden" data-smart-import-target="suggestedCharacters">
+            <p class="form-hint"><strong>AI suggests adding these people to your database:</strong></p>
+            <ul data-smart-import-target="suggestedCharactersList"></ul>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h3>Related Locations</h3>
+          <div class="checkbox-grid" data-smart-import-target="locationsGrid">
+            <% @locations.each do |location| %>
+              <label class="checkbox-item" data-location-id="<%= location.id %>">
+                <input type="checkbox" name="image[location_ids][]" value="<%= location.id %>">
+                <%= location.name %>
+              </label>
+            <% end %>
+          </div>
+
+          <div class="suggested-additions hidden" data-smart-import-target="suggestedLocations">
+            <p class="form-hint"><strong>AI suggests adding these locations to your database:</strong></p>
+            <ul data-smart-import-target="suggestedLocationsList"></ul>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h3>Source Information</h3>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="image_website_name">Website Name</label>
+              <input type="text" name="image[website_name]" id="image_website_name" placeholder="e.g., Getty Images">
+            </div>
+            <div class="form-group">
+              <label for="image_article_title">Article/Page Title</label>
+              <input type="text" name="image[article_title]" id="image_article_title">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="image_article_url">Article URL (if different from image URL)</label>
+            <input type="url" name="image[article_url]" id="image_article_url" placeholder="https://...">
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" data-action="click->smart-import#back">
+            Back
+          </button>
+          <button type="submit" class="btn btn-gold">
+            Import Image
+          </button>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
