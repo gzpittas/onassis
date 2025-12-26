@@ -33,20 +33,58 @@ class ImageAnalyzerService
     http.read_timeout = 30
 
     request = Net::HTTP::Get.new(uri.request_uri)
-    request["User-Agent"] = "Mozilla/5.0 (compatible; OnassisTimeline/1.0)"
+    # Use a real browser User-Agent to avoid blocks
+    request["User-Agent"] = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+    request["Accept"] = "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8"
+    request["Accept-Language"] = "en-US,en;q=0.9"
+    request["Referer"] = @page_url if @page_url.present?
+
     response = http.request(request)
 
-    # Handle redirects
-    if response.is_a?(Net::HTTPRedirection)
+    # Handle redirects (up to 5)
+    redirect_count = 0
+    while response.is_a?(Net::HTTPRedirection) && redirect_count < 5
       redirect_url = response["location"]
+      break unless redirect_url.present?
+
+      # Handle relative redirects
+      if redirect_url.start_with?("/")
+        redirect_url = "#{uri.scheme}://#{uri.host}#{redirect_url}"
+      end
+
       @url = redirect_url
-      return fetch_image if redirect_url.present?
+      uri = URI.parse(@url)
+      http = Net::HTTP.new(uri.host, uri.port)
+      http.use_ssl = uri.scheme == "https"
+      http.verify_mode = OpenSSL::SSL::VERIFY_NONE if http.use_ssl?
+
+      request = Net::HTTP::Get.new(uri.request_uri)
+      request["User-Agent"] = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+      request["Accept"] = "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8"
+      request["Referer"] = @page_url if @page_url.present?
+
+      response = http.request(request)
+      redirect_count += 1
     end
 
-    raise AnalysisError, "Failed to fetch image: #{response.code}" unless response.is_a?(Net::HTTPSuccess)
+    unless response.is_a?(Net::HTTPSuccess)
+      Rails.logger.error "Image fetch failed: #{response.code} for #{@url}"
+      raise AnalysisError, "Failed to fetch image (#{response.code}). The server may be blocking direct access. Try a different image source."
+    end
 
     content_type = response["Content-Type"]&.split(";")&.first
-    raise AnalysisError, "URL does not point to an image" unless content_type&.start_with?("image/")
+
+    # Some servers don't return proper content-type, try to detect from URL
+    if content_type.nil? || !content_type.start_with?("image/")
+      content_type = case @url.downcase
+      when /\.jpe?g/ then "image/jpeg"
+      when /\.png/ then "image/png"
+      when /\.gif/ then "image/gif"
+      when /\.webp/ then "image/webp"
+      else
+        raise AnalysisError, "URL does not appear to be an image"
+      end
+    end
 
     {
       data: Base64.strict_encode64(response.body),
