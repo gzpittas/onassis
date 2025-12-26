@@ -305,6 +305,30 @@ class SmartImportsController < ApplicationController
       end
     end
 
+    # Extract potential new people from title using "with" pattern
+    # e.g., "Aristotle Onassis with Willy Schlatermund" -> extracts "Willy Schlatermund"
+    suggested_new_characters = []
+    title = metadata[:title] || ""
+
+    # Pattern: "Name with Other Name" or "Name and Other Name"
+    if match = title.match(/with\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)+)/i)
+      potential_name = match[1].strip
+      # Check if this person is already in our database
+      existing_names = characters.map { |_, name| name.downcase }
+      unless existing_names.any? { |n| potential_name.downcase.include?(n.split.last) }
+        suggested_new_characters << potential_name
+      end
+    end
+
+    # Also check for names after "and"
+    if match = title.match(/\s+and\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)+)(?:,|\s+in\s+|\s+at\s+|\s*$)/i)
+      potential_name = match[1].strip
+      existing_names = characters.map { |_, name| name.downcase }
+      unless existing_names.any? { |n| potential_name.downcase.include?(n.split.last) }
+        suggested_new_characters << potential_name unless suggested_new_characters.include?(potential_name)
+      end
+    end
+
     render json: {
       success: true,
       source: "alamy",
@@ -319,7 +343,7 @@ class SmartImportsController < ApplicationController
         matched_locations: [],
         matched_location_ids: matched_location_ids.uniq,
         matched_asset_ids: matched_asset_ids.uniq,
-        suggested_new_characters: [],
+        suggested_new_characters: suggested_new_characters,
         suggested_new_locations: [],
         confidence_notes: "Data scraped from Alamy. Photographer: #{metadata[:photographer]}. Agency: #{metadata[:agency]}.",
         alamy_id: metadata[:alamy_id],
