@@ -15,7 +15,7 @@ class ImageAnalyzerService
     page_context = fetch_page_context
 
     prompt = build_prompt(page_context)
-    response = call_claude(prompt, image_data)
+    response = call_openai(prompt, image_data)
     parse_response(response)
   rescue => e
     raise AnalysisError, "Failed to analyze image: #{e.message}"
@@ -54,13 +54,6 @@ class ImageAnalyzerService
   end
 
   def fetch_page_context
-    # Try to get the page where this image is hosted for additional context
-    uri = URI.parse(@url)
-
-    # Get the referring page if possible (usually the image is on a webpage)
-    # For now, we'll just use the image URL itself
-    # In future, could accept a page_url parameter for richer context
-
     "Image URL: #{@url}"
   rescue
     ""
@@ -98,38 +91,38 @@ class ImageAnalyzerService
     PROMPT
   end
 
-  def call_claude(prompt, image_data)
-    client = Anthropic::Client.new
+  def call_openai(prompt, image_data)
+    client = OpenAI::Client.new(access_token: ENV["OPENAI_API_KEY"])
 
-    response = client.messages.create(
-      model: "claude-sonnet-4-20250514",
-      max_tokens: 2048,
-      messages: [
-        {
-          role: "user",
-          content: [
-            {
-              type: "image",
-              source: {
-                type: "base64",
-                media_type: image_data[:media_type],
-                data: image_data[:data]
+    response = client.chat(
+      parameters: {
+        model: "gpt-4o",
+        messages: [
+          {
+            role: "user",
+            content: [
+              {
+                type: "image_url",
+                image_url: {
+                  url: "data:#{image_data[:media_type]};base64,#{image_data[:data]}"
+                }
+              },
+              {
+                type: "text",
+                text: prompt
               }
-            },
-            {
-              type: "text",
-              text: prompt
-            }
-          ]
-        }
-      ]
+            ]
+          }
+        ],
+        max_tokens: 2048
+      }
     )
 
-    response.content.first.text
+    response.dig("choices", 0, "message", "content")
   end
 
   def parse_response(response_text)
-    # Extract JSON from the response (Claude sometimes adds markdown)
+    # Extract JSON from the response
     json_match = response_text.match(/\{[\s\S]*\}/)
     raise AnalysisError, "No JSON found in response" unless json_match
 
