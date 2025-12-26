@@ -3,6 +3,7 @@ class SmartImportsController < ApplicationController
     @images = Image.recent_first
     @characters = Character.by_name
     @locations = Location.order(:name)
+    @assets = Asset.order(:name)
   end
 
   def fetch_images
@@ -48,19 +49,22 @@ class SmartImportsController < ApplicationController
 
     characters = Character.pluck(:name)
     locations = Location.pluck(:name)
+    assets = Asset.pluck(:name)
 
-    analyzer = ImageAnalyzerService.new(url, characters: characters, locations: locations, page_url: page_url)
+    analyzer = ImageAnalyzerService.new(url, characters: characters, locations: locations, assets: assets, page_url: page_url)
     result = analyzer.analyze
 
     # Map matched names to IDs
     matched_character_ids = Character.where(name: result[:matched_characters]).pluck(:id)
     matched_location_ids = Location.where(name: result[:matched_locations]).pluck(:id)
+    matched_asset_ids = Asset.where(name: result[:matched_assets] || []).pluck(:id)
 
     render json: {
       success: true,
       analysis: result.merge(
         matched_character_ids: matched_character_ids,
-        matched_location_ids: matched_location_ids
+        matched_location_ids: matched_location_ids,
+        matched_asset_ids: matched_asset_ids
       )
     }
   rescue ImageAnalyzerService::AnalysisError => e
@@ -80,9 +84,7 @@ class SmartImportsController < ApplicationController
     if params[:image][:remote_url].present?
       unless @image.attach_from_url(params[:image][:remote_url])
         Rails.logger.error "Smart Import: Failed to attach from URL. Errors: #{@image.errors.full_messages}"
-        @images = Image.recent_first
-        @characters = Character.by_name
-        @locations = Location.order(:name)
+        load_form_data
         flash.now[:alert] = "Failed to import image from URL: #{@image.errors[:remote_url].join(', ')}"
         render :new, status: :unprocessable_entity
         return
@@ -94,7 +96,7 @@ class SmartImportsController < ApplicationController
 
     if @image.save
       Rails.logger.info "Smart Import: Image saved successfully with ID: #{@image.id}"
-      # Associate characters and locations
+      # Associate characters, locations, and assets
       if params[:image][:character_ids].present?
         params[:image][:character_ids].reject(&:blank?).each do |char_id|
           @image.image_characters.create(character_id: char_id)
@@ -107,12 +109,16 @@ class SmartImportsController < ApplicationController
         end
       end
 
+      if params[:image][:asset_ids].present?
+        params[:image][:asset_ids].reject(&:blank?).each do |asset_id|
+          @image.asset_images.create(asset_id: asset_id)
+        end
+      end
+
       redirect_to @image, notice: "Image was successfully imported!"
     else
       Rails.logger.error "Smart Import: Failed to save image. Errors: #{@image.errors.full_messages}"
-      @images = Image.recent_first
-      @characters = Character.by_name
-      @locations = Location.order(:name)
+      load_form_data
       flash.now[:alert] = @image.errors.full_messages.join(", ")
       render :new, status: :unprocessable_entity
     end
@@ -171,6 +177,17 @@ class SmartImportsController < ApplicationController
       end
     end
 
+    # Match assets
+    assets = Asset.pluck(:id, :name)
+    matched_asset_ids = []
+
+    asset_text = [metadata[:title], metadata[:caption]].compact.join(" ").downcase
+    assets.each do |id, name|
+      if asset_text.include?(name.downcase)
+        matched_asset_ids << id
+      end
+    end
+
     render json: {
       success: true,
       source: "getty",
@@ -184,6 +201,7 @@ class SmartImportsController < ApplicationController
         matched_character_ids: matched_character_ids.uniq,
         matched_locations: [],
         matched_location_ids: matched_location_ids.uniq,
+        matched_asset_ids: matched_asset_ids.uniq,
         suggested_new_characters: (metadata[:people] || []) - Character.pluck(:name),
         suggested_new_locations: [],
         confidence_notes: "Data from Getty Images API. Photographer: #{metadata[:photographer]}. Collection: #{metadata[:collection]}.",
@@ -243,6 +261,17 @@ class SmartImportsController < ApplicationController
       end
     end
 
+    # Match assets
+    assets = Asset.pluck(:id, :name)
+    matched_asset_ids = []
+
+    asset_text = [metadata[:title], metadata[:description]].compact.join(" ").downcase
+    assets.each do |id, name|
+      if asset_text.include?(name.downcase)
+        matched_asset_ids << id
+      end
+    end
+
     render json: {
       success: true,
       source: "alamy",
@@ -256,6 +285,7 @@ class SmartImportsController < ApplicationController
         matched_character_ids: matched_character_ids.uniq,
         matched_locations: [],
         matched_location_ids: matched_location_ids.uniq,
+        matched_asset_ids: matched_asset_ids.uniq,
         suggested_new_characters: [],
         suggested_new_locations: [],
         confidence_notes: "Data scraped from Alamy. Photographer: #{metadata[:photographer]}. Agency: #{metadata[:agency]}.",
@@ -274,5 +304,12 @@ class SmartImportsController < ApplicationController
       :title, :taken_date, :taken_date_precision, :location, :notes,
       :source_url, :article_url, :article_title, :website_name, :website_url
     )
+  end
+
+  def load_form_data
+    @images = Image.recent_first
+    @characters = Character.by_name
+    @locations = Location.order(:name)
+    @assets = Asset.order(:name)
   end
 end

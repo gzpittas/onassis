@@ -8,7 +8,7 @@ export default class extends Controller {
     "analyzeBtn", "loading", "error", "errorMessage",
     "form", "remoteUrl",
     "title", "notes", "takenDate", "datePrecision", "location",
-    "charactersGrid", "locationsGrid",
+    "charactersGrid", "locationsGrid", "assetsGrid",
     "suggestedCharacters", "suggestedCharactersList",
     "suggestedLocations", "suggestedLocationsList",
     "confidence", "confidenceText"
@@ -211,6 +211,17 @@ export default class extends Controller {
         const checkbox = this.locationsGridTarget.querySelector(`[data-location-id="${id}"] input`)
         if (checkbox) checkbox.checked = true
       })
+    }
+
+    // Check matched assets
+    if (this.hasAssetsGridTarget) {
+      this.uncheckAll(this.assetsGridTarget)
+      if (analysis.matched_asset_ids) {
+        analysis.matched_asset_ids.forEach(id => {
+          const checkbox = this.assetsGridTarget.querySelector(`[data-asset-id="${id}"] input`)
+          if (checkbox) checkbox.checked = true
+        })
+      }
     }
 
     // Show suggested new characters

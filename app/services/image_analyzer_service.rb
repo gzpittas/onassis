@@ -4,10 +4,11 @@ require "base64"
 class ImageAnalyzerService
   class AnalysisError < StandardError; end
 
-  def initialize(url, characters:, locations:, page_url: nil)
+  def initialize(url, characters:, locations:, assets: [], page_url: nil)
     @url = url
     @characters = characters
     @locations = locations
+    @assets = assets
     @page_url = page_url
   end
 
@@ -165,6 +166,9 @@ class ImageAnalyzerService
       KNOWN LOCATIONS IN OUR DATABASE:
       #{@locations.map { |l| "- #{l}" }.join("\n")}
 
+      KNOWN ASSETS IN OUR DATABASE (ships, properties, vehicles, etc.):
+      #{@assets.map { |a| "- #{a}" }.join("\n")}
+
       Please provide your analysis in the following JSON format. Be as accurate as possible. If you're unsure about something, leave it blank or use your best estimate with a note in the description.
 
       {
@@ -175,6 +179,7 @@ class ImageAnalyzerService
         "location": "The location where the photo was taken, if identifiable",
         "matched_characters": ["Array of names from the KNOWN PEOPLE list above that appear in this image - use exact names from the list"],
         "matched_locations": ["Array of names from the KNOWN LOCATIONS list above that relate to this image - use exact names from the list"],
+        "matched_assets": ["Array of names from the KNOWN ASSETS list above that appear in this image - use exact names from the list"],
         "suggested_new_characters": ["People visible in the image who are NOT in our database - provide their full names if known"],
         "suggested_new_locations": ["Locations that should be added to our database"],
         "confidence_notes": "Any notes about your confidence level or uncertainties in this analysis"
