@@ -72,7 +72,7 @@
         <p data-smart-import-target="confidenceText"></p>
       </div>
 
-      <%= form_with url: create_smart_import_path, method: :post, local: true, data: { smart_import_target: "form" } do |f| %>
+      <%= form_with url: create_smart_import_path, method: :post, data: { turbo: false, smart_import_target: "form" } do |f| %>
         <input type="hidden" name="image[remote_url]" data-smart-import-target="remoteUrl">
 
         <div class="form-row">
@@ -90,7 +90,7 @@
         <div class="form-row">
           <div class="form-group">
             <label for="image_taken_date">Date Taken</label>
-            <input type="date" name="image[taken_date]" id="image_taken_date" data-smart-import-target="takenDate">
+            <input type="date" name="image[taken_date]" id="image_taken_date" data-smart-import-target="takenDate" min="1800-01-01" max="2100-12-31">
           </div>
           <div class="form-group">
             <label for="image_taken_date_precision">Date Precision</label>
@@ -165,7 +165,7 @@
           <button type="button" class="btn btn-secondary" data-action="click->smart-import#back">
             Back
           </button>
-          <button type="submit" class="btn btn-gold">
+          <button type="submit" class="btn btn-gold" onclick="console.log('Form submitting, remote_url:', document.querySelector('[data-smart-import-target=remoteUrl]').value)">
             Import Image
           </button>
         </div>

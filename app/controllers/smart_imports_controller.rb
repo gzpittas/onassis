@@ -70,6 +70,54 @@ class SmartImportsController < ApplicationController
     render json: { error: "An unexpected error occurred. Please try again." }, status: :internal_server_error
   end
 
+  def create
+    @image = Image.new(image_params)
+
+    Rails.logger.info "Smart Import: Creating image with params: #{image_params.inspect}"
+    Rails.logger.info "Smart Import: Remote URL: #{params[:image][:remote_url]}"
+
+    # Attach image from URL
+    if params[:image][:remote_url].present?
+      unless @image.attach_from_url(params[:image][:remote_url])
+        Rails.logger.error "Smart Import: Failed to attach from URL. Errors: #{@image.errors.full_messages}"
+        @images = Image.recent_first
+        @characters = Character.by_name
+        @locations = Location.order(:name)
+        flash.now[:alert] = "Failed to import image from URL: #{@image.errors[:remote_url].join(', ')}"
+        render :new, status: :unprocessable_entity
+        return
+      end
+      Rails.logger.info "Smart Import: Successfully attached image from URL"
+    else
+      Rails.logger.warn "Smart Import: No remote URL provided!"
+    end
+
+    if @image.save
+      Rails.logger.info "Smart Import: Image saved successfully with ID: #{@image.id}"
+      # Associate characters and locations
+      if params[:image][:character_ids].present?
+        params[:image][:character_ids].reject(&:blank?).each do |char_id|
+          @image.image_characters.create(character_id: char_id)
+        end
+      end
+
+      if params[:image][:location_ids].present?
+        params[:image][:location_ids].reject(&:blank?).each do |loc_id|
+          @image.image_locations.create(location_id: loc_id)
+        end
+      end
+
+      redirect_to @image, notice: "Image was successfully imported!"
+    else
+      Rails.logger.error "Smart Import: Failed to save image. Errors: #{@image.errors.full_messages}"
+      @images = Image.recent_first
+      @characters = Character.by_name
+      @locations = Location.order(:name)
+      flash.now[:alert] = @image.errors.full_messages.join(", ")
+      render :new, status: :unprocessable_entity
+    end
+  end
+
   private
 
   def analyze_getty(getty_url, image_url = nil)
@@ -92,19 +140,22 @@ class SmartImportsController < ApplicationController
     characters = Character.pluck(:id, :name)
     matched_character_ids = []
 
-    if metadata[:people].present?
-      metadata[:people].each do |person|
-        # Try to find matching character (case-insensitive partial match)
-        match = characters.find { |id, name| name.downcase.include?(person.downcase) || person.downcase.include?(name.downcase.split.first) }
-        matched_character_ids << match[0] if match
-      end
-    end
+    # Combine all text to search
+    text_to_search = [metadata[:caption], (metadata[:people] || []).join(" ")].compact.join(" ").downcase
 
-    # Also check caption for character names
-    if metadata[:caption].present?
-      characters.each do |id, name|
-        if metadata[:caption].downcase.include?(name.downcase.split.first)
-          matched_character_ids << id unless matched_character_ids.include?(id)
+    characters.each do |id, name|
+      name_parts = name.downcase.split
+      first_name = name_parts.first
+      last_name = name_parts.last
+
+      # Require BOTH first and last name to be present
+      if name_parts.length >= 2
+        if text_to_search.include?(first_name) && text_to_search.include?(last_name)
+          matched_character_ids << id
+        end
+      else
+        if text_to_search.include?(name.downcase)
+          matched_character_ids << id
         end
       end
     end
@@ -160,22 +211,23 @@ class SmartImportsController < ApplicationController
 
     # Check headline/title for character names
     text_to_search = [metadata[:title], metadata[:description]].compact.join(" ").downcase
-    characters.each do |id, name|
-      first_name = name.downcase.split.first
-      last_name = name.downcase.split.last
-      if text_to_search.include?(last_name) || text_to_search.include?(first_name)
-        matched_character_ids << id
-      end
-    end
 
-    # Also check keywords/people
-    if metadata[:people].present?
-      metadata[:people].each do |person|
-        characters.each do |id, name|
-          if person.downcase.include?(name.downcase.split.last) ||
-             name.downcase.include?(person.downcase.split.last)
-            matched_character_ids << id unless matched_character_ids.include?(id)
-          end
+    characters.each do |id, name|
+      name_parts = name.downcase.split
+      first_name = name_parts.first
+      last_name = name_parts.last
+
+      # Require BOTH first and last name to be present (not just one)
+      # This prevents matching "Christina Onassis" when only "Aristotle Onassis" is mentioned
+      if name_parts.length >= 2
+        # Both first and last name must appear in the text
+        if text_to_search.include?(first_name) && text_to_search.include?(last_name)
+          matched_character_ids << id
+        end
+      else
+        # Single-word names: require exact match
+        if text_to_search.include?(name.downcase)
+          matched_character_ids << id
         end
       end
     end
@@ -216,56 +268,6 @@ class SmartImportsController < ApplicationController
   rescue AlamyScraperService::ScraperError => e
     render json: { error: e.message }, status: :unprocessable_entity
   end
-
-  def create
-    @image = Image.new(image_params)
-
-    Rails.logger.info "Smart Import: Creating image with params: #{image_params.inspect}"
-    Rails.logger.info "Smart Import: Remote URL: #{params[:image][:remote_url]}"
-
-    # Attach image from URL
-    if params[:image][:remote_url].present?
-      unless @image.attach_from_url(params[:image][:remote_url])
-        Rails.logger.error "Smart Import: Failed to attach from URL. Errors: #{@image.errors.full_messages}"
-        @images = Image.recent_first
-        @characters = Character.by_name
-        @locations = Location.order(:name)
-        flash.now[:alert] = "Failed to import image from URL: #{@image.errors[:remote_url].join(', ')}"
-        render :new, status: :unprocessable_entity
-        return
-      end
-      Rails.logger.info "Smart Import: Successfully attached image from URL"
-    else
-      Rails.logger.warn "Smart Import: No remote URL provided!"
-    end
-
-    if @image.save
-      Rails.logger.info "Smart Import: Image saved successfully with ID: #{@image.id}"
-      # Associate characters and locations
-      if params[:image][:character_ids].present?
-        params[:image][:character_ids].reject(&:blank?).each do |char_id|
-          @image.image_characters.create(character_id: char_id)
-        end
-      end
-
-      if params[:image][:location_ids].present?
-        params[:image][:location_ids].reject(&:blank?).each do |loc_id|
-          @image.image_locations.create(location_id: loc_id)
-        end
-      end
-
-      redirect_to @image, notice: "Image was successfully imported!"
-    else
-      Rails.logger.error "Smart Import: Failed to save image. Errors: #{@image.errors.full_messages}"
-      @images = Image.recent_first
-      @characters = Character.by_name
-      @locations = Location.order(:name)
-      flash.now[:alert] = @image.errors.full_messages.join(", ")
-      render :new, status: :unprocessable_entity
-    end
-  end
-
-  private
 
   def image_params
     params.require(:image).permit(
