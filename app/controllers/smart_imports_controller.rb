@@ -24,8 +24,19 @@ class SmartImportsController < ApplicationController
     url = params[:url]
     page_url = params[:page_url]
 
+    if url.blank? && page_url.blank?
+      render json: { error: "Please provide an image URL or page URL" }, status: :unprocessable_entity
+      return
+    end
+
+    # Check if this is a Getty URL - use their API for better metadata
+    getty_url = page_url.presence || url
+    if GettyApiService.getty_url?(getty_url)
+      return analyze_getty(getty_url, url)
+    end
+
     if url.blank?
-      render json: { error: "Please provide an image URL" }, status: :unprocessable_entity
+      render json: { error: "Please select an image" }, status: :unprocessable_entity
       return
     end
 
@@ -51,6 +62,81 @@ class SmartImportsController < ApplicationController
   rescue => e
     Rails.logger.error("Smart import error: #{e.message}\n#{e.backtrace.first(5).join("\n")}")
     render json: { error: "An unexpected error occurred. Please try again." }, status: :internal_server_error
+  end
+
+  private
+
+  def analyze_getty(getty_url, image_url = nil)
+    image_id = GettyApiService.extract_image_id(getty_url)
+
+    unless image_id
+      render json: { error: "Could not extract Getty image ID from URL" }, status: :unprocessable_entity
+      return
+    end
+
+    getty = GettyApiService.new
+    metadata = getty.get_image_metadata(image_id)
+
+    unless metadata
+      render json: { error: "Could not fetch metadata from Getty" }, status: :unprocessable_entity
+      return
+    end
+
+    # Match people from Getty to our characters
+    characters = Character.pluck(:id, :name)
+    matched_character_ids = []
+
+    if metadata[:people].present?
+      metadata[:people].each do |person|
+        # Try to find matching character (case-insensitive partial match)
+        match = characters.find { |id, name| name.downcase.include?(person.downcase) || person.downcase.include?(name.downcase.split.first) }
+        matched_character_ids << match[0] if match
+      end
+    end
+
+    # Also check caption for character names
+    if metadata[:caption].present?
+      characters.each do |id, name|
+        if metadata[:caption].downcase.include?(name.downcase.split.first)
+          matched_character_ids << id unless matched_character_ids.include?(id)
+        end
+      end
+    end
+
+    # Match locations
+    locations = Location.pluck(:id, :name)
+    matched_location_ids = []
+
+    location_text = [metadata[:location], metadata[:caption]].compact.join(" ").downcase
+    locations.each do |id, name|
+      if location_text.include?(name.downcase)
+        matched_location_ids << id
+      end
+    end
+
+    render json: {
+      success: true,
+      source: "getty",
+      analysis: {
+        title: metadata[:title],
+        description: metadata[:caption],
+        taken_date: metadata[:date_taken]&.strftime("%Y-%m-%d"),
+        taken_date_precision: metadata[:date_taken] ? "exact" : nil,
+        location: metadata[:location],
+        matched_characters: metadata[:people] || [],
+        matched_character_ids: matched_character_ids.uniq,
+        matched_locations: [],
+        matched_location_ids: matched_location_ids.uniq,
+        suggested_new_characters: (metadata[:people] || []) - Character.pluck(:name),
+        suggested_new_locations: [],
+        confidence_notes: "Data from Getty Images API. Photographer: #{metadata[:photographer]}. Collection: #{metadata[:collection]}.",
+        getty_id: metadata[:getty_id],
+        getty_url: metadata[:getty_url],
+        image_url: metadata[:image_url]
+      }
+    }
+  rescue GettyApiService::ApiError => e
+    render json: { error: e.message }, status: :unprocessable_entity
   end
 
   def create

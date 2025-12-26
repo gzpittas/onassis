@@ -179,8 +179,8 @@ export default class extends Controller {
   }
 
   populateForm(url, analysis) {
-    // Set the remote URL for import
-    this.remoteUrlTarget.value = url
+    // Set the remote URL for import (use Getty preview URL if available)
+    this.remoteUrlTarget.value = analysis.image_url || url
 
     // Populate text fields
     this.titleTarget.value = analysis.title || ""

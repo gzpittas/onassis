@@ -1,11 +1,11 @@
-# OpenAI API configuration
+# API Configuration
 #
-# Set your API key via environment variable:
-#   export OPENAI_API_KEY="your-api-key-here"
+# Set your API keys via environment variables or in .env file:
 #
-# Or create a .env file in the project root:
-#   OPENAI_API_KEY=your-api-key-here
+# OpenAI (for AI image analysis):
+#   OPENAI_API_KEY=your-openai-api-key
+#   Get yours at: https://platform.openai.com/api-keys
 #
-# Get your API key from: https://platform.openai.com/api-keys
-
-# The ruby-openai gem reads from OPENAI_API_KEY environment variable
+# Getty Images (for Getty metadata):
+#   GETTY_API_KEY=your-getty-api-key
+#   Get yours at: https://developer.gettyimages.com/
