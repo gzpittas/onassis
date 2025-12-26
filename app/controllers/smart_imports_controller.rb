@@ -96,7 +96,35 @@ class SmartImportsController < ApplicationController
 
     if @image.save
       Rails.logger.info "Smart Import: Image saved successfully with ID: #{@image.id}"
-      # Associate characters, locations, and assets
+
+      new_characters_created = []
+      new_locations_created = []
+
+      # Create new characters if approved
+      if params[:new_characters].present?
+        params[:new_characters].reject(&:blank?).each do |name|
+          character = Character.create(name: name.strip)
+          if character.persisted?
+            @image.image_characters.create(character_id: character.id)
+            new_characters_created << character.name
+            Rails.logger.info "Smart Import: Created new character: #{character.name}"
+          end
+        end
+      end
+
+      # Create new locations if approved
+      if params[:new_locations].present?
+        params[:new_locations].reject(&:blank?).each do |name|
+          location = Location.create(name: name.strip)
+          if location.persisted?
+            @image.image_locations.create(location_id: location.id)
+            new_locations_created << location.name
+            Rails.logger.info "Smart Import: Created new location: #{location.name}"
+          end
+        end
+      end
+
+      # Associate existing characters, locations, and assets
       if params[:image][:character_ids].present?
         params[:image][:character_ids].reject(&:blank?).each do |char_id|
           @image.image_characters.create(character_id: char_id)
@@ -115,7 +143,12 @@ class SmartImportsController < ApplicationController
         end
       end
 
-      redirect_to @image, notice: "Image was successfully imported!"
+      # Build success message
+      notice_parts = ["Image was successfully imported!"]
+      notice_parts << "Created #{new_characters_created.count} new character(s): #{new_characters_created.join(', ')}" if new_characters_created.any?
+      notice_parts << "Created #{new_locations_created.count} new location(s): #{new_locations_created.join(', ')}" if new_locations_created.any?
+
+      redirect_to @image, notice: notice_parts.join(" ")
     else
       Rails.logger.error "Smart Import: Failed to save image. Errors: #{@image.errors.full_messages}"
       load_form_data

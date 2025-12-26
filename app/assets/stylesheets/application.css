@@ -1660,6 +1660,28 @@ td a:hover {
   flex-shrink: 0;
 }
 
+.checkbox-item-new {
+  background-color: #f0fff4;
+  border-left: 3px solid var(--green);
+}
+
+.checkbox-item-new:hover {
+  background-color: #e6ffed;
+}
+
+.badge-new {
+  display: inline-block;
+  background-color: var(--green);
+  color: white;
+  font-size: 0.65rem;
+  font-weight: bold;
+  padding: 0.15rem 0.4rem;
+  border-radius: 3px;
+  margin-left: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
 .checkbox-label {
   display: flex;
   flex-direction: column;

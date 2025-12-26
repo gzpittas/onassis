@@ -224,20 +224,30 @@ export default class extends Controller {
       }
     }
 
-    // Show suggested new characters
+    // Show suggested new characters as checkboxes
     if (analysis.suggested_new_characters && analysis.suggested_new_characters.length > 0) {
       this.suggestedCharactersListTarget.innerHTML = analysis.suggested_new_characters
-        .map(name => `<li>${name}</li>`)
+        .map(name => `
+          <label class="checkbox-item checkbox-item-new">
+            <input type="checkbox" name="new_characters[]" value="${this.escapeHtml(name)}" checked>
+            ${this.escapeHtml(name)} <span class="badge-new">NEW</span>
+          </label>
+        `)
         .join("")
       this.suggestedCharactersTarget.classList.remove("hidden")
     } else {
       this.suggestedCharactersTarget.classList.add("hidden")
     }
 
-    // Show suggested new locations
+    // Show suggested new locations as checkboxes
     if (analysis.suggested_new_locations && analysis.suggested_new_locations.length > 0) {
       this.suggestedLocationsListTarget.innerHTML = analysis.suggested_new_locations
-        .map(name => `<li>${name}</li>`)
+        .map(name => `
+          <label class="checkbox-item checkbox-item-new">
+            <input type="checkbox" name="new_locations[]" value="${this.escapeHtml(name)}" checked>
+            ${this.escapeHtml(name)} <span class="badge-new">NEW</span>
+          </label>
+        `)
         .join("")
       this.suggestedLocationsTarget.classList.remove("hidden")
     } else {
@@ -255,6 +265,12 @@ export default class extends Controller {
 
   uncheckAll(container) {
     container.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false)
+  }
+
+  escapeHtml(text) {
+    const div = document.createElement('div')
+    div.textContent = text
+    return div.innerHTML
   }
 
   showStep2() {
