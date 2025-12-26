@@ -35,6 +35,12 @@ class SmartImportsController < ApplicationController
       return analyze_getty(getty_url, url)
     end
 
+    # Check if this is an Alamy URL - scrape their page for metadata
+    alamy_url = page_url.presence || url
+    if AlamyScraperService.alamy_url?(alamy_url)
+      return analyze_alamy(alamy_url, url)
+    end
+
     if url.blank?
       render json: { error: "Please select an image" }, status: :unprocessable_entity
       return
@@ -139,22 +145,102 @@ class SmartImportsController < ApplicationController
     render json: { error: e.message }, status: :unprocessable_entity
   end
 
+  def analyze_alamy(alamy_url, image_url = nil)
+    scraper = AlamyScraperService.new(alamy_url)
+    metadata = scraper.extract_metadata
+
+    unless metadata
+      render json: { error: "Could not extract metadata from Alamy page" }, status: :unprocessable_entity
+      return
+    end
+
+    # Match people from Alamy to our characters
+    characters = Character.pluck(:id, :name)
+    matched_character_ids = []
+
+    # Check headline/title for character names
+    text_to_search = [metadata[:title], metadata[:description]].compact.join(" ").downcase
+    characters.each do |id, name|
+      first_name = name.downcase.split.first
+      last_name = name.downcase.split.last
+      if text_to_search.include?(last_name) || text_to_search.include?(first_name)
+        matched_character_ids << id
+      end
+    end
+
+    # Also check keywords/people
+    if metadata[:people].present?
+      metadata[:people].each do |person|
+        characters.each do |id, name|
+          if person.downcase.include?(name.downcase.split.last) ||
+             name.downcase.include?(person.downcase.split.last)
+            matched_character_ids << id unless matched_character_ids.include?(id)
+          end
+        end
+      end
+    end
+
+    # Match locations
+    locations = Location.pluck(:id, :name)
+    matched_location_ids = []
+
+    location_text = [metadata[:location], metadata[:title], metadata[:description]].compact.join(" ").downcase
+    locations.each do |id, name|
+      if location_text.include?(name.downcase)
+        matched_location_ids << id
+      end
+    end
+
+    render json: {
+      success: true,
+      source: "alamy",
+      analysis: {
+        title: metadata[:title],
+        description: metadata[:description],
+        taken_date: metadata[:date_taken]&.strftime("%Y-%m-%d"),
+        taken_date_precision: metadata[:date_precision],
+        location: metadata[:location],
+        matched_characters: [],
+        matched_character_ids: matched_character_ids.uniq,
+        matched_locations: [],
+        matched_location_ids: matched_location_ids.uniq,
+        suggested_new_characters: [],
+        suggested_new_locations: [],
+        confidence_notes: "Data scraped from Alamy. Photographer: #{metadata[:photographer]}. Agency: #{metadata[:agency]}.",
+        alamy_id: metadata[:alamy_id],
+        alamy_ref: metadata[:alamy_ref],
+        alamy_url: metadata[:alamy_url],
+        image_url: metadata[:image_url]
+      }
+    }
+  rescue AlamyScraperService::ScraperError => e
+    render json: { error: e.message }, status: :unprocessable_entity
+  end
+
   def create
     @image = Image.new(image_params)
+
+    Rails.logger.info "Smart Import: Creating image with params: #{image_params.inspect}"
+    Rails.logger.info "Smart Import: Remote URL: #{params[:image][:remote_url]}"
 
     # Attach image from URL
     if params[:image][:remote_url].present?
       unless @image.attach_from_url(params[:image][:remote_url])
+        Rails.logger.error "Smart Import: Failed to attach from URL. Errors: #{@image.errors.full_messages}"
         @images = Image.recent_first
         @characters = Character.by_name
         @locations = Location.order(:name)
-        flash.now[:alert] = "Failed to import image from URL"
+        flash.now[:alert] = "Failed to import image from URL: #{@image.errors[:remote_url].join(', ')}"
         render :new, status: :unprocessable_entity
         return
       end
+      Rails.logger.info "Smart Import: Successfully attached image from URL"
+    else
+      Rails.logger.warn "Smart Import: No remote URL provided!"
     end
 
     if @image.save
+      Rails.logger.info "Smart Import: Image saved successfully with ID: #{@image.id}"
       # Associate characters and locations
       if params[:image][:character_ids].present?
         params[:image][:character_ids].reject(&:blank?).each do |char_id|
@@ -170,9 +256,11 @@ class SmartImportsController < ApplicationController
 
       redirect_to @image, notice: "Image was successfully imported!"
     else
+      Rails.logger.error "Smart Import: Failed to save image. Errors: #{@image.errors.full_messages}"
       @images = Image.recent_first
       @characters = Character.by_name
       @locations = Location.order(:name)
+      flash.now[:alert] = @image.errors.full_messages.join(", ")
       render :new, status: :unprocessable_entity
     end
   end

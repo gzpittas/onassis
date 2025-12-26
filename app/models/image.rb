@@ -43,7 +43,10 @@ class Image < ApplicationRecord
     http.read_timeout = 30
 
     request = Net::HTTP::Get.new(uri.request_uri)
-    request["User-Agent"] = "Mozilla/5.0 (compatible; OnassisTimeline/1.0)"
+    # Use a real browser User-Agent to avoid blocks from image servers
+    request["User-Agent"] = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+    request["Accept"] = "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8"
+    request["Accept-Language"] = "en-US,en;q=0.9"
     response = http.request(request)
 
     # Handle redirects
