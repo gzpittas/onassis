@@ -17,6 +17,19 @@
           <% if credit.description.present? %>
             <p><%= truncate(credit.description, length: 150) %></p>
           <% end %>
+          <% candidates_with_images = credit.credit_candidates.by_priority.select { |c| c.image_url.present? } %>
+          <% if candidates_with_images.any? %>
+            <div class="candidate-thumbnails">
+              <% candidates_with_images.each do |candidate| %>
+                <div class="candidate-thumbnail-item">
+                  <%= link_to credit_credit_candidate_path(credit, candidate) do %>
+                    <%= image_tag candidate.image_url, alt: candidate.person_name, class: "candidate-thumb", loading: "lazy" %>
+                  <% end %>
+                  <span class="candidate-thumb-name"><%= candidate.person_name %></span>
+                </div>
+              <% end %>
+            </div>
+          <% end %>
           <p class="card-meta"><%= credit.credit_candidates.count %> candidates</p>
         </div>
         <div class="card-footer">
