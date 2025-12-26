@@ -3,7 +3,7 @@ import { Controller } from "@hotwired/stimulus"
 export default class extends Controller {
   static targets = [
     "step1", "step2",
-    "urlInput", "preview", "previewImage",
+    "urlInput", "pageUrlInput", "preview", "previewImage",
     "analyzeBtn", "loading", "error", "errorMessage",
     "form", "remoteUrl",
     "title", "notes", "takenDate", "datePrecision", "location",
@@ -57,13 +57,15 @@ export default class extends Controller {
     this.showLoading()
 
     try {
+      const pageUrl = this.hasPageUrlInputTarget ? this.pageUrlInputTarget.value.trim() : ""
+
       const response = await fetch("/smart_import/analyze", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
         },
-        body: JSON.stringify({ url: url })
+        body: JSON.stringify({ url: url, page_url: pageUrl })
       })
 
       const data = await response.json()

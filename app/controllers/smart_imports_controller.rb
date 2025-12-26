@@ -7,6 +7,7 @@ class SmartImportsController < ApplicationController
 
   def analyze
     url = params[:url]
+    page_url = params[:page_url]
 
     if url.blank?
       render json: { error: "Please provide an image URL" }, status: :unprocessable_entity
@@ -16,7 +17,7 @@ class SmartImportsController < ApplicationController
     characters = Character.pluck(:name)
     locations = Location.pluck(:name)
 
-    analyzer = ImageAnalyzerService.new(url, characters: characters, locations: locations)
+    analyzer = ImageAnalyzerService.new(url, characters: characters, locations: locations, page_url: page_url)
     result = analyzer.analyze
 
     # Map matched names to IDs

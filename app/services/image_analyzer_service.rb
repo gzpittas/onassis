@@ -4,10 +4,11 @@ require "base64"
 class ImageAnalyzerService
   class AnalysisError < StandardError; end
 
-  def initialize(url, characters:, locations:)
+  def initialize(url, characters:, locations:, page_url: nil)
     @url = url
     @characters = characters
     @locations = locations
+    @page_url = page_url
   end
 
   def analyze
@@ -54,9 +55,63 @@ class ImageAnalyzerService
   end
 
   def fetch_page_context
-    "Image URL: #{@url}"
-  rescue
-    ""
+    context = "Image URL: #{@url}\n"
+
+    if @page_url.present?
+      begin
+        uri = URI.parse(@page_url)
+        http = Net::HTTP.new(uri.host, uri.port)
+        http.use_ssl = uri.scheme == "https"
+        http.verify_mode = OpenSSL::SSL::VERIFY_NONE if http.use_ssl?
+        http.open_timeout = 10
+        http.read_timeout = 30
+
+        request = Net::HTTP::Get.new(uri.request_uri)
+        request["User-Agent"] = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36"
+        response = http.request(request)
+
+        if response.is_a?(Net::HTTPSuccess)
+          # Extract text content from HTML
+          html = response.body.force_encoding("UTF-8")
+
+          # Remove script and style tags
+          html = html.gsub(/<script[^>]*>.*?<\/script>/mi, " ")
+          html = html.gsub(/<style[^>]*>.*?<\/style>/mi, " ")
+
+          # Extract title
+          title_match = html.match(/<title[^>]*>(.*?)<\/title>/mi)
+          page_title = title_match ? title_match[1].strip : ""
+
+          # Extract meta description
+          desc_match = html.match(/<meta[^>]*name=["']description["'][^>]*content=["']([^"']+)["']/mi)
+          desc_match ||= html.match(/<meta[^>]*content=["']([^"']+)["'][^>]*name=["']description["']/mi)
+          meta_desc = desc_match ? desc_match[1].strip : ""
+
+          # Extract image alt text and captions near the image
+          alt_match = html.match(/alt=["']([^"']*(?:onassis|jackie|kennedy|callas|christina)[^"']*)["']/mi)
+          img_alt = alt_match ? alt_match[1].strip : ""
+
+          # Extract figcaption if present
+          figcaption_match = html.match(/<figcaption[^>]*>(.*?)<\/figcaption>/mi)
+          figcaption = figcaption_match ? figcaption_match[1].gsub(/<[^>]+>/, " ").strip : ""
+
+          # Get article text (strip HTML tags, limit length)
+          text_content = html.gsub(/<[^>]+>/, " ").gsub(/\s+/, " ").strip
+          text_content = text_content[0..3000] # Limit to avoid token limits
+
+          context += "\nPage URL: #{@page_url}"
+          context += "\nPage Title: #{page_title}" if page_title.present?
+          context += "\nMeta Description: #{meta_desc}" if meta_desc.present?
+          context += "\nImage Alt Text: #{img_alt}" if img_alt.present?
+          context += "\nImage Caption: #{figcaption}" if figcaption.present?
+          context += "\n\nPage Content:\n#{text_content}"
+        end
+      rescue => e
+        Rails.logger.warn "Failed to fetch page content: #{e.message}"
+      end
+    end
+
+    context
   end
 
   def build_prompt(page_context)

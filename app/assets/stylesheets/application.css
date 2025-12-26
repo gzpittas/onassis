@@ -2712,3 +2712,9 @@ td a:hover {
 .suggested-additions li {
   margin-bottom: 0.25rem;
 }
+
+.form-hint-inline {
+  font-weight: normal;
+  color: #718096;
+  font-size: 0.875rem;
+}
