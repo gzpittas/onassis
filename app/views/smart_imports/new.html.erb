@@ -10,26 +10,36 @@
       <p class="form-hint">Paste the URL of an image you found online. The AI will analyze it and extract metadata.</p>
 
       <div class="form-group">
-        <label for="image-url">Image URL</label>
-        <input type="url"
-               id="image-url"
-               placeholder="https://example.com/image.jpg"
-               data-smart-import-target="urlInput"
-               class="smart-import-url-input">
-      </div>
-
-      <div class="form-group">
-        <label for="page-url">Page URL <span class="form-hint-inline">(optional - the webpage where you found this image)</span></label>
+        <label for="page-url">Page URL</label>
         <input type="url"
                id="page-url"
                placeholder="https://example.com/article-about-onassis"
                data-smart-import-target="pageUrlInput"
                class="smart-import-url-input">
-        <p class="form-hint">If provided, AI will extract captions, dates, and descriptions from the page.</p>
+        <p class="form-hint">Paste the URL of the webpage where you found the image. We'll find the images and extract metadata.</p>
+      </div>
+
+      <div class="smart-import-images hidden" data-smart-import-target="imagesSection">
+        <label>Select an image from the page:</label>
+        <div class="smart-import-image-grid" data-smart-import-target="imageGrid"></div>
       </div>
 
       <div class="smart-import-preview hidden" data-smart-import-target="preview">
+        <p class="form-hint">Selected image:</p>
         <img src="" alt="Preview" data-smart-import-target="previewImage">
+      </div>
+
+      <div class="smart-import-or-divider">
+        <span>or paste image URL directly</span>
+      </div>
+
+      <div class="form-group">
+        <label for="image-url">Direct Image URL <span class="form-hint-inline">(if you already have it)</span></label>
+        <input type="url"
+               id="image-url"
+               placeholder="https://example.com/image.jpg"
+               data-smart-import-target="urlInput"
+               class="smart-import-url-input">
       </div>
 
       <div class="form-actions">

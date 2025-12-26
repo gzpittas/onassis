@@ -11,6 +11,7 @@ Rails.application.routes.draw do
 
   # Smart AI-powered import
   get "smart_import", to: "smart_imports#new", as: :smart_import
+  post "smart_import/fetch_images", to: "smart_imports#fetch_images", as: :smart_import_fetch_images
   post "smart_import/analyze", to: "smart_imports#analyze", as: :smart_import_analyze
   post "smart_import", to: "smart_imports#create", as: :create_smart_import
   resources :assets, path: "production_assets"

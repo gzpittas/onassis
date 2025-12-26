@@ -5,6 +5,21 @@ class SmartImportsController < ApplicationController
     @locations = Location.order(:name)
   end
 
+  def fetch_images
+    page_url = params[:page_url]
+
+    if page_url.blank?
+      render json: { error: "Please provide a page URL" }, status: :unprocessable_entity
+      return
+    end
+
+    images = PageImageExtractor.new(page_url).extract
+    render json: { success: true, images: images }
+  rescue => e
+    Rails.logger.error("Fetch images error: #{e.message}")
+    render json: { error: "Failed to fetch images from page: #{e.message}" }, status: :unprocessable_entity
+  end
+
   def analyze
     url = params[:url]
     page_url = params[:page_url]

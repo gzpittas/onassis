@@ -4,6 +4,7 @@ export default class extends Controller {
   static targets = [
     "step1", "step2",
     "urlInput", "pageUrlInput", "preview", "previewImage",
+    "imagesSection", "imageGrid",
     "analyzeBtn", "loading", "error", "errorMessage",
     "form", "remoteUrl",
     "title", "notes", "takenDate", "datePrecision", "location",
@@ -14,20 +15,119 @@ export default class extends Controller {
   ]
 
   connect() {
-    // Preview image when URL is pasted
-    this.urlInputTarget.addEventListener("input", this.updatePreview.bind(this))
-    this.urlInputTarget.addEventListener("paste", () => {
-      setTimeout(() => this.updatePreview(), 0)
-    })
+    this.selectedImageUrl = null
+
+    // Fetch images when page URL is entered
+    if (this.hasPageUrlInputTarget) {
+      this.pageUrlInputTarget.addEventListener("blur", this.fetchImagesFromPage.bind(this))
+      this.pageUrlInputTarget.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          e.preventDefault()
+          this.fetchImagesFromPage()
+        }
+      })
+    }
+
+    // Preview when direct URL is pasted
+    if (this.hasUrlInputTarget) {
+      this.urlInputTarget.addEventListener("input", this.updatePreviewFromDirectUrl.bind(this))
+      this.urlInputTarget.addEventListener("paste", () => {
+        setTimeout(() => this.updatePreviewFromDirectUrl(), 0)
+      })
+    }
   }
 
-  updatePreview() {
+  async fetchImagesFromPage() {
+    const pageUrl = this.pageUrlInputTarget.value.trim()
+    if (!pageUrl || !this.isValidUrl(pageUrl)) return
+
+    this.hideError()
+    this.showLoading()
+
+    try {
+      const response = await fetch("/smart_import/fetch_images", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
+        },
+        body: JSON.stringify({ page_url: pageUrl })
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to fetch images")
+      }
+
+      this.displayImageOptions(data.images)
+
+    } catch (error) {
+      this.showError(error.message)
+    } finally {
+      this.hideLoading()
+    }
+  }
+
+  displayImageOptions(images) {
+    if (!images || images.length === 0) {
+      this.showError("No suitable images found on this page")
+      return
+    }
+
+    this.imageGridTarget.innerHTML = ""
+
+    images.forEach((image, index) => {
+      const div = document.createElement("div")
+      div.className = "smart-import-image-option"
+      div.dataset.imageUrl = image.url
+      div.innerHTML = `
+        <img src="${image.url}" alt="${image.alt || 'Image ' + (index + 1)}" loading="lazy">
+        ${image.caption ? `<p class="image-option-caption">${image.caption.substring(0, 50)}${image.caption.length > 50 ? '...' : ''}</p>` : ''}
+      `
+      div.addEventListener("click", () => this.selectImage(image.url, div))
+      this.imageGridTarget.appendChild(div)
+    })
+
+    this.imagesSectionTarget.classList.remove("hidden")
+  }
+
+  selectImage(url, element) {
+    // Remove selection from all
+    this.imageGridTarget.querySelectorAll(".smart-import-image-option").forEach(el => {
+      el.classList.remove("selected")
+    })
+
+    // Select this one
+    element.classList.add("selected")
+    this.selectedImageUrl = url
+
+    // Show preview
+    this.previewImageTarget.src = url
+    this.previewTarget.classList.remove("hidden")
+
+    // Clear direct URL input since we're using the page selection
+    if (this.hasUrlInputTarget) {
+      this.urlInputTarget.value = ""
+    }
+  }
+
+  updatePreviewFromDirectUrl() {
     const url = this.urlInputTarget.value.trim()
     if (url && this.isValidUrl(url)) {
       this.previewImageTarget.src = url
       this.previewTarget.classList.remove("hidden")
+      this.selectedImageUrl = url
+
+      // Clear image grid selection
+      if (this.hasImageGridTarget) {
+        this.imageGridTarget.querySelectorAll(".smart-import-image-option").forEach(el => {
+          el.classList.remove("selected")
+        })
+      }
     } else {
       this.previewTarget.classList.add("hidden")
+      this.selectedImageUrl = null
     }
   }
 
@@ -41,15 +141,11 @@ export default class extends Controller {
   }
 
   async analyze() {
-    const url = this.urlInputTarget.value.trim()
+    const imageUrl = this.selectedImageUrl || (this.hasUrlInputTarget ? this.urlInputTarget.value.trim() : "")
+    const pageUrl = this.hasPageUrlInputTarget ? this.pageUrlInputTarget.value.trim() : ""
 
-    if (!url) {
-      this.showError("Please enter an image URL")
-      return
-    }
-
-    if (!this.isValidUrl(url)) {
-      this.showError("Please enter a valid URL")
+    if (!imageUrl) {
+      this.showError("Please select an image or enter an image URL")
       return
     }
 
@@ -57,15 +153,13 @@ export default class extends Controller {
     this.showLoading()
 
     try {
-      const pageUrl = this.hasPageUrlInputTarget ? this.pageUrlInputTarget.value.trim() : ""
-
       const response = await fetch("/smart_import/analyze", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
         },
-        body: JSON.stringify({ url: url, page_url: pageUrl })
+        body: JSON.stringify({ url: imageUrl, page_url: pageUrl })
       })
 
       const data = await response.json()
@@ -74,7 +168,7 @@ export default class extends Controller {
         throw new Error(data.error || "Analysis failed")
       }
 
-      this.populateForm(url, data.analysis)
+      this.populateForm(imageUrl, data.analysis)
       this.showStep2()
 
     } catch (error) {
