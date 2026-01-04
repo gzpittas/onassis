@@ -1,4 +1,6 @@
 class Asset < ApplicationRecord
+  include AccountScoped
+
   has_many :entry_assets, dependent: :destroy
   has_many :entries, through: :entry_assets
   has_many :asset_images, dependent: :destroy

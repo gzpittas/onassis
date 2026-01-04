@@ -1,4 +1,6 @@
 class Music < ApplicationRecord
+  include AccountScoped
+
   validates :title, presence: true
 
   GENRES = %w[

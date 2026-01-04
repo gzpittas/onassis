@@ -1,4 +1,6 @@
 class Source < ApplicationRecord
+  include AccountScoped
+
   has_many :entries, dependent: :nullify # Legacy association
   has_many :entry_sources, dependent: :destroy
   has_many :cited_entries, through: :entry_sources, source: :entry

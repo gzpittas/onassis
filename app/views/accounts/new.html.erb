@@ -1,0 +1,26 @@
+<div class="page-header">
+  <h1>New Timeline</h1>
+</div>
+
+<%= form_with model: @account, local: true do |f| %>
+  <% if @account.errors.any? %>
+    <div class="error-messages">
+      <h3><%= pluralize(@account.errors.count, "error") %> prohibited this timeline from being saved:</h3>
+      <ul>
+        <% @account.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="form-group">
+    <%= f.label :name, "Timeline Name" %>
+    <%= f.text_field :name, placeholder: "e.g., Aristotle Onassis" %>
+  </div>
+
+  <div class="form-actions">
+    <%= f.submit "Create Timeline", class: "btn btn-gold" %>
+    <%= link_to "Cancel", accounts_path, class: "btn btn-secondary" %>
+  </div>
+<% end %>

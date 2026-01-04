@@ -10,6 +10,15 @@ module ActiveSupport
     # Setup all fixtures in test/fixtures/*.yml for all tests in alphabetical order.
     fixtures :all
 
+    setup do
+      Current.user = users(:one)
+      Current.account = accounts(:one)
+    end
+
+    teardown do
+      Current.reset
+    end
+
     # Add more helper methods to be used by all tests here...
   end
 end

@@ -1,4 +1,6 @@
 class Location < ApplicationRecord
+  include AccountScoped
+
   has_many :entry_locations, dependent: :destroy
   has_many :entries, through: :entry_locations
   has_many :image_locations, dependent: :destroy

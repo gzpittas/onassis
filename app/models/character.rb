@@ -1,4 +1,6 @@
 class Character < ApplicationRecord
+  include AccountScoped
+
   has_many :entry_characters, dependent: :destroy
   has_many :entries, through: :entry_characters
   has_many :character_links, dependent: :destroy

@@ -1,0 +1,20 @@
+<div class="page-header">
+  <h1>Timelines</h1>
+  <%= link_to "New Timeline", new_account_path, class: "btn btn-gold" %>
+</div>
+
+<% @accounts.each do |account| %>
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title"><%= account.name %></h2>
+      <% if current_account&.id == account.id %>
+        <span class="card-meta">Current</span>
+      <% else %>
+        <%= button_to "Switch", select_account_path(account), method: :patch, class: "btn btn-secondary btn-small" %>
+      <% end %>
+    </div>
+    <div class="card-body">
+      <p class="card-meta">Owner: <%= account.owner.email %></p>
+    </div>
+  </div>
+<% end %>

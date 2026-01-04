@@ -1,4 +1,6 @@
 class Video < ApplicationRecord
+  include AccountScoped
+
   has_many :video_entries, dependent: :destroy
   has_many :entries, through: :video_entries
   has_many :video_characters, dependent: :destroy

@@ -10,7 +10,15 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_12_24_192516) do
+ActiveRecord::Schema[8.0].define(version: 2025_12_25_000000) do
+  create_table "accounts", force: :cascade do |t|
+    t.string "name", null: false
+    t.integer "owner_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["owner_id"], name: "index_accounts_on_owner_id"
+  end
+
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -57,6 +65,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_24_192516) do
     t.text "notes"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "account_id"
+    t.index ["account_id"], name: "index_articles_on_account_id"
   end
 
   create_table "asset_images", force: :cascade do |t|
@@ -82,6 +92,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_24_192516) do
     t.string "reference_title"
     t.integer "featured_image_id"
     t.string "acquisition_date_precision", default: "exact"
+    t.integer "account_id"
+    t.index ["account_id"], name: "index_assets_on_account_id"
   end
 
   create_table "casting_candidates", force: :cascade do |t|
@@ -117,6 +129,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_24_192516) do
     t.datetime "updated_at", null: false
     t.boolean "lead_character", default: false
     t.integer "featured_image_id"
+    t.integer "account_id"
+    t.index ["account_id"], name: "index_characters_on_account_id"
   end
 
   create_table "credit_candidates", force: :cascade do |t|
@@ -137,6 +151,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_24_192516) do
     t.integer "priority"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "account_id"
+    t.index ["account_id"], name: "index_credits_on_account_id"
   end
 
   create_table "entries", force: :cascade do |t|
@@ -160,6 +176,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_24_192516) do
     t.integer "end_day"
     t.string "date_precision", default: "exact"
     t.integer "featured_image_id"
+    t.integer "account_id"
+    t.index ["account_id"], name: "index_entries_on_account_id"
     t.index ["source_id"], name: "index_entries_on_source_id"
   end
 
@@ -255,6 +273,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_24_192516) do
     t.string "article_author"
     t.string "website_name"
     t.string "website_url"
+    t.integer "account_id"
+    t.index ["account_id"], name: "index_images_on_account_id"
   end
 
   create_table "locations", force: :cascade do |t|
@@ -273,6 +293,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_24_192516) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "featured_image_id"
+    t.integer "account_id"
+    t.index ["account_id"], name: "index_locations_on_account_id"
   end
 
   create_table "musics", force: :cascade do |t|
@@ -289,6 +311,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_24_192516) do
     t.text "notes"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "account_id"
+    t.index ["account_id"], name: "index_musics_on_account_id"
   end
 
   create_table "source_links", force: :cascade do |t|
@@ -309,6 +333,16 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_24_192516) do
     t.text "notes"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "account_id"
+    t.index ["account_id"], name: "index_sources_on_account_id"
+  end
+
+  create_table "users", force: :cascade do |t|
+    t.string "email", null: false
+    t.string "password_digest", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["email"], name: "index_users_on_email", unique: true
   end
 
   create_table "video_assets", force: :cascade do |t|
@@ -360,17 +394,25 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_24_192516) do
     t.text "notes"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "account_id"
+    t.index ["account_id"], name: "index_videos_on_account_id"
   end
 
+  add_foreign_key "accounts", "users", column: "owner_id"
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "article_characters", "articles"
   add_foreign_key "article_characters", "characters"
+  add_foreign_key "articles", "accounts"
   add_foreign_key "asset_images", "assets"
   add_foreign_key "asset_images", "images"
+  add_foreign_key "assets", "accounts"
   add_foreign_key "casting_candidates", "characters"
   add_foreign_key "character_links", "characters"
+  add_foreign_key "characters", "accounts"
   add_foreign_key "credit_candidates", "credits"
+  add_foreign_key "credits", "accounts"
+  add_foreign_key "entries", "accounts"
   add_foreign_key "entries", "sources"
   add_foreign_key "entry_articles", "articles"
   add_foreign_key "entry_articles", "entries"
@@ -388,7 +430,11 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_24_192516) do
   add_foreign_key "image_characters", "images"
   add_foreign_key "image_locations", "images"
   add_foreign_key "image_locations", "locations"
+  add_foreign_key "images", "accounts"
+  add_foreign_key "locations", "accounts"
+  add_foreign_key "musics", "accounts"
   add_foreign_key "source_links", "sources"
+  add_foreign_key "sources", "accounts"
   add_foreign_key "video_assets", "assets"
   add_foreign_key "video_assets", "videos"
   add_foreign_key "video_characters", "characters"
@@ -397,4 +443,5 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_24_192516) do
   add_foreign_key "video_entries", "videos"
   add_foreign_key "video_locations", "locations"
   add_foreign_key "video_locations", "videos"
+  add_foreign_key "videos", "accounts"
 end

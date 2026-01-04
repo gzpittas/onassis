@@ -1,4 +1,6 @@
 class Article < ApplicationRecord
+  include AccountScoped
+
   has_many :entry_articles, dependent: :destroy
   has_many :entries, through: :entry_articles
   has_many :article_characters, dependent: :destroy

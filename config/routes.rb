@@ -1,4 +1,14 @@
 Rails.application.routes.draw do
+  get "signup", to: "users#new"
+  post "signup", to: "users#create"
+  get "login", to: "sessions#new"
+  post "login", to: "sessions#create"
+  delete "logout", to: "sessions#destroy"
+
+  resources :accounts, only: %i[index new create] do
+    patch :select, on: :member
+  end
+
   root "timeline#index"
 
   resources :entries

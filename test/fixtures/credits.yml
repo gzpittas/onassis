@@ -1,11 +1,13 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
+  account: one
   title: MyString
   description: MyText
   priority: 1
 
 two:
+  account: one
   title: MyString
   description: MyText
   priority: 1

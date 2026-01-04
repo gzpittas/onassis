@@ -2,6 +2,8 @@ require "net/http"
 require "openssl"
 
 class Image < ApplicationRecord
+  include AccountScoped
+
   has_one_attached :file do |attachable|
     attachable.variant :thumbnail, resize_to_fill: [300, 300], preprocessed: true
     attachable.variant :card, resize_to_fill: [300, 200], preprocessed: true

@@ -1,4 +1,6 @@
 class Entry < ApplicationRecord
+  include AccountScoped
+
   belongs_to :source, optional: true # Legacy - keeping for backward compatibility
   belongs_to :featured_image, class_name: "Image", optional: true
   has_many :entry_sources, dependent: :destroy
