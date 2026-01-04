@@ -6,8 +6,10 @@ class TimelineController < ApplicationController
       @entries = @entries.by_year(params[:year])
     end
 
+    decade_value = params[:decade].present? ? Entry.normalize_year_value(params[:decade]) : nil
+
     if params[:decade].present?
-      @entries = @entries.by_decade(params[:decade].to_i)
+      @entries = @entries.by_decade(params[:decade])
     end
 
     if params[:entry_type].present?
@@ -28,17 +30,24 @@ class TimelineController < ApplicationController
     @undated_images = params[:decade].blank? ? Image.where(taken_date: nil).includes(:characters, file_attachment: :blob).recent_first : []
 
     if params[:decade].present?
-      decade_start = Date.new(params[:decade].to_i, 1, 1)
-      decade_end = Date.new(params[:decade].to_i + 10, 1, 1)
-      @assets_with_dates = @assets_with_dates.where(acquisition_date: decade_start...decade_end)
-      @images_with_dates = @images_with_dates.where(taken_date: decade_start...decade_end)
+      if decade_value && decade_value >= 0
+        decade_start = Date.new(decade_value, 1, 1)
+        decade_end = Date.new(decade_value + 10, 1, 1)
+        @assets_with_dates = @assets_with_dates.where(acquisition_date: decade_start...decade_end)
+        @images_with_dates = @images_with_dates.where(taken_date: decade_start...decade_end)
+      else
+        @assets_with_dates = @assets_with_dates.none
+        @images_with_dates = @images_with_dates.none
+      end
     end
 
     # Combine entries, assets, and images into unified timeline items
     @timeline_items = build_timeline_items(@entries, @assets_with_dates, @images_with_dates)
 
     @characters = Character.by_name
-    @decades = (1900..1970).step(10).to_a
+    entry_years = Entry.where.not(event_year: nil).pluck(:event_year)
+    entry_decades = entry_years.map { |year| Entry.decade_value_from_year(year) }.uniq.sort
+    @decades = entry_decades.map { |decade| [Entry.decade_label(decade), decade] }
     @entry_types = Entry::ENTRY_TYPES
   end
 
@@ -48,29 +57,47 @@ class TimelineController < ApplicationController
     items = []
 
     entries.each do |entry|
+      sort_key = entry.sort_key
+      next unless sort_key
+
       items << {
         type: :entry,
-        date: entry.event_date,
+        sort_key: sort_key,
+        year: entry.event_year_value,
         object: entry
       }
     end
 
     assets.each do |asset|
+      sort_key = date_sort_key(asset.acquisition_date)
+      next unless sort_key
+
       items << {
         type: :asset,
-        date: asset.acquisition_date,
+        sort_key: sort_key,
+        year: asset.acquisition_date.year,
         object: asset
       }
     end
 
     images.each do |image|
+      sort_key = date_sort_key(image.taken_date)
+      next unless sort_key
+
       items << {
         type: :image,
-        date: image.taken_date,
+        sort_key: sort_key,
+        year: image.taken_date.year,
         object: image
       }
     end
 
-    items.sort_by { |item| item[:date] }
+    items.sort_by { |item| item[:sort_key] }
+  end
+
+  def date_sort_key(date)
+    return nil unless date
+
+    (date.year * 10000) + (date.month * 100) + date.day
   end
 end

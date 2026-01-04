@@ -53,7 +53,7 @@
             <%= check_box_tag "article[entry_ids][]", entry.id, @article.entries.include?(entry), id: "entry_#{entry.id}" %>
             <span class="checkbox-label">
               <strong><%= entry.title %></strong>
-              <span class="checkbox-meta"><%= entry.event_date.strftime("%b %d, %Y") %></span>
+              <span class="checkbox-meta"><%= entry.formatted_date("%b %d, %Y") %></span>
             </span>
           </label>
         <% end %>

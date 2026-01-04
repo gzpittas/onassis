@@ -17,11 +17,24 @@
 
   <div class="form-row">
     <div class="form-group">
-      <%= f.label :event_date, "Event Date" %>
+      <%= f.label :event_date, "Event Date (CE)" %>
       <%= f.date_field :event_date, min: "1800-01-01", max: "2100-12-31" %>
-      <p class="form-hint">If you only know the year or month, use Jan 1st as a placeholder.</p>
+      <p class="form-hint">For BCE or year-only dates, use Event Year + Era and leave Event Date blank.</p>
     </div>
 
+    <div class="form-group">
+      <%= f.label :event_year, "Event Year" %>
+      <%= f.number_field :event_year, value: @entry.event_year_abs, min: 1, placeholder: "e.g., 356" %>
+      <p class="form-hint">Use Era to mark BCE dates.</p>
+    </div>
+
+    <div class="form-group">
+      <%= f.label :event_era, "Era" %>
+      <%= f.select :event_era, [["CE", "ce"], ["BCE", "bce"]], {}, { class: "precision-select" } %>
+    </div>
+  </div>
+
+  <div class="form-row">
     <div class="form-group">
       <%= f.label :date_precision, "Date Precision" %>
       <%= f.select :date_precision, [

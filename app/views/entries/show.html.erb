@@ -64,7 +64,7 @@
     <h2>People Involved</h2>
     <div class="character-list">
       <% @entry.characters.each do |character| %>
-        <% age = character.age_at(@entry.event_date) %>
+        <% age = character.age_at(@entry.event_date_for_age) %>
         <%= link_to character_path(character), class: "character-badge" do %>
           <%= character.name %><% if age %> - <%= age %><% end %>
           <% if character.relationship.present? %>

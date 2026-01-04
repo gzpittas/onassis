@@ -84,16 +84,16 @@
       <div class="simple-checkbox-list">
         <% current_decade = nil %>
         <% @entries.each do |entry| %>
-          <% entry_decade = (entry.event_date.year / 10) * 10 %>
+          <% entry_decade = entry.event_decade_value %>
           <% if entry_decade != current_decade %>
             <% current_decade = entry_decade %>
-            <div class="decade-divider"><%= current_decade %>s</div>
+            <div class="decade-divider"><%= entry.event_decade_label %></div>
           <% end %>
           <label class="simple-checkbox-item">
             <%= check_box_tag "asset[entry_ids][]", entry.id, @asset.entries.include?(entry), id: "entry_#{entry.id}" %>
             <span class="simple-checkbox-content">
               <span class="simple-checkbox-title"><%= entry.title %></span>
-              <span class="simple-checkbox-meta"><%= entry.event_date.strftime("%Y %b %d").upcase %></span>
+              <span class="simple-checkbox-meta"><%= entry.formatted_date("%Y %b %d").upcase %></span>
             </span>
           </label>
         <% end %>

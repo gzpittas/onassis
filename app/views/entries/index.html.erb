@@ -21,13 +21,13 @@
       <tbody>
         <% @entries.each do |entry| %>
           <tr>
-            <td><%= entry.event_date.strftime("%Y-%m-%d") %></td>
+            <td><%= entry.formatted_date("%Y-%m-%d") %></td>
             <td><%= link_to entry.title, entry %></td>
             <td><%= entry.entry_type&.titleize %></td>
             <td><%= entry.location %></td>
             <td>
               <% entry.characters.limit(3).each do |character| %>
-                <% age = character.age_at(entry.event_date) %>
+                <% age = character.age_at(entry.event_date_for_age) %>
                 <span class="tag tag-character"><%= character.name %><% if age %> - <%= age %><% end %></span>
               <% end %>
               <% if entry.characters.count > 3 %>

@@ -10,7 +10,7 @@
       <div class="filter-group">
         <%= label_tag :decade, "Decade" %>
         <%= select_tag :decade,
-            options_for_select([["All Decades", ""]] + @decades.map { |d| ["#{d}s", d] }, params[:decade]),
+            options_for_select([["All Decades", ""]] + @decades, params[:decade]),
             onchange: "this.form.submit()" %>
       </div>
       <div class="filter-group">
@@ -34,7 +34,7 @@
 
 <% if @timeline_items.any? %>
   <div class="timeline" data-controller="timeline-lightbox">
-    <% @timeline_items.group_by { |item| item[:date].year }.each do |year, items| %>
+    <% @timeline_items.group_by { |item| item[:year] }.each do |year, items| %>
       <div class="timeline-year">
         <% items.each do |item| %>
           <% if item[:type] == :image %>
@@ -101,7 +101,7 @@
                   <span class="tag tag-type"><%= entry.entry_type.titleize %></span>
                 <% end %>
                 <% entry.characters.each do |character| %>
-                  <% age = character.age_at(entry.event_date) %>
+                  <% age = character.age_at(entry.event_date_for_age) %>
                   <%= link_to character, class: "tag tag-character" do %>
                     <%= character.name %><% if age %> - <%= age %><% end %>
                   <% end %>
