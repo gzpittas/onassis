@@ -6,21 +6,39 @@
   <div class="nav-links">
     <% if signed_in? %>
       <%= link_to "Timeline", root_path, class: current_page?(root_path) ? "active" : "" %>
-      <%= link_to "Entries", entries_path, class: controller_name == "entries" ? "active" : "" %>
+      <%= link_to "Gallery", images_path, class: controller_name == "images" ? "active" : "" %>
       <%= link_to "Characters", characters_path, class: controller_name == "characters" ? "active" : "" %>
-      <%= link_to "Sources", sources_path, class: controller_name == "sources" ? "active" : "" %>
-      <%= link_to "Articles", articles_path, class: controller_name == "articles" ? "active" : "" %>
-      <%= link_to "Assets", assets_path, class: controller_name == "assets" ? "active" : "" %>
       <%= link_to "Locations", locations_path, class: controller_name == "locations" ? "active" : "" %>
+      <%= link_to "Assets", assets_path, class: controller_name == "assets" ? "active" : "" %>
       <%= link_to "Music", musics_path, class: controller_name == "musics" ? "active" : "" %>
       <%= link_to "Videos", videos_path, class: controller_name == "videos" ? "active" : "" %>
       <%= link_to "Credits", credits_path, class: %w[credits credit_candidates].include?(controller_name) ? "active" : "" %>
-      <%= link_to "Gallery", images_path, class: controller_name == "images" ? "active" : "" %>
       <%= link_to "Smart Import", smart_import_path, class: controller_name == "smart_imports" ? "active" : "" %>
-      <%= link_to "Search", search_path, class: controller_name == "search" ? "active" : "" %>
-      <%= link_to "Help", help_path, class: controller_name == "help" ? "active" : "" %>
-      <%= link_to "Accounts", accounts_path, class: controller_name == "accounts" ? "active" : "" %>
-      <%= link_to "Sign Out", logout_path, data: { turbo_method: :delete } %>
+      <div class="nav-dropdown">
+        <button
+          type="button"
+          class="nav-dropdown-toggle <%= %w[entries sources articles help].include?(controller_name) ? "active" : "" %>">
+          Library
+        </button>
+        <div class="nav-dropdown-menu">
+          <%= link_to "Entries", entries_path, class: controller_name == "entries" ? "active" : "" %>
+          <%= link_to "Sources", sources_path, class: controller_name == "sources" ? "active" : "" %>
+          <%= link_to "Articles", articles_path, class: controller_name == "articles" ? "active" : "" %>
+          <%= link_to "Help", help_path, class: controller_name == "help" ? "active" : "" %>
+        </div>
+      </div>
+      <div class="nav-dropdown">
+        <button
+          type="button"
+          class="nav-dropdown-toggle <%= %w[accounts search].include?(controller_name) ? "active" : "" %>">
+          Settings
+        </button>
+        <div class="nav-dropdown-menu">
+          <%= link_to "Accounts", accounts_path, class: controller_name == "accounts" ? "active" : "" %>
+          <%= link_to "Search", search_path, class: controller_name == "search" ? "active" : "" %>
+          <%= link_to "Sign Out", logout_path, data: { turbo_method: :delete } %>
+        </div>
+      </div>
     <% else %>
       <%= link_to "Sign In", login_path, class: controller_name == "sessions" ? "active" : "" %>
       <%= link_to "Create Account", signup_path, class: controller_name == "users" ? "active" : "" %>
