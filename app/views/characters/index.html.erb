@@ -1,6 +1,8 @@
 <div class="page-header">
   <h1>Characters</h1>
-  <%= link_to "Add Character", new_character_path, class: "btn btn-gold" %>
+  <% if can_write? %>
+    <%= link_to "Add Character", new_character_path, class: "btn btn-gold" %>
+  <% end %>
 </div>
 
 <div class="filters">
@@ -50,8 +52,10 @@
         </div>
         <div class="card-footer">
           <%= link_to "View", character, class: "btn btn-small btn-primary" %>
-          <%= link_to "Edit", edit_character_path(character), class: "btn btn-small btn-secondary" %>
-          <%= link_to "Delete", character, data: { turbo_method: :delete, turbo_confirm: "Are you sure?" }, class: "btn btn-small btn-danger" %>
+          <% if can_write? %>
+            <%= link_to "Edit", edit_character_path(character), class: "btn btn-small btn-secondary" %>
+            <%= link_to "Delete", character, data: { turbo_method: :delete, turbo_confirm: "Are you sure?" }, class: "btn btn-small btn-danger" %>
+          <% end %>
         </div>
       </div>
     <% end %>
@@ -60,6 +64,8 @@
   <div class="empty-state">
     <h3>No Characters Yet</h3>
     <p>Start adding people who interacted with Aristotle Onassis.</p>
-    <%= link_to "Add Your First Character", new_character_path, class: "btn btn-gold" %>
+    <% if can_write? %>
+      <%= link_to "Add Your First Character", new_character_path, class: "btn btn-gold" %>
+    <% end %>
   </div>
 <% end %>

@@ -1,8 +1,10 @@
 <div class="page-header">
   <h1><%= @article.title %></h1>
   <div class="actions">
-    <%= link_to "Edit", edit_article_path(@article), class: "btn btn-secondary" %>
-    <%= link_to "Delete", @article, data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete this article?" }, class: "btn btn-danger" %>
+    <% if can_write? %>
+      <%= link_to "Edit", edit_article_path(@article), class: "btn btn-secondary" %>
+      <%= link_to "Delete", @article, data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete this article?" }, class: "btn btn-danger" %>
+    <% end %>
     <%= link_to "Back to Articles", articles_path, class: "btn btn-primary" %>
   </div>
 </div>

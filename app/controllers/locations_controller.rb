@@ -1,4 +1,5 @@
 class LocationsController < ApplicationController
+  before_action :require_write_access, except: %i[index show]
   before_action :set_location, only: %i[show edit update destroy]
 
   def index

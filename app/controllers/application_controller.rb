@@ -7,7 +7,7 @@ class ApplicationController < ActionController::Base
   before_action :require_account
   after_action { Current.reset }
 
-  helper_method :current_user, :current_account, :signed_in?
+  helper_method :current_user, :current_account, :signed_in?, :can_write?
 
   private
 
@@ -23,8 +23,9 @@ class ApplicationController < ActionController::Base
   def current_account
     return unless current_user
 
-    account = current_user.accounts.find_by(id: session[:account_id]) if session[:account_id]
-    account ||= current_user.accounts.order(:created_at).first
+    accessible_accounts = current_user.accessible_accounts
+    account = accessible_accounts.find_by(id: session[:account_id]) if session[:account_id]
+    account ||= accessible_accounts.order(:created_at).first
     session[:account_id] = account.id if account
     account
   end
@@ -43,6 +44,25 @@ class ApplicationController < ActionController::Base
     return unless signed_in?
     return if current_account.present?
 
-    redirect_to new_account_path, alert: "Create a timeline to continue."
+    if current_user.observer?
+      reset_session
+      redirect_to login_path, alert: "Your observer access has not been enabled yet."
+    else
+      redirect_to new_account_path, alert: "Create a timeline to continue."
+    end
+  end
+
+  def can_write?
+    return false unless current_user
+    return false if current_user.observer?
+    return true unless current_account
+
+    current_account.owner_id == current_user.id
+  end
+
+  def require_write_access
+    return if can_write?
+
+    redirect_back(fallback_location: root_path, alert: "Read-only access.")
   end
 end

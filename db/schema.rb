@@ -10,7 +10,17 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_12_25_000000) do
+ActiveRecord::Schema[8.0].define(version: 2025_12_26_000010) do
+  create_table "account_observers", force: :cascade do |t|
+    t.integer "account_id", null: false
+    t.integer "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id", "user_id"], name: "index_account_observers_on_account_id_and_user_id", unique: true
+    t.index ["account_id"], name: "index_account_observers_on_account_id"
+    t.index ["user_id"], name: "index_account_observers_on_user_id"
+  end
+
   create_table "accounts", force: :cascade do |t|
     t.string "name", null: false
     t.integer "owner_id", null: false
@@ -342,6 +352,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_25_000000) do
     t.string "password_digest", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "role", default: "owner", null: false
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
@@ -398,6 +409,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_25_000000) do
     t.index ["account_id"], name: "index_videos_on_account_id"
   end
 
+  add_foreign_key "account_observers", "accounts"
+  add_foreign_key "account_observers", "users"
   add_foreign_key "accounts", "users", column: "owner_id"
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"

@@ -1,6 +1,8 @@
 <div class="page-header">
   <h1>Aristotle Onassis Timeline</h1>
-  <%= link_to "Add Entry", new_entry_path, class: "btn btn-gold" %>
+  <% if can_write? %>
+    <%= link_to "Add Entry", new_entry_path, class: "btn btn-gold" %>
+  <% end %>
 </div>
 
 <div class="filters">
@@ -180,14 +182,20 @@
   <div class="empty-state">
     <h3>No Timeline Entries Yet</h3>
     <p>Start adding entries from your research to build the Onassis timeline.</p>
-    <%= link_to "Add Your First Entry", new_entry_path, class: "btn btn-gold" %>
+    <% if can_write? %>
+      <%= link_to "Add Your First Entry", new_entry_path, class: "btn btn-gold" %>
+    <% end %>
   </div>
 <% end %>
 
 <% if @undated_images.any? %>
   <div class="undated-images-section" data-controller="timeline-lightbox">
     <h2>Undated Images (<%= @undated_images.count %>)</h2>
-    <p class="section-hint">These images don't have dates assigned yet. Edit an image to add a date and it will appear on the timeline above.</p>
+    <% if can_write? %>
+      <p class="section-hint">These images don't have dates assigned yet. Edit an image to add a date and it will appear on the timeline above.</p>
+    <% else %>
+      <p class="section-hint">These images don't have dates assigned yet.</p>
+    <% end %>
 
     <div class="undated-images-grid">
       <% @undated_images.each do |image| %>

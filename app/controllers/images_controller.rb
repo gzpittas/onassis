@@ -1,4 +1,5 @@
 class ImagesController < ApplicationController
+  before_action :require_write_access, except: %i[index show]
   before_action :set_image, only: %i[show edit update destroy]
 
   def index

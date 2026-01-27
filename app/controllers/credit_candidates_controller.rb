@@ -1,4 +1,5 @@
 class CreditCandidatesController < ApplicationController
+  before_action :require_write_access, except: :show
   before_action :set_credit
   before_action :set_credit_candidate, only: %i[show edit update destroy]
 

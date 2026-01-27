@@ -1,8 +1,10 @@
 <div class="page-header">
   <h1><%= @credit.title %></h1>
   <div class="actions">
-    <%= link_to "Edit", edit_credit_path(@credit), class: "btn btn-secondary" %>
-    <%= link_to "Delete", @credit, data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete this credit and all its candidates?" }, class: "btn btn-danger" %>
+    <% if can_write? %>
+      <%= link_to "Edit", edit_credit_path(@credit), class: "btn btn-secondary" %>
+      <%= link_to "Delete", @credit, data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete this credit and all its candidates?" }, class: "btn btn-danger" %>
+    <% end %>
     <%= link_to "Back to Credits", credits_path, class: "btn btn-primary" %>
   </div>
 </div>
@@ -40,15 +42,19 @@
               <p class="card-meta"><%= truncate(candidate.notes, length: 100) %></p>
             <% end %>
           </div>
-          <div class="card-footer">
-            <%= link_to "Edit", edit_credit_credit_candidate_path(@credit, candidate), class: "btn btn-small btn-secondary" %>
-            <%= link_to "Remove", credit_credit_candidate_path(@credit, candidate), data: { turbo_method: :delete, turbo_confirm: "Are you sure?" }, class: "btn btn-small btn-danger" %>
-          </div>
+          <% if can_write? %>
+            <div class="card-footer">
+              <%= link_to "Edit", edit_credit_credit_candidate_path(@credit, candidate), class: "btn btn-small btn-secondary" %>
+              <%= link_to "Remove", credit_credit_candidate_path(@credit, candidate), data: { turbo_method: :delete, turbo_confirm: "Are you sure?" }, class: "btn btn-small btn-danger" %>
+            </div>
+          <% end %>
         </div>
       <% end %>
     </div>
   <% else %>
     <p class="card-meta">No candidates yet for this credit.</p>
   <% end %>
-  <%= link_to "Add Candidate", new_credit_credit_candidate_path(@credit), class: "btn btn-secondary btn-small" %>
+  <% if can_write? %>
+    <%= link_to "Add Candidate", new_credit_credit_candidate_path(@credit), class: "btn btn-secondary btn-small" %>
+  <% end %>
 </div>

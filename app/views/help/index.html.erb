@@ -268,9 +268,11 @@
   <div class="card">
     <div class="help-actions">
       <%= link_to "View Timeline", root_path, class: "btn btn-primary" %>
-      <%= link_to "Add Entry", new_entry_path, class: "btn btn-gold" %>
-      <%= link_to "Add Character", new_character_path, class: "btn btn-gold" %>
-      <%= link_to "Add Source", new_source_path, class: "btn btn-gold" %>
+      <% if can_write? %>
+        <%= link_to "Add Entry", new_entry_path, class: "btn btn-gold" %>
+        <%= link_to "Add Character", new_character_path, class: "btn btn-gold" %>
+        <%= link_to "Add Source", new_source_path, class: "btn btn-gold" %>
+      <% end %>
       <%= link_to "Search", search_path, class: "btn btn-secondary" %>
     </div>
   </div>

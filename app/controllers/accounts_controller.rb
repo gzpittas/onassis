@@ -1,8 +1,9 @@
 class AccountsController < ApplicationController
+  before_action :require_write_access
   skip_before_action :require_account, only: %i[new create]
 
   def index
-    @accounts = current_user.accounts.order(:created_at)
+    @accounts = current_user.accessible_accounts.order(:created_at)
   end
 
   def new
@@ -22,7 +23,7 @@ class AccountsController < ApplicationController
   end
 
   def select
-    account = current_user.accounts.find(params[:id])
+    account = current_user.accessible_accounts.find(params[:id])
     session[:account_id] = account.id
     redirect_to root_path, notice: "Switched to #{account.name}."
   end

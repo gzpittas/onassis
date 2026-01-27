@@ -1,6 +1,8 @@
 <div class="page-header">
   <h1>All Entries</h1>
-  <%= link_to "Add Entry", new_entry_path, class: "btn btn-gold" %>
+  <% if can_write? %>
+    <%= link_to "Add Entry", new_entry_path, class: "btn btn-gold" %>
+  <% end %>
 </div>
 
 <% if @entries.any? %>
@@ -15,7 +17,9 @@
           <th>Characters</th>
           <th>Source</th>
           <th>Status</th>
-          <th>Actions</th>
+          <% if can_write? %>
+            <th>Actions</th>
+          <% end %>
         </tr>
       </thead>
       <tbody>
@@ -42,10 +46,12 @@
                 <span class="tag tag-unverified">Unverified</span>
               <% end %>
             </td>
-            <td class="actions">
-              <%= link_to "Edit", edit_entry_path(entry), class: "btn btn-small btn-secondary" %>
-              <%= link_to "Delete", entry, data: { turbo_method: :delete, turbo_confirm: "Are you sure?" }, class: "btn btn-small btn-danger" %>
-            </td>
+            <% if can_write? %>
+              <td class="actions">
+                <%= link_to "Edit", edit_entry_path(entry), class: "btn btn-small btn-secondary" %>
+                <%= link_to "Delete", entry, data: { turbo_method: :delete, turbo_confirm: "Are you sure?" }, class: "btn btn-small btn-danger" %>
+              </td>
+            <% end %>
           </tr>
         <% end %>
       </tbody>
@@ -55,6 +61,8 @@
   <div class="empty-state">
     <h3>No Entries Yet</h3>
     <p>Start documenting events from the life of Aristotle Onassis.</p>
-    <%= link_to "Add Your First Entry", new_entry_path, class: "btn btn-gold" %>
+    <% if can_write? %>
+      <%= link_to "Add Your First Entry", new_entry_path, class: "btn btn-gold" %>
+    <% end %>
   </div>
 <% end %>

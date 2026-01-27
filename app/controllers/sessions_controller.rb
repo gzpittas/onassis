@@ -11,11 +11,14 @@ class SessionsController < ApplicationController
     if user&.authenticate(session_params[:password])
       reset_session
       session[:user_id] = user.id
-      account = user.accounts.order(:created_at).first
+      account = user.accessible_accounts.order(:created_at).first
       session[:account_id] = account&.id
 
       if account
         redirect_to root_path, notice: "Welcome back!"
+      elsif user.observer?
+        reset_session
+        redirect_to login_path, alert: "Your observer access has not been enabled yet."
       else
         redirect_to new_account_path, notice: "Create your first timeline to continue."
       end

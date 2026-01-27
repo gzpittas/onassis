@@ -1,6 +1,8 @@
 <div class="page-header">
   <h1>Newspaper Articles</h1>
-  <%= link_to "Add Article", new_article_path, class: "btn btn-gold" %>
+  <% if can_write? %>
+    <%= link_to "Add Article", new_article_path, class: "btn btn-gold" %>
+  <% end %>
 </div>
 
 <% if @articles.any? %>
@@ -13,7 +15,9 @@
           <th>Date</th>
           <th>Entries</th>
           <th>Characters</th>
-          <th>Actions</th>
+          <% if can_write? %>
+            <th>Actions</th>
+          <% end %>
         </tr>
       </thead>
       <tbody>
@@ -24,10 +28,12 @@
             <td><%= article.publication_date&.strftime("%b %d, %Y") %></td>
             <td><%= article.entries.count %></td>
             <td><%= article.characters.count %></td>
-            <td class="actions">
-              <%= link_to "Edit", edit_article_path(article), class: "btn btn-small btn-secondary" %>
-              <%= link_to "Delete", article, data: { turbo_method: :delete, turbo_confirm: "Are you sure?" }, class: "btn btn-small btn-danger" %>
-            </td>
+            <% if can_write? %>
+              <td class="actions">
+                <%= link_to "Edit", edit_article_path(article), class: "btn btn-small btn-secondary" %>
+                <%= link_to "Delete", article, data: { turbo_method: :delete, turbo_confirm: "Are you sure?" }, class: "btn btn-small btn-danger" %>
+              </td>
+            <% end %>
           </tr>
         <% end %>
       </tbody>
@@ -37,6 +43,8 @@
   <div class="empty-state">
     <h3>No Articles Yet</h3>
     <p>Start adding newspaper articles related to your research.</p>
-    <%= link_to "Add Your First Article", new_article_path, class: "btn btn-gold" %>
+    <% if can_write? %>
+      <%= link_to "Add Your First Article", new_article_path, class: "btn btn-gold" %>
+    <% end %>
   </div>
 <% end %>

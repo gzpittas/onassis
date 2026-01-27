@@ -1,8 +1,10 @@
 <div class="page-header">
   <h1><%= @location.name %></h1>
   <div class="actions">
-    <%= link_to "Edit", edit_location_path(@location), class: "btn btn-secondary" %>
-    <%= link_to "Delete", @location, data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete this location?" }, class: "btn btn-danger" %>
+    <% if can_write? %>
+      <%= link_to "Edit", edit_location_path(@location), class: "btn btn-secondary" %>
+      <%= link_to "Delete", @location, data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete this location?" }, class: "btn btn-danger" %>
+    <% end %>
     <%= link_to "Back to Locations", locations_path, class: "btn btn-primary" %>
   </div>
 </div>
@@ -159,7 +161,9 @@
   <% else %>
     <p class="card-meta">No images yet.</p>
   <% end %>
-  <%= link_to "Add Image", new_image_path, class: "btn btn-secondary btn-small" %>
+  <% if can_write? %>
+    <%= link_to "Add Image", new_image_path, class: "btn btn-secondary btn-small" %>
+  <% end %>
 </div>
 
 <% if @location.entries.any? %>

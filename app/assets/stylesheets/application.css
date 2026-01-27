@@ -130,6 +130,15 @@ body {
   z-index: 1001;
 }
 
+.nav-dropdown-menu::before {
+  content: "";
+  position: absolute;
+  top: -0.5rem;
+  left: 0;
+  right: 0;
+  height: 0.5rem;
+}
+
 .nav-dropdown:hover .nav-dropdown-menu,
 .nav-dropdown:focus-within .nav-dropdown-menu {
   display: flex;

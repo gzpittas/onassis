@@ -1,6 +1,9 @@
 class Account < ApplicationRecord
   belongs_to :owner, class_name: "User"
 
+  has_many :account_observers, dependent: :destroy
+  has_many :observers, through: :account_observers, source: :user
+
   has_many :entries, dependent: :destroy
   has_many :characters, dependent: :destroy
   has_many :sources, dependent: :destroy

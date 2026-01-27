@@ -1,6 +1,8 @@
 <div class="page-header">
   <h1>Sources</h1>
-  <%= link_to "Add Source", new_source_path, class: "btn btn-gold" %>
+  <% if can_write? %>
+    <%= link_to "Add Source", new_source_path, class: "btn btn-gold" %>
+  <% end %>
 </div>
 
 <div class="filters">
@@ -29,7 +31,9 @@
           <th>Type</th>
           <th>Publisher</th>
           <th>Entries</th>
-          <th>Actions</th>
+          <% if can_write? %>
+            <th>Actions</th>
+          <% end %>
         </tr>
       </thead>
       <tbody>
@@ -40,10 +44,12 @@
             <td><span class="tag"><%= source.source_type&.titleize %></span></td>
             <td><%= source.publisher %></td>
             <td><%= source.entries.count %></td>
-            <td class="actions">
-              <%= link_to "Edit", edit_source_path(source), class: "btn btn-small btn-secondary" %>
-              <%= link_to "Delete", source, data: { turbo_method: :delete, turbo_confirm: "Are you sure?" }, class: "btn btn-small btn-danger" %>
-            </td>
+            <% if can_write? %>
+              <td class="actions">
+                <%= link_to "Edit", edit_source_path(source), class: "btn btn-small btn-secondary" %>
+                <%= link_to "Delete", source, data: { turbo_method: :delete, turbo_confirm: "Are you sure?" }, class: "btn btn-small btn-danger" %>
+              </td>
+            <% end %>
           </tr>
         <% end %>
       </tbody>
@@ -53,6 +59,8 @@
   <div class="empty-state">
     <h3>No Sources Yet</h3>
     <p>Start adding the books, articles, and documentaries you're researching.</p>
-    <%= link_to "Add Your First Source", new_source_path, class: "btn btn-gold" %>
+    <% if can_write? %>
+      <%= link_to "Add Your First Source", new_source_path, class: "btn btn-gold" %>
+    <% end %>
   </div>
 <% end %>

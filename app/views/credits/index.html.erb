@@ -1,6 +1,8 @@
 <div class="page-header">
   <h1>Production Credits</h1>
-  <%= link_to "Add Credit", new_credit_path, class: "btn btn-gold" %>
+  <% if can_write? %>
+    <%= link_to "Add Credit", new_credit_path, class: "btn btn-gold" %>
+  <% end %>
 </div>
 
 <% if @credits.any? %>
@@ -34,8 +36,10 @@
         </div>
         <div class="card-footer">
           <%= link_to "View", credit, class: "btn btn-small btn-primary" %>
-          <%= link_to "Edit", edit_credit_path(credit), class: "btn btn-small btn-secondary" %>
-          <%= link_to "Delete", credit, data: { turbo_method: :delete, turbo_confirm: "Are you sure?" }, class: "btn btn-small btn-danger" %>
+          <% if can_write? %>
+            <%= link_to "Edit", edit_credit_path(credit), class: "btn btn-small btn-secondary" %>
+            <%= link_to "Delete", credit, data: { turbo_method: :delete, turbo_confirm: "Are you sure?" }, class: "btn btn-small btn-danger" %>
+          <% end %>
         </div>
       </div>
     <% end %>
@@ -44,6 +48,8 @@
   <div class="empty-state">
     <h3>No Credits Yet</h3>
     <p>Start adding production credits like Director, Producer, Writer, etc.</p>
-    <%= link_to "Add Your First Credit", new_credit_path, class: "btn btn-gold" %>
+    <% if can_write? %>
+      <%= link_to "Add Your First Credit", new_credit_path, class: "btn btn-gold" %>
+    <% end %>
   </div>
 <% end %>

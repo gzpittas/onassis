@@ -1,6 +1,8 @@
 <div class="page-header">
   <h1>Videos</h1>
-  <%= link_to "Add Video", new_video_path, class: "btn btn-gold" %>
+  <% if can_write? %>
+    <%= link_to "Add Video", new_video_path, class: "btn btn-gold" %>
+  <% end %>
 </div>
 
 <div class="filters">
@@ -56,6 +58,8 @@
   <div class="empty-state">
     <h3>No Videos Yet</h3>
     <p>Start adding documentaries, interviews, and footage for research.</p>
-    <%= link_to "Add Your First Video", new_video_path, class: "btn btn-gold" %>
+    <% if can_write? %>
+      <%= link_to "Add Your First Video", new_video_path, class: "btn btn-gold" %>
+    <% end %>
   </div>
 <% end %>

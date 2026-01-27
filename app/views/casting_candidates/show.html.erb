@@ -1,8 +1,10 @@
 <div class="page-header">
   <h1><%= @casting_candidate.actor_name %></h1>
   <div class="actions">
-    <%= link_to "Edit", edit_character_casting_candidate_path(@character, @casting_candidate), class: "btn btn-secondary" %>
-    <%= link_to "Delete", character_casting_candidate_path(@character, @casting_candidate), data: { turbo_method: :delete, turbo_confirm: "Are you sure?" }, class: "btn btn-danger" %>
+    <% if can_write? %>
+      <%= link_to "Edit", edit_character_casting_candidate_path(@character, @casting_candidate), class: "btn btn-secondary" %>
+      <%= link_to "Delete", character_casting_candidate_path(@character, @casting_candidate), data: { turbo_method: :delete, turbo_confirm: "Are you sure?" }, class: "btn btn-danger" %>
+    <% end %>
     <%= link_to "Back to #{@character.name}", @character, class: "btn btn-primary" %>
   </div>
 </div>

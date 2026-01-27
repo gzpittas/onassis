@@ -8,6 +8,7 @@ Rails.application.routes.draw do
   resources :accounts, only: %i[index new create] do
     patch :select, on: :member
   end
+  resources :members, only: %i[index create]
 
   root "timeline#index"
 

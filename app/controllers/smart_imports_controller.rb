@@ -1,4 +1,6 @@
 class SmartImportsController < ApplicationController
+  before_action :require_write_access
+
   def new
     @images = Image.recent_first
     @characters = Character.by_name

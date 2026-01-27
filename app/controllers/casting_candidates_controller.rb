@@ -1,4 +1,5 @@
 class CastingCandidatesController < ApplicationController
+  before_action :require_write_access, except: :show
   before_action :set_character
   before_action :set_casting_candidate, only: %i[show edit update destroy]
 

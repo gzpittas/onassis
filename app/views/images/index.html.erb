@@ -1,6 +1,8 @@
 <div class="page-header">
   <h1>Image Gallery</h1>
-  <%= link_to "Add Image", new_image_path, class: "btn btn-gold" %>
+  <% if can_write? %>
+    <%= link_to "Add Image", new_image_path, class: "btn btn-gold" %>
+  <% end %>
 </div>
 
 <div class="filters">
@@ -96,6 +98,8 @@
   <div class="empty-state">
     <h3>No Images Yet</h3>
     <p>Start adding historical photos to your research collection.</p>
-    <%= link_to "Add Your First Image", new_image_path, class: "btn btn-gold" %>
+    <% if can_write? %>
+      <%= link_to "Add Your First Image", new_image_path, class: "btn btn-gold" %>
+    <% end %>
   </div>
 <% end %>

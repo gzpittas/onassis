@@ -1,8 +1,10 @@
 <div class="page-header">
   <h1><%= @credit_candidate.person_name %></h1>
   <div class="actions">
-    <%= link_to "Edit", edit_credit_credit_candidate_path(@credit, @credit_candidate), class: "btn btn-secondary" %>
-    <%= link_to "Delete", credit_credit_candidate_path(@credit, @credit_candidate), data: { turbo_method: :delete, turbo_confirm: "Are you sure?" }, class: "btn btn-danger" %>
+    <% if can_write? %>
+      <%= link_to "Edit", edit_credit_credit_candidate_path(@credit, @credit_candidate), class: "btn btn-secondary" %>
+      <%= link_to "Delete", credit_credit_candidate_path(@credit, @credit_candidate), data: { turbo_method: :delete, turbo_confirm: "Are you sure?" }, class: "btn btn-danger" %>
+    <% end %>
     <%= link_to "Back to #{@credit.title}", @credit, class: "btn btn-primary" %>
   </div>
 </div>

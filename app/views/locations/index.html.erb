@@ -1,6 +1,8 @@
 <div class="page-header">
   <h1>Locations</h1>
-  <%= link_to "Add Location", new_location_path, class: "btn btn-gold" %>
+  <% if can_write? %>
+    <%= link_to "Add Location", new_location_path, class: "btn btn-gold" %>
+  <% end %>
 </div>
 
 <div class="filters">
@@ -60,6 +62,8 @@
   <div class="empty-state">
     <h3>No locations yet</h3>
     <p>Add filming locations: cities, buildings, residences, and other significant places.</p>
-    <%= link_to "Add First Location", new_location_path, class: "btn btn-gold" %>
+    <% if can_write? %>
+      <%= link_to "Add First Location", new_location_path, class: "btn btn-gold" %>
+    <% end %>
   </div>
 <% end %>

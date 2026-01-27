@@ -1,6 +1,8 @@
 <div class="page-header">
   <h1>Assets</h1>
-  <%= link_to "Add Asset", new_asset_path, class: "btn btn-gold" %>
+  <% if can_write? %>
+    <%= link_to "Add Asset", new_asset_path, class: "btn btn-gold" %>
+  <% end %>
 </div>
 
 <div class="filters">
@@ -57,6 +59,8 @@
   <div class="empty-state">
     <h3>No assets yet</h3>
     <p>Add significant objects like vehicles, vessels, residences, and other production-relevant items.</p>
-    <%= link_to "Add First Asset", new_asset_path, class: "btn btn-gold" %>
+    <% if can_write? %>
+      <%= link_to "Add First Asset", new_asset_path, class: "btn btn-gold" %>
+    <% end %>
   </div>
 <% end %>

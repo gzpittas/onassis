@@ -1,4 +1,5 @@
 class EntriesController < ApplicationController
+  before_action :require_write_access, except: %i[index show]
   before_action :set_entry, only: %i[show edit update destroy add_source remove_source]
 
   def index

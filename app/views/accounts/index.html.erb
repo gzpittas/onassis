@@ -1,6 +1,8 @@
 <div class="page-header">
   <h1>Timelines</h1>
-  <%= link_to "New Timeline", new_account_path, class: "btn btn-gold" %>
+  <% if can_write? %>
+    <%= link_to "New Timeline", new_account_path, class: "btn btn-gold" %>
+  <% end %>
 </div>
 
 <% @accounts.each do |account| %>

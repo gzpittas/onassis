@@ -1,6 +1,8 @@
 <div class="page-header">
   <h1>Music Library</h1>
-  <%= link_to "Add Music", new_music_path, class: "btn btn-gold" %>
+  <% if can_write? %>
+    <%= link_to "Add Music", new_music_path, class: "btn btn-gold" %>
+  <% end %>
 </div>
 
 <div class="filters">
@@ -77,7 +79,9 @@
         </div>
         <div class="music-card-actions">
           <%= link_to "View", music, class: "btn btn-small btn-primary" %>
-          <%= link_to "Edit", edit_music_path(music), class: "btn btn-small btn-secondary" %>
+          <% if can_write? %>
+            <%= link_to "Edit", edit_music_path(music), class: "btn btn-small btn-secondary" %>
+          <% end %>
         </div>
       </div>
     <% end %>
@@ -86,6 +90,8 @@
   <div class="empty-state">
     <h3>No Music Yet</h3>
     <p>Start building your soundtrack by adding songs and compositions.</p>
-    <%= link_to "Add Your First Track", new_music_path, class: "btn btn-gold" %>
+    <% if can_write? %>
+      <%= link_to "Add Your First Track", new_music_path, class: "btn btn-gold" %>
+    <% end %>
   </div>
 <% end %>

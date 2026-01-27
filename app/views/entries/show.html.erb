@@ -1,8 +1,10 @@
 <div class="page-header">
   <h1><%= @entry.title %></h1>
   <div class="actions">
-    <%= link_to "Edit", edit_entry_path(@entry), class: "btn btn-secondary" %>
-    <%= link_to "Delete", @entry, data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete this entry?" }, class: "btn btn-danger" %>
+    <% if can_write? %>
+      <%= link_to "Edit", edit_entry_path(@entry), class: "btn btn-secondary" %>
+      <%= link_to "Delete", @entry, data: { turbo_method: :delete, turbo_confirm: "Are you sure you want to delete this entry?" }, class: "btn btn-danger" %>
+    <% end %>
     <%= link_to "Back to Timeline", root_path, class: "btn btn-primary" %>
   </div>
 </div>
@@ -101,7 +103,9 @@
         <% end %>
       </div>
     <% end %>
-    <p class="add-source-link"><%= link_to "Add Another Source", edit_entry_path(@entry, add_source: true, anchor: "entry-sources"), class: "btn btn-secondary btn-small" %></p>
+    <% if can_write? %>
+      <p class="add-source-link"><%= link_to "Add Another Source", edit_entry_path(@entry, add_source: true, anchor: "entry-sources"), class: "btn btn-secondary btn-small" %></p>
+    <% end %>
   </div>
 <% elsif @entry.source.present? %>
   <%# Legacy single source display %>
@@ -118,12 +122,18 @@
         <p>Page Reference: <%= @entry.page_reference %></p>
       <% end %>
     </div>
-    <p class="add-source-link"><%= link_to "Add Another Source", edit_entry_path(@entry, add_source: true, anchor: "entry-sources"), class: "btn btn-secondary btn-small" %></p>
+    <% if can_write? %>
+      <p class="add-source-link"><%= link_to "Add Another Source", edit_entry_path(@entry, add_source: true, anchor: "entry-sources"), class: "btn btn-secondary btn-small" %></p>
+    <% end %>
   </div>
 <% else %>
   <div class="detail-section">
     <h2>Sources</h2>
-    <p class="add-source-link"><%= link_to "Add a Source", edit_entry_path(@entry, add_source: true, anchor: "entry-sources"), class: "btn btn-secondary btn-small" %></p>
+    <% if can_write? %>
+      <p class="add-source-link"><%= link_to "Add a Source", edit_entry_path(@entry, add_source: true, anchor: "entry-sources"), class: "btn btn-secondary btn-small" %></p>
+    <% else %>
+      <p class="card-meta">No sources yet.</p>
+    <% end %>
   </div>
 <% end %>
 
@@ -150,7 +160,9 @@
   <% else %>
     <p class="card-meta">No related newspaper articles yet.</p>
   <% end %>
-  <%= link_to "Add Article", new_article_path, class: "btn btn-secondary btn-small" %>
+  <% if can_write? %>
+    <%= link_to "Add Article", new_article_path, class: "btn btn-secondary btn-small" %>
+  <% end %>
 </div>
 
 <div class="detail-section">
@@ -171,5 +183,7 @@
   <% else %>
     <p class="card-meta">No related images yet.</p>
   <% end %>
-  <%= link_to "Add Image", new_image_path, class: "btn btn-secondary btn-small" %>
+  <% if can_write? %>
+    <%= link_to "Add Image", new_image_path, class: "btn btn-secondary btn-small" %>
+  <% end %>
 </div>
