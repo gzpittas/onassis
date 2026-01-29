@@ -64,9 +64,9 @@ body {
 .nav-brand a {
   color: var(--menurooster-blue);
   text-decoration: none;
-  font-family: 'belladona stencil', sans-serif;
+  font-family: 'verdana', sans-serif;
   font-size: 2rem;
-  font-weight: 400;
+  font-weight: 700;
   letter-spacing: ;
 }
 
