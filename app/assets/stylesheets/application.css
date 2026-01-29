@@ -30,7 +30,7 @@
 }
 
 body {
-  font-family: "Source Sans 3", "Avenir Next", Avenir, "Segoe UI", sans-serif;
+  font-family: "Rubik", sans-serif;
   margin: 0;
   padding: 0;
   padding-top: var(--nav-height);
@@ -392,7 +392,7 @@ body {
   top: 0;
   bottom: 0;
   width: 3px;
-  background-color: var(--gold);
+  background-color: var(--menurooster-blue-medium);
 }
 
 .timeline-entry {
@@ -411,12 +411,12 @@ body {
   border-radius: 0;
   border-top: 8px solid transparent;
   border-bottom: 8px solid transparent;
-  border-left: 14px solid var(--gold);
+  border-left: 14px solid var(--menurooster-blue-medium);
 }
 
 .timeline-date {
   font-weight: bold;
-  color: var(--navy);
+  color: var(--menurooster-blue-medium);
   margin-bottom: 0.25rem;
 }
 
