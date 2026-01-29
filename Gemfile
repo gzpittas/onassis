@@ -40,6 +40,9 @@ gem "thruster", require: false
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 gem "image_processing", "~> 1.2"
 
+# S3-compatible storage (Cloudflare R2)
+gem "aws-sdk-s3"
+
 # OpenAI API for AI-powered features
 gem "ruby-openai"
 
