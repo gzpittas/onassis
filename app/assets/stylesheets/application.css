@@ -18,6 +18,7 @@
   --menurooster-putty: #ffffff;
   --radius-sm: 6px;
   --radius-md: 10px;
+  --nav-height: 72px;
 }
 
 * {
@@ -32,6 +33,7 @@ body {
   font-family: "Source Sans 3", "Avenir Next", Avenir, "Segoe UI", sans-serif;
   margin: 0;
   padding: 0;
+  padding-top: var(--nav-height);
   background-color: var(--menurooster-putty);
   background-image:
     radial-gradient(1000px 600px at 0% -10%, rgba(216, 243, 255, 0.35), transparent 60%),
@@ -51,8 +53,11 @@ body {
   align-items: center;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   border-radius: 0;
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
   z-index: 1000;
 }
 
@@ -1068,6 +1073,10 @@ td a:hover {
 
 /* Responsive */
 @media (max-width: 768px) {
+  :root {
+    --nav-height: 140px;
+  }
+
   .main-nav {
     flex-direction: column;
     gap: 1rem;
