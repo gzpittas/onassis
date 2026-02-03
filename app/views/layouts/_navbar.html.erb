@@ -29,23 +29,33 @@
           <%= link_to "Help", help_path, class: controller_name == "help" ? "active" : "" %>
         </div>
       </div>
-      <% if can_write? %>
-        <div class="nav-dropdown">
-          <button
-            type="button"
-            class="nav-dropdown-toggle <%= %w[accounts members search].include?(controller_name) ? "active" : "" %>">
-            Settings
-          </button>
-          <div class="nav-dropdown-menu">
+      <div class="nav-dropdown">
+        <button
+          type="button"
+          class="nav-dropdown-toggle <%= %w[accounts members search].include?(controller_name) ? "active" : "" %>">
+          <i class="fa-solid fa-gear"></i>
+        </button>
+        <div class="nav-dropdown-menu">
+          <% accessible = current_user.accessible_accounts.order(:created_at) %>
+          <% if accessible.count > 1 %>
+            <span class="nav-dropdown-label">Timelines</span>
+            <% accessible.each do |account| %>
+              <% if account.id == current_account&.id %>
+                <span class="nav-dropdown-current"><%= account.name %></span>
+              <% else %>
+                <%= button_to account.name, select_account_path(account), method: :patch, class: "nav-dropdown-switch" %>
+              <% end %>
+            <% end %>
+            <span class="nav-dropdown-divider"></span>
+          <% end %>
+          <% if can_write? %>
             <%= link_to "Accounts", accounts_path, class: controller_name == "accounts" ? "active" : "" %>
             <%= link_to "Members", members_path, class: controller_name == "members" ? "active" : "" %>
             <%= link_to "Search", search_path, class: controller_name == "search" ? "active" : "" %>
-            <%= link_to "Sign Out", logout_path, data: { turbo_method: :delete } %>
-          </div>
+          <% end %>
+          <%= link_to "Sign Out", logout_path, data: { turbo_method: :delete } %>
         </div>
-      <% else %>
-        <%= link_to "Sign Out", logout_path, data: { turbo_method: :delete } %>
-      <% end %>
+      </div>
     <% else %>
       <%= link_to "Sign In", login_path, class: controller_name == "sessions" ? "active" : "" %>
       <%= link_to "Create Account", signup_path, class: controller_name == "users" ? "active" : "" %>
