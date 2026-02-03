@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_12_26_000010) do
+ActiveRecord::Schema[8.0].define(version: 2026_02_03_174602) do
   create_table "account_observers", force: :cascade do |t|
     t.integer "account_id", null: false
     t.integer "user_id", null: false
@@ -353,6 +353,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_26_000010) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "role", default: "owner", null: false
+    t.integer "max_timelines", default: 1, null: false
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 

@@ -7,10 +7,18 @@ class AccountsController < ApplicationController
   end
 
   def new
+    unless current_user.can_create_timeline?
+      redirect_to accounts_path, alert: "You've reached your timeline limit (#{current_user.max_timelines}). Contact us to add more."
+      return
+    end
     @account = current_user.accounts.new
   end
 
   def create
+    unless current_user.can_create_timeline?
+      redirect_to accounts_path, alert: "You've reached your timeline limit (#{current_user.max_timelines}). Contact us to add more."
+      return
+    end
     @account = current_user.accounts.new(account_params)
 
     if @account.save

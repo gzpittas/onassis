@@ -44,17 +44,11 @@ class ApplicationController < ActionController::Base
     return unless signed_in?
     return if current_account.present?
 
-    if current_user.observer?
-      reset_session
-      redirect_to login_path, alert: "Your observer access has not been enabled yet."
-    else
-      redirect_to new_account_path, alert: "Create a timeline to continue."
-    end
+    redirect_to new_account_path, alert: "Create a timeline to continue."
   end
 
   def can_write?
     return false unless current_user
-    return false if current_user.observer?
     return true unless current_account
 
     current_account.owner_id == current_user.id

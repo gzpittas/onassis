@@ -16,9 +16,6 @@ class SessionsController < ApplicationController
 
       if account
         redirect_to root_path, notice: "Welcome back!"
-      elsif user.observer?
-        reset_session
-        redirect_to login_path, alert: "Your observer access has not been enabled yet."
       else
         redirect_to new_account_path, notice: "Create your first timeline to continue."
       end

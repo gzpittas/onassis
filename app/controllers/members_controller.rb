@@ -36,9 +36,9 @@ class MembersController < ApplicationController
     else
       @member = User.new(
         email: email,
-        role: "observer",
         password: member_params[:password],
-        password_confirmation: member_params[:password_confirmation]
+        password_confirmation: member_params[:password_confirmation],
+        skip_account_setup: true
       )
 
       if @member.password.blank?

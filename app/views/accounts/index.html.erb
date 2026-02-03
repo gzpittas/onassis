@@ -1,6 +1,6 @@
 <div class="page-header">
   <h1>Timelines</h1>
-  <% if can_write? %>
+  <% if can_write? && current_user.can_create_timeline? %>
     <%= link_to "New Timeline", new_account_path, class: "btn btn-gold" %>
   <% end %>
 </div>

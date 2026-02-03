@@ -5,7 +5,7 @@ class User < ApplicationRecord
   has_many :account_observers, dependent: :destroy
   has_many :observed_accounts, through: :account_observers, source: :account
 
-  attr_accessor :account_name
+  attr_accessor :account_name, :skip_account_setup
 
   before_validation :normalize_email
 
@@ -13,7 +13,11 @@ class User < ApplicationRecord
 
   validates :email, presence: true, uniqueness: { case_sensitive: false }
   validates :role, inclusion: { in: roles.keys }
-  validates :account_name, presence: true, on: :create, unless: :observer?
+  validates :account_name, presence: true, on: :create, unless: :skip_account_setup
+
+  def can_create_timeline?
+    accounts.count < max_timelines
+  end
 
   def accessible_accounts
     Account.where(id: accounts.select(:id))
