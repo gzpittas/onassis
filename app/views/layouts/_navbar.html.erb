@@ -1,8 +1,4 @@
 <nav class="main-nav">
-  <div class="nav-brand">
-    <%= link_to (current_account&.name&.upcase || "TIMELINE"), root_path %>
-    
-  </div>
   <div class="nav-links">
     <% if signed_in? %>
       <%= link_to "Timeline", root_path, class: current_page?(root_path) ? "active" : "" %>
