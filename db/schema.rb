@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_02_03_174602) do
+ActiveRecord::Schema[8.0].define(version: 2026_02_14_120000) do
   create_table "account_observers", force: :cascade do |t|
     t.integer "account_id", null: false
     t.integer "user_id", null: false
@@ -26,6 +26,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_03_174602) do
     t.integer "owner_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "main_character_id"
+    t.index ["main_character_id"], name: "index_accounts_on_main_character_id"
     t.index ["owner_id"], name: "index_accounts_on_owner_id"
   end
 
@@ -412,6 +414,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_03_174602) do
 
   add_foreign_key "account_observers", "accounts"
   add_foreign_key "account_observers", "users"
+  add_foreign_key "accounts", "characters", column: "main_character_id"
   add_foreign_key "accounts", "users", column: "owner_id"
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"

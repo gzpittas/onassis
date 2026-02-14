@@ -5,7 +5,7 @@ Rails.application.routes.draw do
   post "login", to: "sessions#create"
   delete "logout", to: "sessions#destroy"
 
-  resources :accounts, only: %i[index new create] do
+  resources :accounts, only: %i[index new create edit update] do
     patch :select, on: :member
   end
   resources :members, only: %i[index create]
@@ -14,7 +14,7 @@ Rails.application.routes.draw do
 
   resources :entries
   resources :characters do
-    resources :casting_candidates, except: [:index]
+    resources :casting_candidates, except: [ :index ]
   end
   resources :sources
   resources :articles
@@ -30,7 +30,7 @@ Rails.application.routes.draw do
   resources :musics, path: "music"
   resources :videos
   resources :credits do
-    resources :credit_candidates, except: [:index]
+    resources :credit_candidates, except: [ :index ]
   end
 
   get "timeline", to: "timeline#index"

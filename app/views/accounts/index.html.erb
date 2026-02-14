@@ -14,9 +14,15 @@
       <% else %>
         <%= button_to "Switch", select_account_path(account), method: :patch, class: "btn btn-secondary btn-small" %>
       <% end %>
+      <% if @owned_account_ids.include?(account.id) %>
+        <%= link_to "Settings", edit_account_path(account), class: "btn btn-secondary btn-small" %>
+      <% end %>
     </div>
     <div class="card-body">
       <p class="card-meta">Owner: <%= account.owner.email %></p>
+      <% if account.main_character.present? %>
+        <p class="card-meta">Main character: <%= account.main_character.name %></p>
+      <% end %>
     </div>
   </div>
 <% end %>

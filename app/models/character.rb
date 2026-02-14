@@ -27,6 +27,23 @@ class Character < ApplicationRecord
   scope :by_name, -> { order(:name) }
   scope :lead, -> { where(lead_character: true) }
 
+  def self.default_entry_character_ids
+    default_entry_character_ids_for(Current.account)
+  end
+
+  def self.default_entry_character_ids_for(account)
+    return [] unless account
+
+    lead_scope = unscoped.where(account_id: account.id, lead_character: true)
+    main = lead_scope
+      .where("LOWER(name) LIKE ? AND LOWER(name) LIKE ?", "%aristotle%", "%onassis%")
+      .order(:created_at, :id)
+      .first
+
+    main ||= lead_scope.order(:created_at, :id).first
+    main ? [ main.id ] : []
+  end
+
   def lifespan
     return nil unless birth_date
     death_date ? "#{birth_date.year}–#{death_date.year}" : "#{birth_date.year}–"
