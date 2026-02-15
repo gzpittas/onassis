@@ -1,20 +1,15 @@
 class MembersController < ApplicationController
-  before_action :require_write_access
+  before_action :require_account_owner
 
   def index
-    @memberships = current_account.account_observers
-      .includes(:user)
-      .joins(:user)
-      .order("users.email")
+    load_memberships
     @member = User.new
   end
 
   def create
-    @memberships = current_account.account_observers
-      .includes(:user)
-      .joins(:user)
-      .order("users.email")
+    load_memberships
     email = member_params[:email].to_s.downcase.strip
+    role = member_params[:role].presence || "observer"
 
     if email.blank?
       @member = User.new
@@ -22,17 +17,31 @@ class MembersController < ApplicationController
       return render :index, status: :unprocessable_entity
     end
 
+    unless AccountMembership.roles.key?(role)
+      @member = User.new(email: email)
+      @member.errors.add(:role, "is invalid")
+      return render :index, status: :unprocessable_entity
+    end
+
     user = User.find_by(email: email)
 
     if user
-      if current_account.observers.exists?(id: user.id)
+      membership = current_account.account_memberships.find_or_initialize_by(user: user)
+
+      if membership.persisted? && membership.role == role
         @member = User.new(email: email)
         @member.errors.add(:email, "already has access")
         return render :index, status: :unprocessable_entity
       end
 
-      current_account.account_observers.create!(user: user)
-      redirect_to members_path, notice: "#{email} now has observer access."
+      membership.role = role
+      membership.save!
+
+      if membership.saved_change_to_id?
+        redirect_to members_path, notice: "#{email} now has #{role} access."
+      else
+        redirect_to members_path, notice: "#{email} access updated to #{role}."
+      end
     else
       @member = User.new(
         email: email,
@@ -47,8 +56,8 @@ class MembersController < ApplicationController
       end
 
       if @member.save
-        current_account.account_observers.create!(user: @member)
-        redirect_to members_path, notice: "#{email} invited as observer."
+        current_account.account_memberships.create!(user: @member, role: role)
+        redirect_to members_path, notice: "#{email} invited as #{role}."
       else
         render :index, status: :unprocessable_entity
       end
@@ -57,7 +66,14 @@ class MembersController < ApplicationController
 
   private
 
+  def load_memberships
+    @memberships = current_account.account_memberships
+      .includes(:user)
+      .joins(:user)
+      .order("users.email")
+  end
+
   def member_params
-    params.require(:member).permit(:email, :password, :password_confirmation)
+    params.require(:member).permit(:email, :role, :password, :password_confirmation)
   end
 end

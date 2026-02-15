@@ -2,8 +2,8 @@ class User < ApplicationRecord
   has_secure_password
 
   has_many :accounts, foreign_key: :owner_id, dependent: :destroy
-  has_many :account_observers, dependent: :destroy
-  has_many :observed_accounts, through: :account_observers, source: :account
+  has_many :account_memberships, dependent: :destroy
+  has_many :member_accounts, through: :account_memberships, source: :account
 
   attr_accessor :account_name, :skip_account_setup
 
@@ -21,7 +21,7 @@ class User < ApplicationRecord
 
   def accessible_accounts
     Account.where(id: accounts.select(:id))
-      .or(Account.where(id: observed_accounts.select(:id)))
+      .or(Account.where(id: member_accounts.select(:id)))
   end
 
   private

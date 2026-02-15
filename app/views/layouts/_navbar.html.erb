@@ -46,7 +46,11 @@
           <% end %>
           <% if can_write? %>
             <%= link_to "Accounts", accounts_path, class: controller_name == "accounts" ? "active" : "" %>
+          <% end %>
+          <% if account_owner? %>
             <%= link_to "Members", members_path, class: controller_name == "members" ? "active" : "" %>
+          <% end %>
+          <% if can_write? %>
             <%= link_to "Search", search_path, class: controller_name == "search" ? "active" : "" %>
           <% end %>
           <%= link_to "Sign Out", logout_path, data: { turbo_method: :delete } %>
@@ -54,7 +58,9 @@
       </div>
     <% else %>
       <%= link_to "Sign In", login_path, class: controller_name == "sessions" ? "active" : "" %>
-      <%= link_to "Create Account", signup_path, class: controller_name == "users" ? "active" : "" %>
+      <% if public_signup_allowed? %>
+        <%= link_to "Create Account", signup_path, class: controller_name == "users" ? "active" : "" %>
+      <% end %>
     <% end %>
   </div>
 </nav>

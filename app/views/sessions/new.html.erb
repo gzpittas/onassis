@@ -15,6 +15,8 @@
 
   <div class="form-actions">
     <%= f.submit "Sign In", class: "btn btn-gold" %>
-    <%= link_to "Create an account", signup_path, class: "btn btn-secondary" %>
+    <% if public_signup_allowed? %>
+      <%= link_to "Create an account", signup_path, class: "btn btn-secondary" %>
+    <% end %>
   </div>
 <% end %>

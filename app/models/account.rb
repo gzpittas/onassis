@@ -2,8 +2,18 @@ class Account < ApplicationRecord
   belongs_to :owner, class_name: "User"
   belongs_to :main_character, -> { unscope(where: :account_id) }, class_name: "Character", optional: true
 
-  has_many :account_observers, dependent: :destroy
-  has_many :observers, through: :account_observers, source: :user
+  has_many :account_memberships, dependent: :destroy
+  has_many :members, through: :account_memberships, source: :user
+
+  has_many :observer_memberships, -> { where(role: "observer") },
+           class_name: "AccountMembership",
+           inverse_of: :account
+  has_many :observers, through: :observer_memberships, source: :user
+
+  has_many :editor_memberships, -> { where(role: "editor") },
+           class_name: "AccountMembership",
+           inverse_of: :account
+  has_many :editors, through: :editor_memberships, source: :user
 
   has_many :entries, dependent: :destroy
   has_many :characters, dependent: :destroy

@@ -7,9 +7,16 @@ class ApplicationController < ActionController::Base
   before_action :require_account
   after_action { Current.reset }
 
-  helper_method :current_user, :current_account, :signed_in?, :can_write?
+  helper_method :current_user, :current_account, :signed_in?, :can_write?, :account_owner?, :public_signup_allowed?
 
   private
+
+  def public_signup_allowed?
+    return @public_signup_allowed if defined?(@public_signup_allowed)
+
+    allow_signup = ActiveModel::Type::Boolean.new.cast(ENV["ALLOW_SIGNUP"])
+    @public_signup_allowed = allow_signup || !User.exists?
+  end
 
   def set_current
     Current.user = current_user
@@ -34,6 +41,13 @@ class ApplicationController < ActionController::Base
     current_user.present?
   end
 
+  def account_owner?
+    return false unless current_user
+    return false unless current_account
+
+    current_account.owner_id == current_user.id
+  end
+
   def require_login
     return if signed_in?
 
@@ -51,7 +65,15 @@ class ApplicationController < ActionController::Base
     return false unless current_user
     return true unless current_account
 
-    current_account.owner_id == current_user.id
+    return true if account_owner?
+
+    current_account.account_memberships.where(user_id: current_user.id, role: "editor").exists?
+  end
+
+  def require_account_owner
+    return if account_owner?
+
+    redirect_back(fallback_location: root_path, alert: "Owner access only.")
   end
 
   def require_write_access

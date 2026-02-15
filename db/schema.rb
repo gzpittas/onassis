@@ -10,15 +10,16 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_02_14_120000) do
-  create_table "account_observers", force: :cascade do |t|
+ActiveRecord::Schema[8.0].define(version: 2026_02_15_153000) do
+  create_table "account_memberships", force: :cascade do |t|
     t.integer "account_id", null: false
     t.integer "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["account_id", "user_id"], name: "index_account_observers_on_account_id_and_user_id", unique: true
-    t.index ["account_id"], name: "index_account_observers_on_account_id"
-    t.index ["user_id"], name: "index_account_observers_on_user_id"
+    t.string "role", default: "observer", null: false
+    t.index ["account_id", "user_id"], name: "index_account_memberships_on_account_id_and_user_id", unique: true
+    t.index ["account_id"], name: "index_account_memberships_on_account_id"
+    t.index ["user_id"], name: "index_account_memberships_on_user_id"
   end
 
   create_table "accounts", force: :cascade do |t|
@@ -412,8 +413,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_14_120000) do
     t.index ["account_id"], name: "index_videos_on_account_id"
   end
 
-  add_foreign_key "account_observers", "accounts"
-  add_foreign_key "account_observers", "users"
+  add_foreign_key "account_memberships", "accounts"
+  add_foreign_key "account_memberships", "users"
   add_foreign_key "accounts", "characters", column: "main_character_id"
   add_foreign_key "accounts", "users", column: "owner_id"
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
